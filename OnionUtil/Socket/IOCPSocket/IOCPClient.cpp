@@ -1,16 +1,16 @@
 ﻿#include "IOCPClient.h"
 
-OnionSocket::IOCPClient::IOCPClient(std::string ip, int port) : m_ip(ip),m_port(port),m_isConnect(false)
+onion::socket::IOCPClient::IOCPClient(std::string ip, int port) : m_ip(ip),m_port(port),m_isConnect(false)
 {
-	m_pIocpsockinfo = new IOCPData();
 	m_session = new IOCPSession();
 }
 
-OnionSocket::IOCPClient::~IOCPClient()
+onion::socket::IOCPClient::~IOCPClient()
 {
+
 }
 
-bool OnionSocket::IOCPClient::InitializeClient()
+bool onion::socket::IOCPClient::InitializeClient()
 {
 	if (!WSAInit())
 		return false;
@@ -21,7 +21,6 @@ bool OnionSocket::IOCPClient::InitializeClient()
 		printf("[error] socket create error msg : [%s] \n", WSAGetLastError());
 		return false;
 	}
-	
 
 	//server info
 	ZeroMemory(&m_serverAddr, sizeof(SOCKADDR_IN));
@@ -38,7 +37,7 @@ bool OnionSocket::IOCPClient::InitializeClient()
 	return true;
 }
 
-void OnionSocket::IOCPClient::StartClient()
+void onion::socket::IOCPClient::StartClient()
 {
 	int nResult = 0;
 	DWORD recvBytes;
@@ -67,16 +66,10 @@ void OnionSocket::IOCPClient::StartClient()
 	flags = 0;
 
 	m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_socket), m_hIOCP,
-		(ULONG_PTR)&(m_session), NULL);
+		(ULONG_PTR)&(*m_session), NULL);
 
 
 	DWORD get_size;
-
-	/*ZeroMemory(m_pIocpsockinfo->GetOverlapped(), sizeof(OVERLAPPED));*/
-
-	//m_pIocpsockinfo->GetWSABuf()->buf = sendBuf;
-	//m_pIocpsockinfo->GetWSABuf()->len = 1024;
-	//m_pIocpsockinfo->SetIOType(IO_WRITE);
 
 	m_session->m_data[IO_WRITE]->GetWSABuf()->buf = sendBuf;
 	m_session->m_data[IO_WRITE]->GetWSABuf()->len = 1024;
@@ -96,7 +89,7 @@ void OnionSocket::IOCPClient::StartClient()
 	//}
 }
 
-void OnionSocket::IOCPClient::StopClient()
+void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
 }

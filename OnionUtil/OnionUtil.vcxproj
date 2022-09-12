@@ -144,22 +144,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Session.h" />
-    <ClInclude Include="SocketCommon.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSession.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPClient.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPData.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPServer.h" />
+    <ClInclude Include="Socket\Session.h" />
+    <ClInclude Include="Socket\SessionManager.h" />
+    <ClInclude Include="Socket\SocketCommon.h" />
+    <ClInclude Include="Util\SingleTon.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OnionUtil.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSession.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSock.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPClient.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPData.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPServer.cpp" />
     <ClCompile Include="Socket\Session.cpp" />
+    <ClCompile Include="Socket\SessionManager.cpp" />
+    <ClCompile Include="Util\OnionUtil.cpp" />
+    <ClCompile Include="Util\SingleTon.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

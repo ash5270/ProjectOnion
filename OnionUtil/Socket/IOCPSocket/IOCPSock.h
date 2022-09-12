@@ -4,7 +4,7 @@
 
 #include <thread>
 
-namespace OnionSocket
+namespace onion::socket
 {
 	#define BUF_SIZE 1024
 
@@ -27,7 +27,7 @@ namespace OnionSocket
 
 		HANDLE* m_pWorkerHandle;
 		HANDLE m_hIOCP;
-		IOCPData* m_pIocpsockinfo;
+		//IOCPData* m_pIocpsockinfo;
 	private:
 		bool m_bWorkerThread;
 	};

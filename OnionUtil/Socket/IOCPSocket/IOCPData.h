@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "../SocketCommon.h"
 
-namespace OnionSocket
+namespace onion::socket
 {
 	typedef enum
 	{

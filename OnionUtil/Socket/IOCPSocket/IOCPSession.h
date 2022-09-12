@@ -2,16 +2,17 @@
 #include "../Session.h"
 #include "IOCPData.h"
 
-namespace OnionSocket
+namespace onion::socket
 {
-	class IOCPSession : public Session
+	class IOCPSession : public Session 
 	{
-	protected:
+	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;
-		void Send(size_t transferSize) override;
+		void OnSend(size_t transferSize) override;
 		void RecvStandBy() override;
-		void OnRecv() override;
+		void OnRecv(size_t transferSize) override;
 		void OnClose() override;
+
 	public:
 		IOCPData* m_data[2];
 

@@ -4,7 +4,7 @@
 #include <string>
 
 
-namespace OnionSocket
+namespace onion::socket
 {
 	class IOCPClient :public IOCPSock
 	{

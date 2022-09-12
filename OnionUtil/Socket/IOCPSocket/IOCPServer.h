@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include "IOCPSock.h"
+#include "../SessionManager.h"
 #include <thread>
 
-namespace OnionSocket
+namespace onion::socket
 {
-	class IOCPServer : ::OnionSocket::IOCPSock
+	class IOCPServer : IOCPSock
 	{
 	public:
 		IOCPServer(int port);
@@ -18,12 +19,14 @@ namespace OnionSocket
 		void StopServer();
 
 	private:
-		::std::thread m_thAccept;
+		std::thread m_thAccept;
 		SOCKET m_listenSocket;
 		SOCKADDR_IN m_serverAdddr;
 		
 		bool m_bAccept;
 		int m_port;
+
+		SessionManager m_sessionManager;
 	};
 
 }

@@ -1,17 +1,18 @@
 ﻿#include "IOCPServer.h"
+#include "IOCPSession.h"
 
-OnionSocket::IOCPServer::IOCPServer(int port) :IOCPSock()
+onion::socket::IOCPServer::IOCPServer(int port) :IOCPSock()
 {
 	m_bAccept = true;
 	m_port = port;
 }
 
-OnionSocket::IOCPServer::~IOCPServer()
+onion::socket::IOCPServer::~IOCPServer()
 {
 	
 }
 
-bool OnionSocket::IOCPServer::InitializeServer()
+bool onion::socket::IOCPServer::InitializeServer()
 {
 	if (!WSAInit())
 		return false;
@@ -52,7 +53,7 @@ bool OnionSocket::IOCPServer::InitializeServer()
 	return true;
 }
 
-void OnionSocket::IOCPServer::StartServer()
+void onion::socket::IOCPServer::StartServer()
 {
 	int nResult = 0;
 	//client 정보
@@ -85,6 +86,7 @@ void OnionSocket::IOCPServer::StartServer()
 	printf_s("[info] Server Start\n");
 
 
+	//accept 
 	m_thAccept = ::std::thread([&, this]()
 		{
 			while (m_bAccept)
@@ -96,24 +98,21 @@ void OnionSocket::IOCPServer::StartServer()
 					printf_s("[error] Accept failed \n");
 					return;
 				}//client
-				else
-				{
-					printf_s("[info] connect client \n ");
-				}
 
-				m_pIocpsockinfo = new IOCPData();
-				m_pIocpsockinfo->SetIOType(IO_READ);
-				m_pIocpsockinfo->SetSocket(clientSocket);
-				m_pIocpsockinfo->GetWSABuf()->len = BUF_SIZE;
-				m_pIocpsockinfo->GetWSABuf()->buf = m_pIocpsockinfo->GetData();
+				auto session = new IOCPSession();
+				auto cur_session = session->m_data[IO_READ];
+				cur_session->SetSocket(clientSocket);
+				cur_session->GetWSABuf()->len = BUF_SIZE;
+				cur_session->GetWSABuf()->buf = cur_session->GetData();
+
+				m_sessionManager.CreateSession(session);
 
 				flags = 0;
 
-				m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(clientSocket), m_hIOCP, 
-					reinterpret_cast<DWORD>(m_pIocpsockinfo), 0);
+				m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(cur_session->GetSocket()), m_hIOCP, 
+					(ULONG_PTR)&(*session), 0);
 
-				//socket
-				nResult = WSARecv(m_pIocpsockinfo->GetSocket(), m_pIocpsockinfo->GetWSABuf(), 1, &recvBytes, &flags, m_pIocpsockinfo->GetOverlapped(), NULL);
+				nResult = WSARecv(cur_session->GetSocket(), cur_session->GetWSABuf(), 1, &recvBytes, &flags, cur_session->GetOverlapped(), NULL);
 				if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 				{
 					printf_s("[error] IO pending failed : %d\n", WSAGetLastError());
@@ -123,7 +122,7 @@ void OnionSocket::IOCPServer::StartServer()
 		});
 }
 
-void OnionSocket::IOCPServer::StopServer()
+void onion::socket::IOCPServer::StopServer()
 {
 	m_thAccept.join();
 

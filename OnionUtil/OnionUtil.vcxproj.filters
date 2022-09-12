@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SocketCommon.h">
-      <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>Network\Socket</Filter>
-    </ClInclude>
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h">
       <Filter>Network\Socket\IOCPSocket</Filter>
     </ClInclude>
@@ -36,11 +30,20 @@
     <ClInclude Include="Socket\IOCPSocket\IOCPSession.h">
       <Filter>Network\Socket\IOCPSocket</Filter>
     </ClInclude>
+    <ClInclude Include="Socket\Session.h">
+      <Filter>Network\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\SessionManager.h">
+      <Filter>Network\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\SocketCommon.h">
+      <Filter>Network\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\SingleTon.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OnionUtil.cpp">
-      <Filter>Util</Filter>
-    </ClCompile>
     <ClCompile Include="Socket\Session.cpp">
       <Filter>Network\Socket</Filter>
     </ClCompile>
@@ -58,6 +61,15 @@
     </ClCompile>
     <ClCompile Include="Socket\IOCPSocket\IOCPSession.cpp">
       <Filter>Network\Socket\IOCPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\SessionManager.cpp">
+      <Filter>Network\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\OnionUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\SingleTon.cpp">
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

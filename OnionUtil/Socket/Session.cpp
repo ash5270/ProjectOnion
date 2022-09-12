@@ -1,26 +1,27 @@
 ﻿#include "Session.h"
 
-bool OnionSocket::Session::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
+bool onion::socket::Session::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 {
 	return false;
 }
 
-void OnionSocket::Session::Send(size_t transferSize)
+void onion::socket::Session::OnSend(size_t transferSize)
 {
 
 }
 
-void OnionSocket::Session::RecvStandBy()
+void onion::socket::Session::RecvStandBy()
 {
 
 }
 
-void OnionSocket::Session::OnRecv()
+void onion::socket::Session::OnRecv(size_t transferSize)
 {
-
+	
 }
 
-void OnionSocket::Session::OnClose()
+
+void onion::socket::Session::OnClose()
 {
 
 }
