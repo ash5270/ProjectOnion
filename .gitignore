@@ -259,3 +259,5 @@ FakesAssemblies/
 
 #vs file
 .vs/*
+.vs/
+.vs
