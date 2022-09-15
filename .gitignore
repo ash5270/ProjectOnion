@@ -29,7 +29,7 @@
 
 # OSX
 # =========================
-.vs/
+
 .DS_Store
 .AppleDouble
 .LSOverride
