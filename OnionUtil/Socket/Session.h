@@ -6,13 +6,15 @@
 namespace onion::socket
 {
 	class Session
-	//: public std::enable_shared_from_this<Session>
 	{
 	protected:
 		SOCKET m_socket;
 		SOCKADDR_IN m_addrInfo;
 
 	public:
+		Session();
+		virtual ~Session();
+		
 		virtual bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo);
 		virtual void OnSend(size_t transferSize);
 		virtual void RecvStandBy();

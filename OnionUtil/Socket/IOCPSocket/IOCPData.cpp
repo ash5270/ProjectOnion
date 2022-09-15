@@ -1,5 +1,4 @@
-﻿
-#include "IOCPData.h"
+﻿#include "IOCPData.h"
 
 onion::socket::IOCPData::IOCPData()
 {

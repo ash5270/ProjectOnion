@@ -40,8 +40,8 @@ bool onion::socket::IOCPClient::InitializeClient()
 void onion::socket::IOCPClient::StartClient()
 {
 	int nResult = 0;
-	DWORD recvBytes;
-	DWORD flags;
+	DWORD recvBytes = 0;
+	DWORD flags = 0;
 
 	m_hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 

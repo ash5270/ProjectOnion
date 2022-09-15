@@ -152,6 +152,8 @@
     <ClInclude Include="Socket\Session.h" />
     <ClInclude Include="Socket\SessionManager.h" />
     <ClInclude Include="Socket\SocketCommon.h" />
+    <ClInclude Include="System\Buffer.h" />
+    <ClInclude Include="Util\Common.h" />
     <ClInclude Include="Util\SingleTon.h" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +164,7 @@
     <ClCompile Include="Socket\IOCPSocket\IOCPServer.cpp" />
     <ClCompile Include="Socket\Session.cpp" />
     <ClCompile Include="Socket\SessionManager.cpp" />
+    <ClCompile Include="System\Buffer.cpp" />
     <ClCompile Include="Util\OnionUtil.cpp" />
     <ClCompile Include="Util\SingleTon.cpp" />
   </ItemGroup>

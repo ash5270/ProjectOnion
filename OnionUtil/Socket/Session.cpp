@@ -1,5 +1,15 @@
 ﻿#include "Session.h"
 
+onion::socket::Session::Session()
+{
+
+}
+
+onion::socket::Session::~Session()
+{
+
+}
+
 bool onion::socket::Session::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 {
 	return false;

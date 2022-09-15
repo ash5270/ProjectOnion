@@ -26,8 +26,6 @@ onion::socket::IOCPSock::~IOCPSock()
 	}
 }
 
-
-
 bool onion::socket::IOCPSock::CreateWorkerThread(size_t num_thread)
 {
 	UINT32 threadId;

@@ -13,6 +13,9 @@
     <Filter Include="Network\Socket\IOCPSocket">
       <UniqueIdentifier>{d084eecb-0294-4324-a89d-3cdbd80de3cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{29dedd6b-0bf0-43e1-a3e8-b33038d6d59f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h">
@@ -42,6 +45,12 @@
     <ClInclude Include="Util\SingleTon.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="Util\Common.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="System\Buffer.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -70,6 +79,9 @@
     </ClCompile>
     <ClCompile Include="Util\SingleTon.cpp">
       <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="System\Buffer.cpp">
+      <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

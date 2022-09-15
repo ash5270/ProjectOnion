@@ -14,7 +14,6 @@ namespace onion::socket
 		IOCPSock();
 		~IOCPSock();
 
-		
 		//작업 스레드 생성
 		bool CreateWorkerThread(size_t num_thread);
 		//작업 스레드 시작
@@ -27,7 +26,6 @@ namespace onion::socket
 
 		HANDLE* m_pWorkerHandle;
 		HANDLE m_hIOCP;
-		//IOCPData* m_pIocpsockinfo;
 	private:
 		bool m_bWorkerThread;
 	};
