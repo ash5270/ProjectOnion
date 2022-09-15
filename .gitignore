@@ -11,7 +11,7 @@
 
 # Fortran module files
 *.mod
-.vs
+
 # Compiled Static libraries
 *.lai
 *.la
@@ -256,3 +256,6 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+#vs file
+.vs/*
