@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../SocketCommon.h"
+#include "../../System/Buffer.h"
 
 namespace onion::socket
 {
@@ -18,18 +19,18 @@ namespace onion::socket
 		size_t m_totalBytes;
 		size_t m_currentBytes;
 		SOCKET m_socket;
-		WSABUF m_wsabuf;
-
-		char m_buffer[BUF_MAX_SIZE];
+		system::Buffer m_buffer;
 	public:
 		IOCPData();
 		void Clear();
 		SOCKET GetSocket();
 		void SetSocket(const SOCKET& socket);
-		WSABUF* GetWSABuf();
+		WSABUF GetWSABuf();
 		OVERLAPPED* GetOverlapped();
-		char* GetData();
+		system::Buffer& GetBuffer();
 		IO_TYPE GetIOType();
 		void SetIOType(IO_TYPE type);
+
+		void SetData(system::Buffer buffer);
 	};
 }

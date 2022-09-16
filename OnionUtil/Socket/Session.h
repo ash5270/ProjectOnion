@@ -17,9 +17,12 @@ namespace onion::socket
 		
 		virtual bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo);
 		virtual void OnSend(size_t transferSize);
-		virtual void RecvStandBy();
+		virtual void RecvReady();
 		virtual void OnRecv(size_t transferSize);
 		virtual void OnClose();
+
+
+		void SetSocket(const SOCKET& socket);
 	};
 }
 

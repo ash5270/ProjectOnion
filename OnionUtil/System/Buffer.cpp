@@ -36,6 +36,11 @@ void onion::system::Buffer::Clear()
 	ZERO_MEMORY(m_data, m_capacity);
 }
 
+char* onion::system::Buffer::GetData() const
+{
+	return m_data;
+}
+
 size_t onion::system::Buffer::size()
 {
 	return m_offset;
@@ -209,5 +214,5 @@ void onion::system::Buffer::operator>>(std::wstring* value)
 	value->clear();
 	*value = buffer;
 
-	delete buffer;
+	delete[] buffer;
 }

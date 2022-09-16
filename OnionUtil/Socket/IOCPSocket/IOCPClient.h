@@ -19,6 +19,8 @@ namespace onion::socket
 		//클라 닫기
 		void StopClient();
 
+		IOCPSession* GetSession();
+
 	private:
 		SOCKET m_socket;
 		SOCKADDR_IN m_serverAddr;

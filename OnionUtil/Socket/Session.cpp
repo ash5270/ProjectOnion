@@ -20,7 +20,7 @@ void onion::socket::Session::OnSend(size_t transferSize)
 
 }
 
-void onion::socket::Session::RecvStandBy()
+void onion::socket::Session::RecvReady()
 {
 
 }
@@ -34,4 +34,9 @@ void onion::socket::Session::OnRecv(size_t transferSize)
 void onion::socket::Session::OnClose()
 {
 
+}
+
+void onion::socket::Session::SetSocket(const SOCKET& socket)
+{
+	m_socket = socket;
 }

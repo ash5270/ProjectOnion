@@ -94,18 +94,8 @@ void onion::socket::IOCPSock::WorkingThread()
 			{
 				pSession->OnRecv(recvBytes);
 			}
-
 			printf_s("[info] recv Success\n");
-
-			bResult = WSARecv(pSocketinfo->GetSocket(), pSocketinfo->GetWSABuf(), 1, &dwFlags,&recvBytes, pSocketinfo->GetOverlapped(), NULL);
-
-			if (bResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-			{
-				printf_s("[error] IO pending failed : %d\n", WSAGetLastError());
-				closesocket(pSocketinfo->GetSocket());
-				free(pSocketinfo);
-				continue;
-			}
+			pSession->RecvReady();
 
 			break;
 

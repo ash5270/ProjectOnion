@@ -1,4 +1,5 @@
 ﻿#include "Socket/IOCPSocket/IOCPClient.h"
+#include "System/Buffer.h"
 
 int main()
 {
@@ -7,6 +8,12 @@ int main()
 	client.StartClient();
 
 
+	int x = 012321321;
+	onion::system::Buffer buf;
+	buf << x;
+	client.GetSession()->SendBuffer(&buf);
+
+	
 
 	while(1)
 	{

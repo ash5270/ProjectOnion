@@ -19,6 +19,7 @@ namespace onion::system
 		~Buffer();
 		
 		void Clear();
+		char* GetData() const;
 
 		//size
 		size_t size();

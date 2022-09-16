@@ -22,6 +22,8 @@ bool onion::socket::IOCPClient::InitializeClient()
 		return false;
 	}
 
+	m_session->SetSocket(m_socket);
+
 	//server info
 	ZeroMemory(&m_serverAddr, sizeof(SOCKADDR_IN));
 	m_serverAddr.sin_family = AF_INET;
@@ -63,33 +65,18 @@ void onion::socket::IOCPClient::StartClient()
 
 	m_isConnect = true;
 
-	flags = 0;
-
 	m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_socket), m_hIOCP,
 		(ULONG_PTR)&(*m_session), NULL);
 
-
-	DWORD get_size;
-
-	m_session->m_data[IO_WRITE]->GetWSABuf()->buf = sendBuf;
-	m_session->m_data[IO_WRITE]->GetWSABuf()->len = 1024;
-
-	
-	nResult = WSASend(m_socket, m_session->m_data[IO_WRITE]->GetWSABuf(), 1, &get_size, 0, m_session->m_data[IO_WRITE]->GetOverlapped(), NULL);
-	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-	{
-		printf_s("[error] WSASend falied : %d \n", WSAGetLastError());
-	}
-
-	//nResult = WSARecv(m_pIocpsockinfo->GetSocket(), m_pIocpsockinfo->GetWSABuf(), 1, &recvBytes, &flags,
-	//	m_pIocpsockinfo->GetOverlapped(), NULL);
-	//if(nResult==SOCKET_ERROR&& WSAGetLastError()==WSA_IO_PENDING)
-	//{
-	//	printf_s("[error] IO pending failed : %d \n", WSAGetLastError());
-	//}
+	m_session->RecvReady();
 }
 
 void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
+}
+
+onion::socket::IOCPSession* onion::socket::IOCPClient::GetSession()
+{
+	return m_session;
 }

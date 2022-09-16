@@ -102,8 +102,11 @@ void onion::socket::IOCPServer::StartServer()
 				auto session = new IOCPSession();
 				auto cur_session = session->m_data[IO_READ];
 				cur_session->SetSocket(clientSocket);
-				cur_session->GetWSABuf()->len = BUF_SIZE;
-				cur_session->GetWSABuf()->buf = cur_session->GetData();
+				session->SetSocket(clientSocket);
+			/*	cur_session->GetWSABuf()->len = BUF_SIZE;
+				cur_session->GetWSABuf()->buf = cur_session->GetBuffer().GetData();*/
+
+				session->RecvReady();
 
 				m_sessionManager.CreateSession(session);
 
@@ -112,12 +115,7 @@ void onion::socket::IOCPServer::StartServer()
 				m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(cur_session->GetSocket()), m_hIOCP, 
 					(ULONG_PTR)&(*session), 0);
 
-				nResult = WSARecv(cur_session->GetSocket(), cur_session->GetWSABuf(), 1, &recvBytes, &flags, cur_session->GetOverlapped(), NULL);
-				if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-				{
-					printf_s("[error] IO pending failed : %d\n", WSAGetLastError());
-					return;
-				}
+			
 			}
 		});
 }

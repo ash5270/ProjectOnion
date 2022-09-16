@@ -10,7 +10,7 @@ onion::socket::IOCPData::IOCPData()
 
 void onion::socket::IOCPData::Clear()
 {
-	ZeroMemory(m_buffer, BUF_MAX_SIZE);
+	m_buffer.Clear();
 	m_totalBytes = 0;
 	m_currentBytes = 0;
 }
@@ -26,9 +26,12 @@ void onion::socket::IOCPData::SetSocket(const SOCKET& socket)
 	m_socket = socket;
 }
 
-WSABUF* onion::socket::IOCPData::GetWSABuf()
+WSABUF onion::socket::IOCPData::GetWSABuf()
 {
-	return &m_wsabuf;
+	WSABUF buf;
+	buf.len = 0;
+	//수정해야할곳
+	return buf;
 }
 
 OVERLAPPED* onion::socket::IOCPData::GetOverlapped()
@@ -36,7 +39,7 @@ OVERLAPPED* onion::socket::IOCPData::GetOverlapped()
 	return &m_overlapped;
 }
 
-char* onion::socket::IOCPData::GetData()
+onion::system::Buffer& onion::socket::IOCPData::GetBuffer()
 {
 	return m_buffer;
 }
