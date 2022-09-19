@@ -10,6 +10,7 @@ onion::socket::IOCPData::IOCPData()
 
 void onion::socket::IOCPData::Clear()
 {
+	//PO_LOG(LOG_ERROR, L"초기화 iodate\n");
 	m_buffer.Clear();
 	m_totalBytes = 0;
 	m_currentBytes = 0;
@@ -30,7 +31,7 @@ WSABUF onion::socket::IOCPData::GetWSABuf()
 {
 	WSABUF buf;
 	buf.len = 0;
-	//수정해야할곳
+	buf.buf = m_buffer.GetData() + m_buffer.size();
 	return buf;
 }
 

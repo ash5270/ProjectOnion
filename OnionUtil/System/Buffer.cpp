@@ -1,5 +1,5 @@
 #include "Buffer.h"
-
+#include "LogSystem.h"
 onion::system::Buffer::Buffer()
 {
 	m_data = new char[BUF_MAX_SIZE];
@@ -28,9 +28,9 @@ onion::system::Buffer::~Buffer()
 	}
 }
 
-
 void onion::system::Buffer::Clear()
 {
+	//PO_LOG(LOG_ERROR,L"√ ±‚»≠ buffer\n");
 	m_offset = 0;
 	m_readOffset = 0;
 	ZERO_MEMORY(m_data, m_capacity);
@@ -39,6 +39,13 @@ void onion::system::Buffer::Clear()
 char* onion::system::Buffer::GetData() const
 {
 	return m_data;
+}
+
+void onion::system::Buffer::AddOffset(size_t offset)
+{
+	if(m_capacity < m_offset + offset)
+		return;
+	m_offset += offset;
 }
 
 size_t onion::system::Buffer::size()
@@ -55,7 +62,7 @@ bool onion::system::Buffer::CheckWriteBound(size_t len)
 {
 	if (m_offset + len > m_capacity)
 	{
-		printf_s("[error] buffer overflow\n");
+		PO_LOG(LOG_ERROR, L"buffer overflow\n");
 		return false;
 	}
 	return true;
@@ -65,7 +72,7 @@ bool onion::system::Buffer::CheckReadBound(size_t len)
 {
 	if(m_readOffset+len>m_offset)
 	{
-		printf_s("[error] buffer read overflow\n");
+		PO_LOG(LOG_ERROR, L"buffer read overflow\n");
 		return false;
 	}
 	return true;
@@ -76,7 +83,7 @@ bool onion::system::Buffer::CheckReadBound(size_t len)
 	if(!this->CheckWriteBound(size))\
 		return;\
 	memcpy_s((m_data)+m_offset,m_capacity-m_offset,(const void*)&value,size);\
-	m_offset+=size;
+	m_offset+=size
 
 template <typename T>
 void  onion::system::Buffer::operator<<(const T& value)

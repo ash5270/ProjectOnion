@@ -20,7 +20,8 @@ namespace onion::system
 		
 		void Clear();
 		char* GetData() const;
-
+		//add offset -> 사용이유는 recv 했을때 버퍼 자체를 복사해오지만 이 offset값은 복사하지 않기 때문
+		void AddOffset(size_t offset);
 		//size
 		size_t size();
 		//capacity

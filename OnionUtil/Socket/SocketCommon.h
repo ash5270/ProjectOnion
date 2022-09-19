@@ -9,3 +9,5 @@
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 
+#include "../System/LogSystem.h"
+

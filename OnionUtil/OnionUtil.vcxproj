@@ -153,7 +153,11 @@
     <ClInclude Include="Socket\SessionManager.h" />
     <ClInclude Include="Socket\SocketCommon.h" />
     <ClInclude Include="System\Buffer.h" />
+    <ClInclude Include="System\Log.h" />
+    <ClInclude Include="System\LogData.h" />
+    <ClInclude Include="System\LogSystem.h" />
     <ClInclude Include="Util\Common.h" />
+    <ClInclude Include="Util\MutexQueue.h" />
     <ClInclude Include="Util\SingleTon.h" />
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +169,8 @@
     <ClCompile Include="Socket\Session.cpp" />
     <ClCompile Include="Socket\SessionManager.cpp" />
     <ClCompile Include="System\Buffer.cpp" />
+    <ClCompile Include="System\LogData.cpp" />
+    <ClCompile Include="System\LogSystem.cpp" />
     <ClCompile Include="Util\OnionUtil.cpp" />
     <ClCompile Include="Util\SingleTon.cpp" />
   </ItemGroup>

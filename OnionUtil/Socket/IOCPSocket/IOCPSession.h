@@ -11,6 +11,7 @@ namespace onion::socket
 	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;
 		void OnSend(size_t transferSize) override;
+		//recv를 받을 수 있게 준비 상태로 만들어줌
 		void RecvReady() override;
 		void OnRecv(size_t transferSize) override;
 		void OnClose() override;
@@ -23,7 +24,7 @@ namespace onion::socket
 	public:
 		IOCPData* m_data[2];
 
-		IOCPSession();
+		IOCPSession(const SOCKET& socket);
 		~IOCPSession();
 
 	};

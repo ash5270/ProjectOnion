@@ -12,7 +12,7 @@ namespace onion::socket
 		SOCKADDR_IN m_addrInfo;
 
 	public:
-		Session();
+		Session(const SOCKET& socket);
 		virtual ~Session();
 		
 		virtual bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo);
@@ -20,9 +20,6 @@ namespace onion::socket
 		virtual void RecvReady();
 		virtual void OnRecv(size_t transferSize);
 		virtual void OnClose();
-
-
-		void SetSocket(const SOCKET& socket);
 	};
 }
 

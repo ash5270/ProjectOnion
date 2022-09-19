@@ -51,6 +51,18 @@
     <ClInclude Include="System\Buffer.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="System\LogData.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="System\LogSystem.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="System\Log.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\MutexQueue.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -81,6 +93,12 @@
       <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="System\Buffer.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="System\LogData.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="System\LogSystem.cpp">
       <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>

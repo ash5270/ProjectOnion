@@ -37,12 +37,12 @@ bool onion::socket::IOCPSock::CreateWorkerThread(size_t num_thread)
 		m_pWorkerHandle[i] = (HANDLE*)_beginthreadex(NULL, 0, &CallWorkerThread, this, CREATE_SUSPENDED, &threadId);
 		if (m_pWorkerHandle[i] == NULL)
 		{
-			printf_s("[error] worker Thread create Failed\n");
+			PO_LOG(LOG_ERROR, L"worker Thread create Failed\n");
 			return false;
 		}
 		ResumeThread(m_pWorkerHandle[i]);
 	}
-	printf_s("[info] worker thread  count : [%d]\n",num_thread+1);
+	PO_LOG(LOG_INFO, L" worker thread  count : [%d]\n", num_thread+1);
 	return true;
 }
 
@@ -71,7 +71,8 @@ void onion::socket::IOCPSock::WorkingThread()
 
 		if (!bResult && recvBytes == 0)
 		{
-			printf_s("[info] socket(%I64d) connect close\n", pSocketinfo->GetSocket());
+			PO_LOG(LOG_INFO, L"socket(%I64d) connect close\n", pSocketinfo->GetSocket());
+			pSession->OnClose();
 			closesocket(pSocketinfo->GetSocket());
 			free(pSocketinfo);
 			continue;
@@ -79,22 +80,22 @@ void onion::socket::IOCPSock::WorkingThread()
 
 		if (recvBytes == 0)
 		{
-			printf_s("[error] recvBytes size 0\n");
+			PO_LOG(LOG_ERROR, L" recvBytes size 0\n");
 			closesocket(pSocketinfo->GetSocket());
 			free(pSocketinfo);
 			continue;
 		}
-
-		//pSocketinfo->GetWSABuf().len = recvBytes;
 
 		switch (pSocketinfo->GetIOType())
 		{
 		case IO_READ:
 			if(pSession!=nullptr)
 			{
+				//packet 들어오면 수정 될곳
+				pSession->m_data[IO_READ]->GetBuffer().AddOffset(recvBytes);
 				pSession->OnRecv(recvBytes);
 			}
-			printf_s("[info] recv Success\n");
+			PO_LOG(LOG_INFO, L"recv success\n");
 			pSession->RecvReady();
 
 			break;
@@ -104,12 +105,9 @@ void onion::socket::IOCPSock::WorkingThread()
 			{
 				pSession->OnSend(recvBytes);
 			}
-			printf_s("[info] send Success\n");
-			
+			PO_LOG(LOG_INFO, L"send success\n");
 			break;
 		}
-
-		pSocketinfo->Clear();
 	}
 }
 
@@ -125,7 +123,7 @@ bool onion::socket::IOCPSock::WSAInit()
 	nResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if(nResult!=0)
 	{
-		printf("[error] wsa init error\n");
+		PO_LOG(LOG_ERROR, L"wsa init error\n");
 		return false;
 	}
 

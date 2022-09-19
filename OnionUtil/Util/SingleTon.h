@@ -8,7 +8,7 @@ namespace onion::util
 	{
 	protected:
 		SingleTon(){}
-		~SingleTon(){};
+		~SingleTon(){}
 	public:
 		SingleTon(const SingleTon&);
 		SingleTon& operator=(const SingleTon&);

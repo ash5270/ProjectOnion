@@ -14,6 +14,9 @@ onion::socket::IOCPServer::~IOCPServer()
 
 bool onion::socket::IOCPServer::InitializeServer()
 {
+	//log system 시작
+	onion::system::LogSystem::getInstance().Start();
+
 	if (!WSAInit())
 		return false;
 	int nResult = 0;
@@ -22,7 +25,7 @@ bool onion::socket::IOCPServer::InitializeServer()
 	m_listenSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if(m_listenSocket==INVALID_SOCKET)
 	{
-		printf_s("[error] listen socket create msg : [%s]\n", WSAGetLastError());
+		PO_LOG(LOG_ERROR, L"listen socket create msg : [%d]\n", WSAGetLastError());
 		return false;
 	}
 
@@ -35,7 +38,7 @@ bool onion::socket::IOCPServer::InitializeServer()
 	nResult = bind(m_listenSocket, reinterpret_cast<SOCKADDR*>(&m_serverAdddr), sizeof(SOCKADDR_IN));
 	if(nResult==SOCKET_ERROR)
 	{
-		printf_s("[error] bind failed\n");
+		PO_LOG(LOG_ERROR, L"bind failed\n");
 		closesocket(m_listenSocket);
 		WSACleanup();
 		return false;
@@ -44,7 +47,7 @@ bool onion::socket::IOCPServer::InitializeServer()
 	nResult = listen(m_listenSocket, 5);
 	if (nResult != 0)
 	{
-		printf_s("[error] listen error\n");
+		PO_LOG(LOG_ERROR, L"listen failed\n");
 		closesocket(m_listenSocket);
 		WSACleanup();
 		return false;
@@ -72,7 +75,7 @@ void onion::socket::IOCPServer::StartServer()
 	//system info get
 	SYSTEM_INFO system_info;
 	GetSystemInfo(&system_info);
-	printf_s("[info] cpu count : %d \n", system_info.dwNumberOfProcessors);
+	//printf_s("[info] cpu count : %d \n", system_info.dwNumberOfProcessors);
 
 	int nThreadCount = system_info.dwNumberOfProcessors * 2;
 
@@ -83,8 +86,7 @@ void onion::socket::IOCPServer::StartServer()
 		return;
 	}
 
-	printf_s("[info] Server Start\n");
-
+	PO_LOG(LOG_INFO, L"Server Start\n");
 
 	//accept 
 	m_thAccept = ::std::thread([&, this]()
@@ -95,34 +97,35 @@ void onion::socket::IOCPServer::StartServer()
 				clientSocket = WSAAccept(m_listenSocket, (sockaddr*)&clientAddr, &addrLen, NULL, NULL);
 				if (clientSocket == INVALID_SOCKET)
 				{
-					printf_s("[error] Accept failed \n");
+					PO_LOG(LOG_ERROR, L" Accept failed\n");
 					return;
-				}//client
+				}
+				//session 생성
+				auto session = new IOCPSession(clientSocket);
+				//session 매니저에 추가
+				SessionManager::getInstance().RegisterSession(session);
 
-				auto session = new IOCPSession();
-				auto cur_session = session->m_data[IO_READ];
-				cur_session->SetSocket(clientSocket);
-				session->SetSocket(clientSocket);
-			/*	cur_session->GetWSABuf()->len = BUF_SIZE;
-				cur_session->GetWSABuf()->buf = cur_session->GetBuffer().GetData();*/
-
+				auto io_data = session->m_data[IO_READ];
+				//recv 받을 준비 해두기
 				session->RecvReady();
-
-				m_sessionManager.CreateSession(session);
-
 				flags = 0;
-
-				m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(cur_session->GetSocket()), m_hIOCP, 
+				m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(io_data->GetSocket()), m_hIOCP, 
 					(ULONG_PTR)&(*session), 0);
 
-			
+				//accept 알려줌
+				session->OnAccept(clientSocket, clientAddr);
 			}
 		});
 }
 
 void onion::socket::IOCPServer::StopServer()
 {
-	m_thAccept.join();
+	m_bAccept = false;
+
+	if(m_thAccept.joinable())
+		m_thAccept.join();
 
 	WSACleanup();
+	//log system 종료
+	onion::system::LogSystem::getInstance().Stop();
 }

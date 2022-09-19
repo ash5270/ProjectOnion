@@ -1,8 +1,9 @@
 ﻿#include "IOCPClient.h"
+#include "../../System/LogSystem.h"
 
 onion::socket::IOCPClient::IOCPClient(std::string ip, int port) : m_ip(ip),m_port(port),m_isConnect(false)
 {
-	m_session = new IOCPSession();
+	
 }
 
 onion::socket::IOCPClient::~IOCPClient()
@@ -18,11 +19,12 @@ bool onion::socket::IOCPClient::InitializeClient()
 	m_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if(m_socket==INVALID_SOCKET)
 	{
-		printf("[error] socket create error msg : [%s] \n", WSAGetLastError());
+		PO_LOG(LOG_ERROR, L"socket create error msg : [%s] \n", WSAGetLastError());
 		return false;
 	}
 
-	m_session->SetSocket(m_socket);
+	//연결이 된다음 session 생성
+	m_session = new IOCPSession(m_socket);
 
 	//server info
 	ZeroMemory(&m_serverAddr, sizeof(SOCKADDR_IN));
@@ -32,7 +34,7 @@ bool onion::socket::IOCPClient::InitializeClient()
 	 
 	if(nResult==0)
 	{
-		printf("[error] inet_pton error\n");
+		PO_LOG(LOG_ERROR, L"inet_pton error\n");
 		return false;
 	}
 
@@ -41,6 +43,8 @@ bool onion::socket::IOCPClient::InitializeClient()
 
 void onion::socket::IOCPClient::StartClient()
 {
+	onion::system::LogSystem::getInstance().Start();
+
 	int nResult = 0;
 	DWORD recvBytes = 0;
 	DWORD flags = 0;
@@ -52,12 +56,12 @@ void onion::socket::IOCPClient::StartClient()
 		return; 
 	}
 
-	printf("[info] start client\n");
+	PO_LOG(LOG_INFO, L"start client\n");
 
 	nResult = connect(m_socket, reinterpret_cast<SOCKADDR*>(&m_serverAddr), sizeof(SOCKADDR_IN));
 	if(nResult==SOCKET_ERROR)
 	{
-		printf("[error] connect failed\n");
+		PO_LOG(LOG_ERROR, L"[error] connect failed\n");
 		closesocket(m_socket);
 		WSACleanup();
 		return;
@@ -74,6 +78,8 @@ void onion::socket::IOCPClient::StartClient()
 void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
+
+	onion::system::LogSystem::getInstance().Stop();
 }
 
 onion::socket::IOCPSession* onion::socket::IOCPClient::GetSession()
