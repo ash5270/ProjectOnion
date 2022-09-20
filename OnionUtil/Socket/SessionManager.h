@@ -16,7 +16,6 @@ namespace onion::socket
 
 		void RegisterSession(Session* session);
 		void UnregisterSession(Session* session);
-
 	};
 }
 

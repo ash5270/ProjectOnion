@@ -6,7 +6,7 @@
 
 #include <mutex>
 #include <queue>
-#include<thread>
+#include<thread> 
 
 namespace onion::system
 {
@@ -17,7 +17,7 @@ namespace onion::system
 		std::mutex m_lock;
 		std::queue<LogData> m_logDatas;
 		std::thread m_thread;
-
+			
 	public:
 		void Start();
 		void Stop();

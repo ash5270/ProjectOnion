@@ -50,7 +50,7 @@ void onion::socket::IOCPSession::OnRecv(size_t transferSize)
 	PO_LOG(LOG_INFO, L"[info] recv size : [%d]\n", transferSize);
 	std::wstring x;
 	m_data[IO_READ]->GetBuffer() >> &x;
-	PO_LOG(LOG_INFO, L"recv msg : [%s]\n", x.c_str());
+	PO_LOG(LOG_DEBUG, L"recv msg : [%s]\n", x.c_str());
 	//Session::OnRecv();
 }
 
@@ -84,7 +84,6 @@ void onion::socket::IOCPSession::Recv(WSABUF buffer)
 
 void onion::socket::IOCPSession::SendBuffer(system::Buffer* buffer)
 {
-
 	if (m_data[IO_WRITE]->GetIOType() != IO_WRITE)
 		return;
 

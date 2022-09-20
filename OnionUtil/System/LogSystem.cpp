@@ -35,18 +35,20 @@ void onion::system::LogSystem::Update()
 			const auto log = m_logDatas.front();
 			m_logDatas.pop();
 			std::wstring result_str;
+
 			switch (log.type)
 			{
 			case LOGTYPE::LOG_INFO:
-				result_str += L"[LOG_INFO]  ";
+				//time -> 시간 
+				result_str += L"[LOG_INFO] ";
 				break;
 
 			case LOGTYPE::LOG_ERROR:
-				result_str += L"[LOG_ERROR]  ";
+				result_str += L"[LOG_ERROR] ";
 				break;
 
 			case LOGTYPE::LOG_DEBUG:
-				result_str += L"[LOG_DEBUG]  ";
+				result_str += L"[LOG_DEBUG] ";
 			}
 			result_str += log.str;
 			wprintf_s(L"%s", result_str.c_str());

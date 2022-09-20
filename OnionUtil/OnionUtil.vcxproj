@@ -156,6 +156,8 @@
     <ClInclude Include="System\Log.h" />
     <ClInclude Include="System\LogData.h" />
     <ClInclude Include="System\LogSystem.h" />
+    <ClInclude Include="System\Object\GameObject.h" />
+    <ClInclude Include="System\Object\Object.h" />
     <ClInclude Include="Util\Common.h" />
     <ClInclude Include="Util\MutexQueue.h" />
     <ClInclude Include="Util\SingleTon.h" />

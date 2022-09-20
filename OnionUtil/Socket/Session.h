@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "SocketCommon.h"
-#include <memory>
 #include <mstcpip.h>
 
 namespace onion::socket
