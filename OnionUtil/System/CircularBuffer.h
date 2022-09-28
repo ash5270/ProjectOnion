@@ -1,39 +1,37 @@
-#pragma once
+癤�#pragma once
 #include "../Util/Common.h"
-#include <string>
-#include <iostream>
+#include <memory.h>
+
+
 namespace onion::system
 {
-	class Buffer
+	class CircularBuffer
 	{
+		//start
 		char* m_data;
-		size_t m_offset;
-		size_t m_readOffset;
-		size_t m_capacity;
+		//end
+		char* m_dataEnd;
+		//head_ptr
+		char* m_headPtr;
+		size_t m_headSize;
+		//tail_ptr
+		char* m_tailPtr;
+		size_t m_tailSize;
+
+
+		void Write(char* value, size_t size);
+		void Read(void* value, size_t size);
 
 	public:
-		Buffer();
-		Buffer(size_t size);
-		Buffer(const Buffer& buffer, size_t size);
-		//다른 버퍼에서 데이터 복사하는게 아님
-		Buffer(char* setbuf, size_t size);
+		CircularBuffer(char* buffer, size_t capacity);
+		~CircularBuffer();
 
-		~Buffer();
-		
+		bool CheckReadBound(size_t len);
+		bool CheckWriteBound(size_t len);
+
 		void Clear();
 		char* GetData() const;
-		//add offset -> 사용이유는 recv 했을때 버퍼 자체를 복사해오지만 이 offset값은 복사하지 않기 때문
-		void AddOffset(size_t offset);
-		//size
-		size_t size();
-		//capacity
-		size_t capacity();
 
-		//check bound
-		bool CheckWriteBound(size_t len);
-		bool CheckReadBound(size_t len);
-
-		//write
 		template<typename  T>
 		void operator<<(const T& value);
 		void operator<<(const bool& value);
@@ -47,9 +45,6 @@ namespace onion::system
 		void operator<<(const uint64_t& value);
 		//wstring
 		void operator<<(const std::wstring& value);
-
-		//read
-		void Read(void* value, size_t size);
 
 		template<typename T>
 		void operator>>(T* value);

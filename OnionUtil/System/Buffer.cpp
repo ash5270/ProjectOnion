@@ -16,7 +16,18 @@ onion::system::Buffer::Buffer(size_t size)
 
 onion::system::Buffer::Buffer(const Buffer& buffer, size_t size)
 {
+	m_readOffset = buffer.m_readOffset;
+	m_offset = buffer.m_offset;
+	m_capacity = buffer.m_capacity;
 	m_data = new char[size];
+	//여기서 복사 하기
+}
+
+onion::system::Buffer::Buffer(char* setbuf, size_t size)
+{
+	m_data = setbuf;
+	m_capacity = size;
+	Clear();
 }
 
 onion::system::Buffer::~Buffer()

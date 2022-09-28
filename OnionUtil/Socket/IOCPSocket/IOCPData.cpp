@@ -45,7 +45,7 @@ onion::system::Buffer& onion::socket::IOCPData::GetBuffer()
 	return m_buffer;
 }
 
-onion::socket::IO_TYPE onion::socket::IOCPData::GetIOType()
+IO_TYPE onion::socket::IOCPData::GetIOType()
 {
 	return m_type;
 }

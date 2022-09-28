@@ -4,14 +4,6 @@
 
 namespace onion::socket
 {
-	typedef enum
-	{
-		IO_READ =0,
-		IO_WRITE ,
-		IO_ACCEPT,
-		IO_ERROR
-	}IO_TYPE;
-
 	class IOCPData
 	{
 		OVERLAPPED m_overlapped;

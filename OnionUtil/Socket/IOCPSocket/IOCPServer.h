@@ -25,7 +25,6 @@ namespace onion::socket
 		
 		bool m_bAccept;
 		int m_port;
-
 	};
 
 }

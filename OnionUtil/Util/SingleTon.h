@@ -8,10 +8,10 @@ namespace onion::util
 	{
 	protected:
 		SingleTon(){}
-		~SingleTon(){}
+		virtual  ~SingleTon(){}
 	public:
-		SingleTon(const SingleTon&);
-		SingleTon& operator=(const SingleTon&);
+		SingleTon(const SingleTon&) =delete;
+		SingleTon& operator=(const SingleTon&) = delete;
 
 		static T& getInstance()
 		{

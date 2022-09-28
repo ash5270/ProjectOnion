@@ -19,6 +19,9 @@
     <Filter Include="System\Object">
       <UniqueIdentifier>{8ce86407-6653-486d-840e-fac9ca037247}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network\Socket\RIO">
+      <UniqueIdentifier>{2dbac9df-77af-484c-bade-98768bce4a65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h">
@@ -72,6 +75,30 @@
     <ClInclude Include="System\Object\GameObject.h">
       <Filter>System\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Util\Clock.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="System\CircularBuffer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\RIOSocket\RIOServer.h">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\RIOSocket\RIOSock.h">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\RIOSocket\RIOContext.h">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="System\SpinLock.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\RIOSocket\RIOSession.h">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\RIOSocket\RIOSessionManager.h">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -109,6 +136,27 @@
     </ClCompile>
     <ClCompile Include="System\LogSystem.cpp">
       <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\Clock.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="System\CircularBuffer.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\RIOSocket\RIOServer.cpp">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\RIOSocket\RIOSock.cpp">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\RIOSocket\RIOContext.cpp">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\RIOSocket\RIOSession.cpp">
+      <Filter>Network\Socket\RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\RIOSocket\RIOSessionManager.cpp">
+      <Filter>Network\Socket\RIO</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

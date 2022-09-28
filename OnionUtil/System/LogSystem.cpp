@@ -1,5 +1,5 @@
 ﻿#include "LogSystem.h"
-
+#include "../Util/Clock.h"
 void onion::system::LogSystem::Start()
 {
 	m_isUpdate = true;
@@ -12,6 +12,7 @@ void onion::system::LogSystem::Start()
 void onion::system::LogSystem::Stop()
 {
 	m_isUpdate = false;
+
 	if (m_thread.joinable())
 		m_thread.join();
 }
@@ -25,21 +26,19 @@ void onion::system::LogSystem::AddLog(LogData&& logData)
 
 void onion::system::LogSystem::Update()
 {
-	while (m_isUpdate)
+	while (m_isUpdate||m_logDatas.size()>0)
 	{
 		if (!m_logDatas.empty())
 		{
 			//lock
 			std::lock_guard<std::mutex> lock(m_lock);
 
-			const auto log = m_logDatas.front();
-			m_logDatas.pop();
+			
 			std::wstring result_str;
-
-			switch (log.type)
+			result_str += util::Clock::getInstance().NowTime(DATETIME_FORMAT);
+			switch (m_logDatas.front().type)
 			{
 			case LOGTYPE::LOG_INFO:
-				//time -> 시간 
 				result_str += L"[LOG_INFO] ";
 				break;
 
@@ -49,9 +48,11 @@ void onion::system::LogSystem::Update()
 
 			case LOGTYPE::LOG_DEBUG:
 				result_str += L"[LOG_DEBUG] ";
+				break;
 			}
-			result_str += log.str;
+			result_str += m_logDatas.front().str;
 			wprintf_s(L"%s", result_str.c_str());
+			m_logDatas.pop();
 		}
 		std::this_thread::sleep_for(std::chrono::microseconds(20));
 	}

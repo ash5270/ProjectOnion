@@ -44,14 +44,7 @@ bool onion::socket::IOCPServer::InitializeServer()
 		return false;
 	}
 
-	nResult = listen(m_listenSocket, 5);
-	if (nResult != 0)
-	{
-		PO_LOG(LOG_ERROR, L"listen failed\n");
-		closesocket(m_listenSocket);
-		WSACleanup();
-		return false;
-	}
+	
 
 	return true;
 }
@@ -79,7 +72,6 @@ void onion::socket::IOCPServer::StartServer()
 
 	int nThreadCount = system_info.dwNumberOfProcessors * 2;
 
-
 	//Worker Thread
 	if (!CreateWorkerThread(nThreadCount-10))
 	{
@@ -87,6 +79,16 @@ void onion::socket::IOCPServer::StartServer()
 	}
 
 	PO_LOG(LOG_INFO, L"Server Start\n");
+
+	nResult = listen(m_listenSocket, 5);
+	if (nResult != 0)
+	{
+		PO_LOG(LOG_ERROR, L"listen failed\n");
+		closesocket(m_listenSocket);
+		WSACleanup();
+		return;
+	}
+
 
 	//accept 
 	m_thAccept = ::std::thread([&, this]()

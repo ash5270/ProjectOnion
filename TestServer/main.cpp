@@ -6,20 +6,32 @@
 #include "System/LogData.h"
 #include "Socket/IOCPSocket/IOCPServer.h"
 
+#include "Socket/RIOSocket/RIOServer.h"
+
 int main()
 {
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
 
-	onion::socket::IOCPServer iocp(3000);
-	iocp.InitializeServer();
-	iocp.StartServer();
+	//onion::socket::IOCPServer iocp(3000);
+	//iocp.InitializeServer();
+	//iocp.StartServer();
+
+	//while(true)
+	//{
+	//	//update
+	//	//server update
+	//}
+
+	//iocp.StopServer();
+
+
+	onion::socket::RIOServer server(3000);
+	server.InitializeServer();
+	server.StartServer();
 
 	while(true)
 	{
-		//update
-		//server update
+		
 	}
-
-	iocp.StopServer();
 	return 0;
 }

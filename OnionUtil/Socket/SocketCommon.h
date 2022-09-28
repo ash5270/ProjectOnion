@@ -11,3 +11,11 @@
 
 #include "../System/LogSystem.h"
 
+typedef enum
+{
+	IO_READ = 0,
+	IO_WRITE,
+	IO_ACCEPT,
+	IO_ERROR
+}IO_TYPE;
+
