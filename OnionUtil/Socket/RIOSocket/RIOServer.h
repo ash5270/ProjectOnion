@@ -23,6 +23,8 @@ namespace onion::socket
 		void StartServer();
 
 		void StopServer();
+
+		RIOSessionManager& GetSessionManger();
 	};
 
 }

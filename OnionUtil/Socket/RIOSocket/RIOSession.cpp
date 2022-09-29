@@ -56,7 +56,7 @@ void onion::socket::RIOSession::ReleaseRef()
 	if (ref == 0)
 	{
 		//여기서 세션 삭제
-
+		server->GetSessionManger().ReturnSession(this);
 	}
 }
 
@@ -82,7 +82,7 @@ void onion::socket::RIOSession::SetThreadID(int threadID)
 
 bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 {
-
+	AddRef();
 	m_socket = socket;
 	u_long arg = 1;
 	ioctlsocket(m_socket, FIONBIO, &arg);
@@ -113,7 +113,8 @@ void onion::socket::RIOSession::RecvReady()
 {
 	RIOContext* context = new RIOContext(this, IO_READ, m_rioBufferID);
 	context->BufferId = m_rioBufferID;
-	context->Length = static_cast<ULONG>(m_buffer->capacity());
+	//버퍼에서 남은 자리 
+	context->Length = static_cast<ULONG>(m_buffer->capacity()-m_buffer->size());
 	context->Offset = m_buffer->size();
 
 	DWORD recvBytes = 0;
@@ -131,6 +132,13 @@ void onion::socket::RIOSession::RecvReady()
 void onion::socket::RIOSession::OnRecv(size_t transferSize)
 {
 	PO_LOG(LOG_DEBUG, L"recv success msg size : [%d]\n",transferSize);
+	std::wstring x;
+	m_buffer->AddOffset(transferSize);
+	*m_buffer >> &x;
+
+	PO_LOG(LOG_INFO, L"[%s]\n", x.c_str());
+
+	//m_buffer->Clear();
 	//Session::OnRecv(transferSize);
 }
 

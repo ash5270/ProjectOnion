@@ -107,3 +107,8 @@ void onion::socket::RIOServer::StartServer()
 void onion::socket::RIOServer::StopServer()
 {
 }
+
+onion::socket::RIOSessionManager& onion::socket::RIOServer::GetSessionManger()
+{
+	return m_session_manager;
+}

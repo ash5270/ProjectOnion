@@ -43,8 +43,6 @@ bool onion::socket::IOCPClient::InitializeClient()
 
 void onion::socket::IOCPClient::StartClient()
 {
-	onion::system::LogSystem::getInstance().Start();
-
 	int nResult = 0;
 	DWORD recvBytes = 0;
 	DWORD flags = 0;
@@ -79,7 +77,7 @@ void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
 
-	onion::system::LogSystem::getInstance().Stop();
+	
 }
 
 onion::socket::IOCPSession* onion::socket::IOCPClient::GetSession()

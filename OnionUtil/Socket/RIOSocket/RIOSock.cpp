@@ -1,4 +1,5 @@
 ﻿#include "RIOSock.h"
+#include "RIOSession.h"
 
 RIO_CQ onion::socket::RIOSock::m_Rio_CompletionQueue[5] = { 0 };
 RIO_EXTENSION_FUNCTION_TABLE onion::socket::RIOSock::m_Rio_func_table = { 0 };
@@ -45,7 +46,7 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 		for (ULONG i = 0; i < num_results; i++)
 		{
 			RIOContext* context = reinterpret_cast<RIOContext*>(results[i].RequestContext);
-			Session* session = context->GetSession();
+			RIOSession* session = reinterpret_cast<RIOSession*>(context->GetSession());
 			ULONG transferred = results[i].BytesTransferred;
 
 			if(transferred==0)
@@ -66,6 +67,8 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 				PO_LOG(LOG_ERROR, L"Unkown I/O type : %d \n", context->GetIOType());
 				break;
 			}
+			session->ReleaseRef();
+			delete context;
 		}
 	}
 
