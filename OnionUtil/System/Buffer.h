@@ -45,6 +45,7 @@ namespace onion::system
 		void operator<<(const uint32_t& value);
 		void operator<<(const int64_t& value);
 		void operator<<(const uint64_t& value);
+		//void operator<<(const Buffer& buffer);
 		//wstring
 		void operator<<(const std::wstring& value);
 

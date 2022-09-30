@@ -106,7 +106,7 @@ bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 
 void onion::socket::RIOSession::OnSend(size_t transferSize)
 {
-	//Session::OnSend(transferSize);
+	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
 }
 
 void onion::socket::RIOSession::RecvReady()
@@ -138,6 +138,23 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 
 	PO_LOG(LOG_INFO, L"[%s]\n", x.c_str());
 
+	RIOContext* context = new RIOContext(this, IO_WRITE, m_rioBufferID);
+	context->BufferId = m_rioBufferID;
+	//버퍼에서 보낼 길이
+	context->Length = static_cast<ULONG>(m_buffer->size());
+	//버퍼 오프셋
+	context->Offset = m_buffer->size()-transferSize;
+
+	DWORD sendBytes = 0;
+	DWORD flags = 0;
+
+
+	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)context, 1, flags, context))
+	{
+		PO_LOG(LOG_ERROR, L"RIOSend Error : [%d]\n", GetLastError());
+		return;
+	}
+
 	//m_buffer->Clear();
 	//Session::OnRecv(transferSize);
 }
@@ -145,4 +162,25 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 void onion::socket::RIOSession::OnClose()
 {
 	//Session::OnClose();
+}
+
+void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
+{
+	//*m_buffer << buffer;
+
+	RIOContext* context = new RIOContext(this, IO_WRITE, m_rioBufferID);
+	context->BufferId = m_rioBufferID;
+	//
+	context->Length = static_cast<ULONG>(m_buffer->capacity() - m_buffer->size());
+	context->Offset = m_buffer->size();
+
+	DWORD sendBytes = 0;
+	DWORD flags = 0;
+
+
+	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)context, 1, flags, context))
+	{
+		PO_LOG(LOG_ERROR, L"RIOSend Error : [%d]\n", GetLastError());
+		return;
+	}
 }

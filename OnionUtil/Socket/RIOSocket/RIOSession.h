@@ -45,6 +45,8 @@ namespace onion::socket
 		void RecvReady() override;
 		void OnRecv(size_t transferSize) override;
 		void OnClose() override;
+
+		void SendBuffer(system::Buffer* buffer);
 	};
 
 }
