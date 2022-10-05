@@ -7,31 +7,56 @@ onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 
 onion::socket::RIOSession::~RIOSession()
 {
-	
+	RIOSock::m_Rio_func_table.RIODeregisterBuffer(m_rioBufferRecvID);
+	RIOSock::m_Rio_func_table.RIODeregisterBuffer(m_rioBufferSendID);
+
+	VirtualFreeEx(GetCurrentProcess(), m_rioBufferRecvPtr,0, MEM_RELEASE);
+	VirtualFreeEx(GetCurrentProcess(), m_rioBufferSendPtr,0, MEM_RELEASE);
+
+	delete m_recvBuffer;
+	delete m_sendBuffer;
 }
 
 bool onion::socket::RIOSession::Init()
 {
-	m_rio_buffer_ptr = reinterpret_cast<char*>(VirtualAllocEx(GetCurrentProcess(), 0,
-		SESSION_BUFFER_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
-	if(m_rio_buffer_ptr==nullptr)
+	m_recvBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
+	m_sendBuffer = new system::CircularBuffer(512);
+	m_rioBufferRecvPtr = m_recvBuffer->GetData();
+	if(m_rioBufferRecvPtr==nullptr)
 	{
-		PO_LOG(LOG_ERROR, L"VirtualAllocEx Error : [%d]\n", GetLastError());
+		PO_LOG(LOG_ERROR, L"RecvBuffer VirtualAllocEx Error : [%d]\n", GetLastError());
+		return false;
+	}
+	
+	m_rioBufferSendPtr = m_sendBuffer->GetData();
+	if(m_rioBufferSendPtr==nullptr)
+	{
+		PO_LOG(LOG_ERROR, L"SendBuffer VirtualAllocEx Error : [%d]\n", GetLastError());
 		return false;
 	}
 
-	// m_buffer = new onion::system::Buffer()
-	m_buffer = new system::Buffer(m_rio_buffer_ptr, SESSION_BUFFER_SIZE);
-	m_rioBufferID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rio_buffer_ptr, SESSION_BUFFER_SIZE);
+	//buffer setting
+	
 
-	if(m_rioBufferID == RIO_INVALID_BUFFERID)
+	m_rioBufferRecvID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferRecvPtr, SESSION_BUFFER_SIZE);
+	if(m_rioBufferRecvID == RIO_INVALID_BUFFERID)
 	{
-		PO_LOG(LOG_ERROR, L"RIORegisterBuffer Error : [%d]\n", GetLastError());
+		PO_LOG(LOG_ERROR, L"RIORegister RecvBuffer  Error : [%d]\n", GetLastError());
 		return false;
 	}
+
+	m_rioBufferSendID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferSendPtr, 512);
+	if(m_rioBufferSendID==RIO_INVALID_BUFFERID)
+	{
+		PO_LOG(LOG_ERROR, L"RIORegister SendBuffer Error : [%d]\n", GetLastError());
+		return false;
+	}
+
+	//context init
+	m_rioSendContext = new RIOContext(this, IO_WRITE, m_rioBufferSendID);
+	m_rioRecvContext = new RIOContext(this, IO_READ, m_rioBufferRecvID);
 
 	return true;
-
 }
 
 void onion::socket::RIOSession::AddRef()
@@ -82,7 +107,6 @@ void onion::socket::RIOSession::SetThreadID(int threadID)
 
 bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 {
-	AddRef();
 	m_socket = socket;
 	u_long arg = 1;
 	ioctlsocket(m_socket, FIONBIO, &arg);
@@ -104,83 +128,82 @@ bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 	return true;
 }
 
-void onion::socket::RIOSession::OnSend(size_t transferSize)
-{
-	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
-}
 
 void onion::socket::RIOSession::RecvReady()
 {
-	RIOContext* context = new RIOContext(this, IO_READ, m_rioBufferID);
-	context->BufferId = m_rioBufferID;
+	m_rioRecvContext->BufferId = m_rioBufferRecvID;
 	//버퍼에서 남은 자리 
-	context->Length = static_cast<ULONG>(m_buffer->capacity()-m_buffer->size());
-	context->Offset = m_buffer->size();
+	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->capacity()-m_recvBuffer->offset());
+	m_rioRecvContext->Offset = m_recvBuffer->offset();
 
 	DWORD recvBytes = 0;
 	DWORD flags = 0;
 
-	if (!RIOSock::m_Rio_func_table.RIOReceive(m_requestQueue, (PRIO_BUF)context, 1, flags, context))
+	AddRef();
+
+	if (!RIOSock::m_Rio_func_table.RIOReceive(m_requestQueue, (PRIO_BUF)m_rioRecvContext, 1, flags, m_rioRecvContext))
 	{
 		PO_LOG(LOG_ERROR, L"RIOReceive error : [%d]\n", GetLastError());
 		return;
 	}
-
-	//Session::RecvReady();
 }
 
 void onion::socket::RIOSession::OnRecv(size_t transferSize)
 {
-	PO_LOG(LOG_DEBUG, L"recv success msg size : [%d]\n",transferSize);
+	PO_LOG(LOG_DEBUG, L"recv success msg offset : [%d]\n",transferSize);
 	std::wstring x;
-	m_buffer->AddOffset(transferSize);
-	*m_buffer >> &x;
+	m_recvBuffer->HeadCommit(transferSize);
+	*m_recvBuffer >> &x;
 
 	PO_LOG(LOG_INFO, L"[%s]\n", x.c_str());
 
-	RIOContext* context = new RIOContext(this, IO_WRITE, m_rioBufferID);
-	context->BufferId = m_rioBufferID;
-	//버퍼에서 보낼 길이
-	context->Length = static_cast<ULONG>(m_buffer->size());
-	//버퍼 오프셋
-	context->Offset = m_buffer->size()-transferSize;
+	*m_sendBuffer << x;
+	SendPost();
 
-	DWORD sendBytes = 0;
-	DWORD flags = 0;
+	//SendBuffer(m_recvBuffer);
+	//여기서 메모리 릭 
+	
+	//SendBuffer(buffer);
 
-
-	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)context, 1, flags, context))
-	{
-		PO_LOG(LOG_ERROR, L"RIOSend Error : [%d]\n", GetLastError());
-		return;
-	}
-
-	//m_buffer->Clear();
-	//Session::OnRecv(transferSize);
 }
 
 void onion::socket::RIOSession::OnClose()
 {
+	PO_LOG(LOG_INFO, L"Session OnClose\n");
+	ReleaseRef();
 	//Session::OnClose();
 }
 
-void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
+void onion::socket::RIOSession::SendPost()
 {
-	//*m_buffer << buffer;
+	AddRef();
 
-	RIOContext* context = new RIOContext(this, IO_WRITE, m_rioBufferID);
-	context->BufferId = m_rioBufferID;
-	//
-	context->Length = static_cast<ULONG>(m_buffer->capacity() - m_buffer->size());
-	context->Offset = m_buffer->size();
+	m_rioSendContext->BufferId = m_rioBufferSendID;
+	//버퍼에서 보낼 길이
+	m_rioSendContext->Length = static_cast<ULONG>(m_sendBuffer->size());
+	//버퍼 오프셋
+	m_rioSendContext->Offset = m_sendBuffer->tailOffset();
 
+	PO_LOG(LOG_DEBUG, L"Send Buffer length : [%d], offset : [%d]\n", m_sendBuffer->offset(), 0);
 	DWORD sendBytes = 0;
 	DWORD flags = 0;
 
-
-	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)context, 1, flags, context))
+	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)m_rioSendContext, 1, flags, m_rioSendContext))
 	{
 		PO_LOG(LOG_ERROR, L"RIOSend Error : [%d]\n", GetLastError());
 		return;
 	}
+}
+
+
+void onion::socket::RIOSession::OnSend(size_t transferSize)
+{
+	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
+	m_sendBuffer->TailCommit(transferSize);
+}
+
+void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
+{
+	//*m_sendBuffer << buffer;
+
 }

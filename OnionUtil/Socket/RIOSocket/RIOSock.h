@@ -9,7 +9,7 @@ namespace onion::socket
 	{
 		SESSION_BUFFER_SIZE = 65536,
 
-		MAX_THREAD = 4,
+		MAX_THREAD = 8,
 		MAX_RESULT = 256,
 		MAX_SEND_RQ_SIZE_PER_SOCK = 32,
 		MAX_RECV_RQ_SIZE_PER_SOCK = 32,
@@ -20,7 +20,7 @@ namespace onion::socket
 
 	class RIOSock
 	{
-		static RIO_CQ m_Rio_CompletionQueue[5];
+		static RIO_CQ m_Rio_CompletionQueue[MAX_THREAD];
 		bool m_bWorkerThread;
 	public:
 		RIOSock();
@@ -38,6 +38,5 @@ namespace onion::socket
 
 		HANDLE* m_pWorkerHandle;
 	};
-
 }
 

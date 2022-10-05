@@ -1,7 +1,7 @@
 ﻿#include "RIOSock.h"
 #include "RIOSession.h"
 
-RIO_CQ onion::socket::RIOSock::m_Rio_CompletionQueue[5] = { 0 };
+RIO_CQ onion::socket::RIOSock::m_Rio_CompletionQueue[onion::socket::MAX_THREAD] = {0};
 RIO_EXTENSION_FUNCTION_TABLE onion::socket::RIOSock::m_Rio_func_table = { 0 };
 
 onion::socket::RIOSock::RIOSock()
@@ -11,7 +11,7 @@ onion::socket::RIOSock::RIOSock()
 
 onion::socket::RIOSock::~RIOSock()
 {
-
+	WSACleanup();
 }
 
 //
@@ -51,6 +51,7 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 
 			if(transferred==0)
 			{
+				PO_LOG(LOG_INFO, L" size =0 [%d] \n",GetLastError());
 				session->OnClose();
 				continue;
 			}
@@ -68,16 +69,14 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 				break;
 			}
 			session->ReleaseRef();
-			delete context;
 		}
 	}
 
 	return 0;
 }
-
+//thread 생성
 bool onion::socket::RIOSock::CreateWorkerThread(size_t num_thread)
 {
-
 	UINT32 threadId;
 	//thread handler
 	m_pWorkerHandle = new HANDLE[num_thread];
@@ -91,7 +90,7 @@ bool onion::socket::RIOSock::CreateWorkerThread(size_t num_thread)
 		}
 		ResumeThread(m_pWorkerHandle[i]);
 	}
-	PO_LOG(LOG_INFO, L"worker Thread Start\n");
+	PO_LOG(LOG_INFO, L"worker thread  count : [%d]\n", num_thread + 1);
 	return true;
 }
 

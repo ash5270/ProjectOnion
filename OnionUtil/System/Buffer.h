@@ -24,7 +24,7 @@ namespace onion::system
 		char* GetData() const;
 		//add offset -> 사용이유는 recv 했을때 버퍼 자체를 복사해오지만 이 offset값은 복사하지 않기 때문
 		void AddOffset(size_t offset);
-		//size
+		//offset
 		size_t size();
 		//capacity
 		size_t capacity();
@@ -45,7 +45,7 @@ namespace onion::system
 		void operator<<(const uint32_t& value);
 		void operator<<(const int64_t& value);
 		void operator<<(const uint64_t& value);
-		//void operator<<(const Buffer& buffer);
+		void operator<<(const Buffer& buffer);
 		//wstring
 		void operator<<(const std::wstring& value);
 

@@ -10,6 +10,7 @@ onion::socket::RIOServer::RIOServer(int port)
 
 onion::socket::RIOServer::~RIOServer()
 {
+
 }
 
 bool onion::socket::RIOServer::InitializeServer()
@@ -62,6 +63,7 @@ bool onion::socket::RIOServer::InitializeServer()
 
 void onion::socket::RIOServer::StartServer()
 {
+	PO_LOG(LOG_INFO, L"RIOServer Start\n");
 	m_session_manager.InitSessionPool();
 
 	SYSTEM_INFO system_info;

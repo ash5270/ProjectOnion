@@ -42,7 +42,7 @@ bool onion::socket::IOCPSock::CreateWorkerThread(size_t num_thread)
 		}
 		ResumeThread(m_pWorkerHandle[i]);
 	}
-	PO_LOG(LOG_INFO, L" worker thread  count : [%d]\n", num_thread+1);
+	PO_LOG(LOG_INFO, L"worker thread  count : [%d]\n", num_thread+1);
 	return true;
 }
 
@@ -80,7 +80,7 @@ void onion::socket::IOCPSock::WorkingThread()
 
 		if (recvBytes == 0)
 		{
-			PO_LOG(LOG_ERROR, L" recvBytes size 0\n");
+			PO_LOG(LOG_ERROR, L"recvBytes size 0\n");
 			closesocket(pSocketinfo->GetSocket());
 			free(pSocketinfo);
 			continue;
@@ -92,7 +92,6 @@ void onion::socket::IOCPSock::WorkingThread()
 			if(pSession!=nullptr)
 			{
 				//packet 들어오면 수정 될곳
-				pSession->m_data[IO_READ]->GetBuffer().AddOffset(recvBytes);
 				pSession->OnRecv(recvBytes);
 			}
 			PO_LOG(LOG_INFO, L"recv success\n");

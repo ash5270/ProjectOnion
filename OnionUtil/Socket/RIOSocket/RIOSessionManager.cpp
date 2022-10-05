@@ -74,6 +74,7 @@ void onion::socket::RIOSessionManager::ReturnSession(RIOSession* session)
 		return;
 	}
 
+	PO_LOG(LOG_INFO, L"Session remove\n");
 	m_useSessionList.remove(session);
 	m_freeSessionList[threadID].push_back(session);
 

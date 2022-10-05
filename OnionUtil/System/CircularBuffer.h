@@ -18,20 +18,38 @@ namespace onion::system
 		char* m_tailPtr;
 		size_t m_tailSize;
 
+		//버퍼 넘쳤을 경우 쓰기 금지
+		bool isWirteStop;
+		bool isReadStop;
 
-		void Write(char* value, size_t size);
-		void Read(void* value, size_t size);
+		bool Write(char* value, size_t size);
+		bool Read(char* value, size_t size);
 
+		size_t m_capacity;
 	public:
 		CircularBuffer(char* buffer, size_t capacity);
+		CircularBuffer(size_t capacity);
 		~CircularBuffer();
-
+		
 		bool CheckReadBound(size_t len);
 		bool CheckWriteBound(size_t len);
 
+		//offset
+		size_t offset();
+		size_t size();
+		//capacity
+		size_t capacity();
+		size_t tailOffset();
+		//Clear
 		void Clear();
+		//data
 		char* GetData() const;
 
+		//head쪽 tail쪽 offset 더하기
+		void HeadCommit(size_t len);
+		void TailCommit(size_t len);
+
+	public:
 		template<typename  T>
 		void operator<<(const T& value);
 		void operator<<(const bool& value);

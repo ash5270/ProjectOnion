@@ -147,17 +147,17 @@ void onion::system::Buffer::operator<<(const uint64_t& value)
 	STREAM_WRITE(value);
 }
 
-//void onion::system::Buffer::operator<<(const Buffer& buffer)
-//{
-//	if (m_capacity > m_offset + buffer.m_offset)
-//	{
-//		PO_LOG(LOG_ERROR, L"Buffer overflow \n");
-//		return;
-//	}
-//
-//	memcpy_s(m_data + m_offset, m_capacity - m_offset, buffer.m_data, m_offset);
-//	m_offset += buffer.m_offset;
-//}
+void onion::system::Buffer::operator<<(const Buffer& buffer)
+{
+	if (m_capacity < m_offset + buffer.m_offset)
+	{
+		PO_LOG(LOG_ERROR, L"Buffer overflow \n");
+		return;
+	}
+
+	memcpy_s(m_data + m_offset, m_capacity - m_offset, buffer.m_data, m_offset);
+	m_offset += buffer.m_offset;
+}
 
 void onion::system::Buffer::operator<<(const std::wstring& value)
 {

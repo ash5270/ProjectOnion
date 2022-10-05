@@ -49,7 +49,7 @@ void onion::socket::IOCPClient::StartClient()
 
 	m_hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
-	if(!CreateWorkerThread(1))
+	if(!CreateWorkerThread(2))
 	{
 		return; 
 	}
@@ -59,7 +59,7 @@ void onion::socket::IOCPClient::StartClient()
 	nResult = connect(m_socket, reinterpret_cast<SOCKADDR*>(&m_serverAddr), sizeof(SOCKADDR_IN));
 	if(nResult==SOCKET_ERROR)
 	{
-		PO_LOG(LOG_ERROR, L"[error] connect failed\n");
+		PO_LOG(LOG_ERROR, L"connect failed\n");
 		closesocket(m_socket);
 		WSACleanup();
 		return;
@@ -67,10 +67,11 @@ void onion::socket::IOCPClient::StartClient()
 
 	m_isConnect = true;
 
-	m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_socket), m_hIOCP,
-		(ULONG_PTR)&(*m_session), NULL);
-
 	m_session->RecvReady();
+
+	m_hIOCP = CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_socket), m_hIOCP,
+		(ULONG_PTR)&(*m_session), 0);
+
 }
 
 void onion::socket::IOCPClient::StopClient()

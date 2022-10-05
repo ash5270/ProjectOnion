@@ -2,6 +2,7 @@
 #include "RIOServer.h"
 #include "RIOSock.h"
 #include "../Session.h"
+#include "../../System/CircularBuffer.h"
 #include "../../System/Buffer.h"
 #include "../../System/SpinLock.h"
 #include "RIOSessionManager.h"
@@ -14,16 +15,24 @@ namespace onion::socket
 
 		int m_threadID;
 
-		char* m_rio_buffer_ptr;
+		char* m_rioBufferRecvPtr;
+		char* m_rioBufferSendPtr;
+
 		RIO_RQ m_requestQueue;
-		RIO_BUFFERID m_rioBufferID;
 
-		system::Buffer* m_buffer;
+		RIO_BUFFERID m_rioBufferRecvID;
+		RIO_BUFFERID m_rioBufferSendID;
 
-		SpinLock lock; 
+		system::CircularBuffer* m_recvBuffer;
+		system::CircularBuffer* m_sendBuffer;
+		SpinLock lock;
+
+		RIOContext* m_rioSendContext;
+		RIOContext* m_rioRecvContext;
 	public:
 		RIOSession(const SOCKET& socket);
 		~RIOSession() override;
+
 		//
 		bool Init();
 		void AddRef();
@@ -36,8 +45,6 @@ namespace onion::socket
 		void SetThreadID(int threadID);
 
 		RIOServer* server;
-
-	
 		//
 	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;
@@ -46,6 +53,7 @@ namespace onion::socket
 		void OnRecv(size_t transferSize) override;
 		void OnClose() override;
 
+		void SendPost();
 		void SendBuffer(system::Buffer* buffer);
 	};
 
