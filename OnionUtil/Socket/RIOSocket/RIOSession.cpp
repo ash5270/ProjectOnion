@@ -1,4 +1,5 @@
 ﻿#include "RIOSession.h"
+#include "../../Util/Common.h"
 
 onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 {
@@ -17,10 +18,12 @@ onion::socket::RIOSession::~RIOSession()
 	delete m_sendBuffer;
 }
 
+#define TEST_BUFFER_SIZE 40
+
 bool onion::socket::RIOSession::Init()
 {
 	m_recvBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
-	m_sendBuffer = new system::CircularBuffer(512);
+	m_sendBuffer = new system::CircularBuffer(TEST_BUFFER_SIZE);
 	m_rioBufferRecvPtr = m_recvBuffer->GetData();
 	if(m_rioBufferRecvPtr==nullptr)
 	{
@@ -45,7 +48,7 @@ bool onion::socket::RIOSession::Init()
 		return false;
 	}
 
-	m_rioBufferSendID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferSendPtr, 512);
+	m_rioBufferSendID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferSendPtr, TEST_BUFFER_SIZE);
 	if(m_rioBufferSendID==RIO_INVALID_BUFFERID)
 	{
 		PO_LOG(LOG_ERROR, L"RIORegister SendBuffer Error : [%d]\n", GetLastError());
@@ -184,9 +187,12 @@ void onion::socket::RIOSession::SendPost()
 	//버퍼 오프셋
 	m_rioSendContext->Offset = m_sendBuffer->tailOffset();
 
-	PO_LOG(LOG_DEBUG, L"Send Buffer length : [%d], offset : [%d]\n", m_sendBuffer->offset(), 0);
+	PO_LOG(LOG_DEBUG, L"Send Buffer size : [%d], head offset : [%d], tail offset : [%d]\n", m_sendBuffer->size(),m_sendBuffer->offset(), m_sendBuffer->tailOffset());
 	DWORD sendBytes = 0;
 	DWORD flags = 0;
+
+
+	PO_LOG(LOG_DEBUG, L"\n%s\n", MemoryToWString(m_sendBuffer->GetData(), m_sendBuffer->capacity()).c_str());
 
 	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)m_rioSendContext, 1, flags, m_rioSendContext))
 	{
@@ -197,7 +203,7 @@ void onion::socket::RIOSession::SendPost()
 
 
 void onion::socket::RIOSession::OnSend(size_t transferSize)
-{
+{	
 	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
 	m_sendBuffer->TailCommit(transferSize);
 }
@@ -205,5 +211,4 @@ void onion::socket::RIOSession::OnSend(size_t transferSize)
 void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
 {
 	//*m_sendBuffer << buffer;
-
 }

@@ -12,7 +12,7 @@ namespace onion::socket
 	class RIOSession : public Session
 	{
 		volatile long m_refCount;
-
+		
 		int m_threadID;
 
 		char* m_rioBufferRecvPtr;

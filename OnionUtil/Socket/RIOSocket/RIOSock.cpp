@@ -49,6 +49,7 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 			RIOSession* session = reinterpret_cast<RIOSession*>(context->GetSession());
 			ULONG transferred = results[i].BytesTransferred;
 
+		
 			if(transferred==0)
 			{
 				PO_LOG(LOG_INFO, L" size =0 [%d] \n",GetLastError());

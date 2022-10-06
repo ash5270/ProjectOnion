@@ -10,3 +10,4 @@
 	onion::system::LogData log_data(log_level,std::move(log_str));\
 	onion::system::LogSystem::getInstance().AddLog(std::move(log_data));\
 	}
+

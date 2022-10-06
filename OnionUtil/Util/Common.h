@@ -44,5 +44,31 @@ std::string string_format(const char* format, Args... args)
 	return std::string(buffer.get(), buffer.get() + size - 1);
 }
 
+static std::string MemoryToString(char* buffer, const size_t& size)
+{
+	std::string mem;
+	char buf[6] = { 0 };
+	for (int i = 0; i < size; i++)
+	{
+		sprintf_s(buf, 6, "%02x ", buffer[i]);
+		mem.append(buf);
+	}
+	return mem;
+}
+
+static std::wstring MemoryToWString(char* buffer, const size_t& size)
+{
+	std::wstring result;
+	std::string mem;
+	char buf[6] = { 0 };
+	for (int i = 0; i < size; i++)
+	{
+		sprintf_s(buf, 6, "%02x ", buffer[i]);
+		mem.append(buf);
+	}
+	result.assign(mem.begin(), mem.end());
+	return result;
+}
+
 
 

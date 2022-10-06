@@ -1,1 +1,2 @@
 ﻿#include "LogData.h"
+

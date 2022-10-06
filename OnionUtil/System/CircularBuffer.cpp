@@ -12,7 +12,7 @@ onion::system::CircularBuffer::CircularBuffer(char* buffer, size_t capacity)
 	isReadStop = false;
 }
 
-onion::system::CircularBuffer::CircularBuffer(size_t capacity)
+onion::system::CircularBuffer::CircularBuffer(size_t capacity) 
 {
 	m_data = reinterpret_cast<char*>(
 		VirtualAllocEx(GetCurrentProcess(), 0, capacity, MEM_COMMIT
@@ -150,7 +150,7 @@ size_t onion::system::CircularBuffer::size()
 	}
 	else
 	{
-		offset += m_tailSize;
+		offset += m_capacity-m_tailSize;
 		offset += m_headSize;
 	}
 
@@ -183,12 +183,22 @@ char* onion::system::CircularBuffer::GetData() const
 
 void onion::system::CircularBuffer::HeadCommit(size_t len)
 {
+	if(m_headPtr+len > m_dataEnd)
+	{
+		m_headPtr = m_data;
+		m_tailSize = 0;
+	}
 	m_headPtr += len;
 	m_headSize += len;
 }
 
 void onion::system::CircularBuffer::TailCommit(size_t len)
 {
+	if(m_tailPtr+len > m_dataEnd)
+	{
+		m_tailPtr = m_data;
+		m_tailSize = 0;
+	}
 	m_tailPtr += len;
 	m_tailSize += len;
 }

@@ -10,6 +10,8 @@ typedef enum
 
 namespace onion::system
 {
+	
+
 	struct LogData
 	{
 		LogData(LOGTYPE type,std::wstring&& log)

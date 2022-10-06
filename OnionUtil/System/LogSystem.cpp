@@ -57,3 +57,5 @@ void onion::system::LogSystem::Update()
 		std::this_thread::sleep_for(std::chrono::microseconds(20));
 	}
 }
+
+
