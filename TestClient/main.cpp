@@ -10,6 +10,9 @@
 #include<thread>
 #include<list>
 
+#include "Packet/PacketFactory.h"
+#include "Packet/Packet.h"
+
 using namespace onion::util;
 
 int main()
@@ -24,18 +27,13 @@ int main()
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-	std::wstring msg;
+	PK_C_REQ_CHATTING packet;
+	packet.id = L"ash5270";
 
 	while(1)
 	{
-		onion::system::Buffer buf;
-		std::getline(std::wcin, msg);
-		buf << msg;
-		if(msg==L"Q")
-		{
-			break;
-		}
-		client.GetSession()->SendBuffer(&buf);
+		wcin >> packet.msg;
+		client.GetSession()->SendPacket(&packet);
 	}
 
 	client.StopClient();
@@ -57,7 +55,7 @@ int main()
 		buf << msg;
 		for (auto client : clients)
 		{
-			client.GetSession()->SendBuffer(&buf);
+			client.GetSession()->SendPacket(&buf);
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	}*/

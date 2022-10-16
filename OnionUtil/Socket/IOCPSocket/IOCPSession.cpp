@@ -1,5 +1,6 @@
 ﻿#include "IOCPSession.h"
 #include "cstdio"
+#include "../../Packet/PacketFactory.h"
 
 onion::socket::IOCPSession::IOCPSession(const SOCKET& socket) : Session(socket)
 {
@@ -96,6 +97,21 @@ void onion::socket::IOCPSession::SendBuffer(system::Buffer* buffer)
 	this->Send(buf);
 }
 
+void onion::socket::IOCPSession::SendPacket(Packet* packet)
+{
+	if (m_data[IO_WRITE]->GetIOType() != IO_WRITE)
+		return;
+
+	m_data[IO_WRITE]->Clear();
+	packet->Serialize(m_data[IO_WRITE]->GetBuffer());
+
+	WSABUF buf;
+	buf.buf = m_data[IO_WRITE]->GetBuffer().GetData();
+	buf.len = m_data[IO_WRITE]->GetBuffer().size();
+
+	this->Send(buf);
+}
+	
 void onion::socket::IOCPSession::RecvReady()
 {
 	//수정해야할곳 

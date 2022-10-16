@@ -21,7 +21,6 @@ bool onion::socket::RIOServer::InitializeServer()
 		return false;
 	int nResult = 0;
 
-	//
 	m_listenSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_REGISTERED_IO);
 	if(m_listenSocket==INVALID_SOCKET)
 	{
@@ -38,7 +37,6 @@ bool onion::socket::RIOServer::InitializeServer()
 	m_serverAddr.sin_port = htons(m_port);
 
 	//bind
-
 	nResult = bind(m_listenSocket, reinterpret_cast<SOCKADDR*>(&m_serverAddr), sizeof(SOCKADDR_IN));
 	if (nResult == SOCKET_ERROR)
 	{
@@ -58,7 +56,6 @@ bool onion::socket::RIOServer::InitializeServer()
 	}
 
 	return true;
-
 }
 
 void onion::socket::RIOServer::StartServer()

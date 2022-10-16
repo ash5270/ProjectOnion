@@ -1,5 +1,6 @@
 ﻿#include "RIOSession.h"
 #include "../../Util/Common.h"
+#include "../../Packet/Packet.h"
 
 onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 {
@@ -22,8 +23,8 @@ onion::socket::RIOSession::~RIOSession()
 
 bool onion::socket::RIOSession::Init()
 {
-	m_recvBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
-	m_sendBuffer = new system::CircularBuffer(TEST_BUFFER_SIZE);
+	m_recvBuffer = new system::RingBuffer(SESSION_BUFFER_SIZE);
+	m_sendBuffer = new system::RingBuffer(SESSION_BUFFER_SIZE);
 	m_rioBufferRecvPtr = m_recvBuffer->GetData();
 	if(m_rioBufferRecvPtr==nullptr)
 	{
@@ -37,9 +38,6 @@ bool onion::socket::RIOSession::Init()
 		PO_LOG(LOG_ERROR, L"SendBuffer VirtualAllocEx Error : [%d]\n", GetLastError());
 		return false;
 	}
-
-	//buffer setting
-	
 
 	m_rioBufferRecvID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferRecvPtr, SESSION_BUFFER_SIZE);
 	if(m_rioBufferRecvID == RIO_INVALID_BUFFERID)
@@ -136,8 +134,8 @@ void onion::socket::RIOSession::RecvReady()
 {
 	m_rioRecvContext->BufferId = m_rioBufferRecvID;
 	//버퍼에서 남은 자리 
-	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->capacity()-m_recvBuffer->offset());
-	m_rioRecvContext->Offset = m_recvBuffer->offset();
+	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->GetFreeSpaceSize());
+	m_rioRecvContext->Offset = m_recvBuffer->GetWritableOffset();
 
 	DWORD recvBytes = 0;
 	DWORD flags = 0;
@@ -154,20 +152,14 @@ void onion::socket::RIOSession::RecvReady()
 void onion::socket::RIOSession::OnRecv(size_t transferSize)
 {
 	PO_LOG(LOG_DEBUG, L"recv success msg offset : [%d]\n",transferSize);
-	std::wstring x;
-	m_recvBuffer->HeadCommit(transferSize);
-	*m_recvBuffer >> &x;
+	//std::wstring x;
+	m_recvBuffer->Commit(transferSize);
+	//*m_recvBuffer >> &x;
 
-	PO_LOG(LOG_INFO, L"[%s]\n", x.c_str());
+	//PO_LOG(LOG_INFO, L"[%s]\n", x.c_str());
+	//*m_sendBuffer << x;
 
-	*m_sendBuffer << x;
 	SendPost();
-
-	//SendBuffer(m_recvBuffer);
-	//여기서 메모리 릭 
-	
-	//SendBuffer(buffer);
-
 }
 
 void onion::socket::RIOSession::OnClose()
@@ -179,20 +171,24 @@ void onion::socket::RIOSession::OnClose()
 
 void onion::socket::RIOSession::SendPost()
 {
+	//SpinLockGuard m_guard(lock);
 	AddRef();
+
+	if (m_sendBuffer->GetContiguiousBytes() == 0)
+		return;
 
 	m_rioSendContext->BufferId = m_rioBufferSendID;
 	//버퍼에서 보낼 길이
-	m_rioSendContext->Length = static_cast<ULONG>(m_sendBuffer->size());
+	m_rioSendContext->Length = static_cast<ULONG>(m_sendBuffer->GetContiguiousBytes());
 	//버퍼 오프셋
-	m_rioSendContext->Offset = m_sendBuffer->tailOffset();
+	m_rioSendContext->Offset = m_sendBuffer->GetReadableOffset();
 
-	PO_LOG(LOG_DEBUG, L"Send Buffer size : [%d], head offset : [%d], tail offset : [%d]\n", m_sendBuffer->size(),m_sendBuffer->offset(), m_sendBuffer->tailOffset());
+	//PO_LOG(LOG_DEBUG, L"Send Buffer size : [%d], head offset : [%d], tail offset : [%d]\n", 
+	//	m_sendBuffer->GetContiguiousBytes(),m_sendBuffer->GetWritableOffset(), m_sendBuffer->GetReadableOffset());
 	DWORD sendBytes = 0;
 	DWORD flags = 0;
 
-
-	PO_LOG(LOG_DEBUG, L"\n%s\n", MemoryToWString(m_sendBuffer->GetData(), m_sendBuffer->capacity()).c_str());
+	//PO_LOG(LOG_DEBUG, L"\n%s\n", MemoryToWString(m_sendBuffer->GetData(), m_sendBuffer->GetCapcity()).c_str());
 
 	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)m_rioSendContext, 1, flags, m_rioSendContext))
 	{
@@ -203,12 +199,19 @@ void onion::socket::RIOSession::SendPost()
 
 
 void onion::socket::RIOSession::OnSend(size_t transferSize)
-{	
+{
 	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
-	m_sendBuffer->TailCommit(transferSize);
+	m_sendBuffer->Remove(transferSize);
 }
 
 void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
 {
 	//*m_sendBuffer << buffer;
 }
+
+void onion::socket::RIOSession::SendPacket(Packet* packet)
+{
+	//packet->Serialize(m_sendBuffer);
+}
+
+

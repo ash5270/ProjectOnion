@@ -3,6 +3,7 @@
 #include "IOCPData.h"
 #include "../../System/Buffer.h"
 
+class Packet;
 
 namespace onion::socket
 {
@@ -20,6 +21,7 @@ namespace onion::socket
 		void Recv(WSABUF buffer);
 
 		void SendBuffer(system::Buffer* buffer);
+		void SendPacket(Packet* packet);
 
 	public:
 		IOCPData* m_data[2];

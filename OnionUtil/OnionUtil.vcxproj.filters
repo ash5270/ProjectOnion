@@ -22,6 +22,9 @@
     <Filter Include="Network\Socket\RIO">
       <UniqueIdentifier>{2dbac9df-77af-484c-bade-98768bce4a65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{de5c5c2a-570c-406f-8e66-fbc26ec928d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h">
@@ -99,6 +102,21 @@
     <ClInclude Include="Socket\RIOSocket\RIOSessionManager.h">
       <Filter>Network\Socket\RIO</Filter>
     </ClInclude>
+    <ClInclude Include="System\RingBuffer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\Packet.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketFactory.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketID.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="System\Stream.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -157,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="Socket\RIOSocket\RIOSessionManager.cpp">
       <Filter>Network\Socket\RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="System\RingBuffer.cpp">
+      <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

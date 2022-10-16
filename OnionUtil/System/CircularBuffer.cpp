@@ -62,12 +62,6 @@ bool onion::system::CircularBuffer::Write(char* value,size_t size)
 		}
 	}
 
-	//head에 데이터를 넣으면 넘치나
-	/*if (m_headPtr + 1 <= m_tailPtr || m_headPtr + offset > m_tailPtr)
-	{
-		return false;
-	}*/
-
 	isReadStop = false;
 	memcpy_s(m_headPtr, size, value, size);
 	m_headPtr += size;
@@ -81,6 +75,13 @@ bool onion::system::CircularBuffer::Write(char* value,size_t size)
 
 bool onion::system::CircularBuffer::Read(char* value, size_t size)
 {
+	//리드만 버퍼를 넘어가면 읽을 수 있게 만듬
+	//Rio가 어쩔 수 없이 버퍼를 다 쓰면 앞에 쪽에 쓰게 됨!
+	
+	//읽은 데이터 사이즈 
+	int readSize = 0;
+	int dataSize = size;
+	//데이터를 아예 읽을 수 없을때 
 	if(m_headPtr==m_tailPtr && isReadStop)
 	{
 		return false;
@@ -88,16 +89,15 @@ bool onion::system::CircularBuffer::Read(char* value, size_t size)
 	//tail 데이터 끝쪽
 	else if(m_headPtr <= m_tailPtr)
 	{
+		//데이터 남은게 있다면 
 		if(m_tailPtr+ size  > m_dataEnd)
 		{
-			if(m_data +size > m_headPtr)
-			{
-				return false;
-			}else
-			{
-				m_tailPtr = m_data;
-				m_tailSize = 0;
-			}
+			size_t endSize = m_dataEnd - m_tailPtr;
+			readSize += endSize;
+			memcpy_s(value, endSize, m_tailPtr, endSize);
+
+			m_tailPtr = m_data;
+			m_tailSize += endSize;
 		}
 	}
 	//tail 데이터 시작점
@@ -116,9 +116,9 @@ bool onion::system::CircularBuffer::Read(char* value, size_t size)
 
 
 	isWirteStop = false;
-	memcpy_s(value, size, m_tailPtr, size);
-	m_tailPtr += size;
-	m_tailSize += size;
+	memcpy_s(value, dataSize-readSize, m_tailPtr, dataSize-readSize);
+	m_tailPtr += dataSize;
+	m_tailSize += dataSize;
 
 	if (m_headPtr == m_tailPtr)
 		isReadStop = true;
@@ -128,7 +128,13 @@ bool onion::system::CircularBuffer::Read(char* value, size_t size)
 
 bool onion::system::CircularBuffer::CheckReadBound(size_t len)
 {
-	return false;
+	if(m_tailPtr+m_tailSize+len>m_dataEnd)
+	{
+		return false;
+	}else
+	{
+		return true;
+	}
 }
 
 bool onion::system::CircularBuffer::CheckWriteBound(size_t len)
@@ -150,7 +156,7 @@ size_t onion::system::CircularBuffer::size()
 	}
 	else
 	{
-		offset += m_capacity-m_tailSize;
+		offset += m_capacity - m_tailSize;
 		offset += m_headSize;
 	}
 
@@ -238,7 +244,7 @@ m_headSize += sizeof(value);\
 if (m_headPtr == m_tailPtr)\
 	isWirteStop = true;\
 \
-return\
+
 
 //---------write-------
 void onion::system::CircularBuffer::operator<<(const bool& value)
@@ -288,10 +294,10 @@ void onion::system::CircularBuffer::operator<<(const uint64_t& value)
 
 void onion::system::CircularBuffer::operator<<(const std::wstring& value)
 {
-	*this << (int32_t)(value.length());
-	for (auto i : value)
-		*this << i;
-	return;
+	//char 사이즈가 아니기 때문에 capacity + 1 
+	auto size = (int32_t)value.capacity()+1;
+	STREAM_WRITE(size);
+	Write((char*)value.c_str(), size);
 }
 #define STREAM_READ(type,value)\
 	auto value_ptr = reinterpret_cast<char*>(value);\

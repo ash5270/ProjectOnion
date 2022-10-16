@@ -97,7 +97,7 @@ bool onion::system::Buffer::CheckReadBound(size_t len)
 	m_offset+=size
 
 template <typename T>
-void  onion::system::Buffer::operator<<(const T& value)
+void onion::system::Buffer::operator<<(const T& value)
 {
 	STREAM_WRITE(value);
 }

@@ -15,7 +15,7 @@ namespace onion::socket
 
 		IO_TYPE GetIOType();
 		void SetIOType(IO_TYPE type);
-		Session* GetSession() const;
+		Session* GetSession() const; 
 		void SetSession(Session* session);
 	};
 

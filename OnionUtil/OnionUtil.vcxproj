@@ -144,6 +144,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Packet\Packet.h" />
+    <ClInclude Include="Packet\PacketFactory.h" />
+    <ClInclude Include="Packet\PacketID.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSession.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPClient.h" />
@@ -164,7 +167,9 @@
     <ClInclude Include="System\LogSystem.h" />
     <ClInclude Include="System\Object\GameObject.h" />
     <ClInclude Include="System\Object\Object.h" />
+    <ClInclude Include="System\RingBuffer.h" />
     <ClInclude Include="System\SpinLock.h" />
+    <ClInclude Include="System\Stream.h" />
     <ClInclude Include="Util\Clock.h" />
     <ClInclude Include="Util\Common.h" />
     <ClInclude Include="Util\MutexQueue.h" />
@@ -187,6 +192,7 @@
     <ClCompile Include="System\CircularBuffer.cpp" />
     <ClCompile Include="System\LogData.cpp" />
     <ClCompile Include="System\LogSystem.cpp" />
+    <ClCompile Include="System\RingBuffer.cpp" />
     <ClCompile Include="Util\Clock.cpp" />
     <ClCompile Include="Util\OnionUtil.cpp" />
     <ClCompile Include="Util\SingleTon.cpp" />
