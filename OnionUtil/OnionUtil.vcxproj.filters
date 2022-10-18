@@ -105,6 +105,12 @@
     <ClInclude Include="System\RingBuffer.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="System\Stream.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketAnalyzer.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
     <ClInclude Include="Packet\Packet.h">
       <Filter>Packet</Filter>
     </ClInclude>
@@ -114,7 +120,10 @@
     <ClInclude Include="Packet\PacketID.h">
       <Filter>Packet</Filter>
     </ClInclude>
-    <ClInclude Include="System\Stream.h">
+    <ClInclude Include="System\BufferPool.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="System\BufferQueue.h">
       <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
@@ -177,6 +186,15 @@
       <Filter>Network\Socket\RIO</Filter>
     </ClCompile>
     <ClCompile Include="System\RingBuffer.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketAnalyzer.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="System\BufferPool.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="System\BufferQueue.cpp">
       <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>

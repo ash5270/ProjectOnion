@@ -1,6 +1,5 @@
 ﻿#include "Socket/IOCPSocket/IOCPClient.h"
 #include "System/Buffer.h"
-#include "System/CircularBuffer.h"
 
 #include"Util/Clock.h"
 #include"System/LogSystem.h"
@@ -13,6 +12,7 @@
 #include "Packet/PacketFactory.h"
 #include "Packet/Packet.h"
 
+
 using namespace onion::util;
 
 int main()
@@ -21,23 +21,69 @@ int main()
 	onion::system::LogSystem::getInstance().Start();
 	//이 부분 수정해야할듯   
 
-	onion::socket::IOCPClient client("127.0.0.1", 3000);
+	onion::socket::IOCPClient client("127.0.0.1", 4590);
 	client.InitializeClient();
 	client.StartClient();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	PK_C_REQ_CHATTING packet;
-	packet.id = L"ash5270";
+	packet.id = L"ash527ttttttttttttttt1";
+	packet.msg = L"testttttttttttttttttttt2";
+
+	/*client.GetSession()->SendPacket(&packet);
+	client.GetSession()->SendPacket(&packet);
+	client.GetSession()->SendPacket(&packet);*/
+
+	int x= 0;
+
+	auto end = chrono::steady_clock::now();
+	PO_LOG(LOG_DEBUG, L"%s\n", Clock::getInstance().NowTime(TIME_FORMAT).c_str());
+	for(int k=0; k<3; k++)
+	{
+		auto start = chrono::steady_clock::now();
+		x = 0;
+		for (int i = 0; i < 100000000; i++)
+		{
+			x++;
+			end = chrono::steady_clock::now();
+			auto re = chrono::duration_cast<std::chrono::seconds>(end - start).count();
+
+			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			client.GetSession()->SendPacket(&packet);
+			if (re > 1)
+			{
+				break;
+			}
+		}
+		printf("i= %d\n", x);
+	}
+	
+
+
 
 	while(1)
 	{
-		wcin >> packet.msg;
-		client.GetSession()->SendPacket(&packet);
+		
 	}
 
+	//auto re = chrono::duration_cast<std::chrono::seconds>(end - start).count();
+
+	//while (1)
+	//{
+	//	
+	//	std::this_thread::sleep_for(std::chrono::microseconds(1));
+	//	printf(" %d\n", re);
+	//	PO_LOG(LOG_DEBUG, L"%d\n", re);
+
+	//	client.GetSession()->SendPacket(&packet);
+	//}
+	//printf("i : %d\n",x);
+
+
+
 	client.StopClient();
-	
+
 	/*std::list<onion::socket::IOCPClient> clients;
 	for(int i=0; i<10;i++)
 	{
@@ -67,7 +113,7 @@ int main()
 	Clock::getInstance().StartChecking(1);
 	for (int i = 0; i < 10000000; i++)
 	{
-		
+
 	}
 
 	Clock::getInstance().EndChecking(1);
@@ -114,8 +160,8 @@ int main()
 	int v1 = 0;
 	int b1 = 0;
 
-	buffer.Write(reinterpret_cast<char*>(&x), sizeof(x)); 
-	buffer.Write(reinterpret_cast<char*>(&z), sizeof(z)); 
+	buffer.Write(reinterpret_cast<char*>(&x), sizeof(x));
+	buffer.Write(reinterpret_cast<char*>(&z), sizeof(z));
 	buffer.Write(reinterpret_cast<char*>(&c), sizeof(c));
 	buffer.Write(reinterpret_cast<char*>(&v), sizeof(v));
 	buffer.Read(reinterpret_cast<void*>(&x1), sizeof(x1));

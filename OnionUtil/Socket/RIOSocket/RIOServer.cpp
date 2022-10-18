@@ -78,7 +78,6 @@ void onion::socket::RIOServer::StartServer()
 		return;
 	}
 
-		
 	int nResult = 0;
 	nResult = listen(m_listenSocket, 5);
 	if (nResult == SOCKET_ERROR)

@@ -22,16 +22,16 @@ bool onion::socket::IOCPClient::InitializeClient()
 		PO_LOG(LOG_ERROR, L"socket create error msg : [%s] \n", WSAGetLastError());
 		return false;
 	}
-
-	//연결이 된다음 session 생성
-	m_session = new IOCPSession(m_socket);
-
 	//server info
 	ZeroMemory(&m_serverAddr, sizeof(SOCKADDR_IN));
 	m_serverAddr.sin_family = AF_INET;
 	m_serverAddr.sin_port = htons(m_port);
 	nResult = inet_pton(AF_INET, m_ip.c_str(), &m_serverAddr.sin_addr.S_un.S_addr);
-	 
+
+	//연결이 된다음 session 생성
+	m_session = new IOCPSession(m_socket);
+	m_session->OnAccept(m_socket, m_serverAddr);
+
 	if(nResult==0)
 	{
 		PO_LOG(LOG_ERROR, L"inet_pton error\n");
@@ -77,8 +77,6 @@ void onion::socket::IOCPClient::StartClient()
 void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
-
-	
 }
 
 onion::socket::IOCPSession* onion::socket::IOCPClient::GetSession()

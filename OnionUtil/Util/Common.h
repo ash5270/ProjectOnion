@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#define BUF_MAX_SIZE 1024
+#define BUF_MAX_SIZE 65536
 
 #define ZERO_MEMORY(data,size)\
 	memset(data,0,size)

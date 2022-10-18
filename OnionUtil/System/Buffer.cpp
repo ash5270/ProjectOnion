@@ -1,5 +1,7 @@
 #include "Buffer.h"
 #include "LogSystem.h"
+#include "../Packet/PacketID.h"
+
 onion::system::Buffer::Buffer()
 {
 	m_data = new char[BUF_MAX_SIZE];
@@ -44,6 +46,8 @@ void onion::system::Buffer::Clear()
 	//PO_LOG(LOG_ERROR,L"ÃÊ±âÈ­ buffer\n");
 	m_offset = 0;
 	m_readOffset = 0;
+	if(m_data==nullptr)
+		return;
 	ZERO_MEMORY(m_data, m_capacity);
 }
 
@@ -94,7 +98,8 @@ bool onion::system::Buffer::CheckReadBound(size_t len)
 	if(!this->CheckWriteBound(size))\
 		return;\
 	memcpy_s((m_data)+m_offset,m_capacity-m_offset,(const void*)&value,size);\
-	m_offset+=size
+	m_offset+=size;\
+	write_size+=size
 
 template <typename T>
 void onion::system::Buffer::operator<<(const T& value)
@@ -147,16 +152,17 @@ void onion::system::Buffer::operator<<(const uint64_t& value)
 	STREAM_WRITE(value);
 }
 
-void onion::system::Buffer::operator<<(const Buffer& buffer)
+bool onion::system::Buffer::operator<<(const Buffer& buffer)
 {
 	if (m_capacity < m_offset + buffer.m_offset)
 	{
 		PO_LOG(LOG_ERROR, L"Buffer overflow \n");
-		return;
+		return false;
 	}
 
-	memcpy_s(m_data + m_offset, m_capacity - m_offset, buffer.m_data, m_offset);
+	memcpy_s(m_data + m_offset, m_capacity - m_offset, buffer.m_data, buffer.m_offset);
 	m_offset += buffer.m_offset;
+	return true;
 }
 
 void onion::system::Buffer::operator<<(const std::wstring& value)
@@ -166,6 +172,15 @@ void onion::system::Buffer::operator<<(const std::wstring& value)
 		*this << i;
 	return;
 }
+
+void onion::system::Buffer::operator<<(PacketHeader*&header)
+{
+	if(!CheckWriteBound(sizeof(PacketHeader)))
+		return;
+
+	header = reinterpret_cast<PacketHeader*>(m_data + m_offset);
+	m_offset += sizeof(PacketHeader);
+}	
 
 void onion::system::Buffer::Read(void* value, size_t size)
 {

@@ -95,7 +95,11 @@ bool onion::system::RingBuffer::Read(char* data, size_t size)
 		{
 			//앞으로 당기기
 			if (m_tailPtr != m_data)
-				memmove(m_data, m_tailPtr, m_tailSize);
+			{
+				memmove(m_data, m_tailPtr + 1, m_tailSize);
+				printf("move\n");
+			}
+
 
 			m_headSize = m_tailSize;
 			m_headPtr = m_data;
@@ -214,7 +218,7 @@ void onion::system::RingBuffer::Commit(size_t len)
 size_t onion::system::RingBuffer::GetReadableOffset() const
 {
 	//head쪽에 데이터가 있다면 그쪽부터 읽어라
-	if (m_headSize>0)
+	if (m_headSize > 0 || m_tailPtr!=nullptr )
 		//근데 offset 읽는곳 부터 즉 쓰여진 곳 부터니깐 
 		//m_headPtr - m_data로 offset만 남음
 		return static_cast<size_t>(m_headPtr - m_data);
@@ -304,6 +308,12 @@ void onion::system::RingBuffer::operator<<(const std::wstring& value)
 	auto size = (int32_t)value.capacity()+1;
 	if(Write(reinterpret_cast<char*>(&size),sizeof(uint32_t)))
 		Write((char*)value.c_str(), size);
+}
+
+void onion::system::RingBuffer::operator<<(PacketHeader*& header)
+{
+	header = reinterpret_cast<PacketHeader*>(m_data + GetWritableOffset());
+	Write(header, sizeof(PacketHeader));
 }
 
 template <typename T>

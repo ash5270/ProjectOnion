@@ -2,6 +2,7 @@
 #include "../Session.h"
 #include "IOCPData.h"
 #include "../../System/Buffer.h"
+#include "../../System/BufferQueue.h"
 
 class Packet;
 
@@ -9,6 +10,10 @@ namespace onion::socket
 {
 	class IOCPSession : public Session 
 	{
+		//buffer queue send 용
+		system::BufferQueue m_buf_queue;
+		bool m_is_sending;
+		bool m_isConnect;
 	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;
 		void OnSend(size_t transferSize) override;

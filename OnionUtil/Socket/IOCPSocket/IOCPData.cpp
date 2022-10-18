@@ -14,6 +14,7 @@ void onion::socket::IOCPData::Clear()
 	m_buffer.Clear();
 	m_totalBytes = 0;
 	m_currentBytes = 0;
+	GetBuffer().write_size = 0;
 }
 
 SOCKET onion::socket::IOCPData::GetSocket()

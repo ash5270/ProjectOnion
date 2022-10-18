@@ -5,7 +5,7 @@
 
 namespace onion::socket
 {
-	class IOCPServer : IOCPSock
+	class IOCPServer : public IOCPSock
 	{
 	public:
 		IOCPServer(int port);

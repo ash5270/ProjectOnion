@@ -1,7 +1,7 @@
 #pragma once
 #include<iostream>
 
-#include "../System/Buffer.h"
+#include "../System/Stream.h"
 #include "PacketID.h"
 
 using namespace onion::system;
@@ -9,9 +9,14 @@ using namespace onion::system;
 class Packet
 {
 public:
-    virtual PacketID type() = 0;
-    virtual void Serialize(Buffer& buffer) { buffer << (int32_t)this->type(); }
-    virtual void Deserialize(Buffer& buffer) {}
+    virtual PacketID type() =0;
+     /**
+     * \brief 패킷시리얼라이즈, 패킷 시리얼 라이즈 해주고
+     * \param buffer buffer
+     * \return PacketHeader Pointer
+     */
+    virtual PacketHeader* Serialize(Stream& buffer) { return nullptr; }
+    virtual void Deserialize(Stream& buffer){}
 };
 
 class PK_S_ANS_CHATTING : public Packet 
@@ -21,13 +26,16 @@ public:
     std::wstring     id;
     std::wstring     msg;
 
-    void Serialize(Buffer& buffer)override 
+    PacketHeader* Serialize(Stream& buffer)override 
     {
-        buffer<<(int32_t)this->type();
+        PacketHeader* header;
+        buffer << header;
+        header->packetId = type();
         buffer<<id;
         buffer<<msg;
+        return header;
     }
-    void Deserialize(Buffer& buffer)override 
+    void Deserialize(Stream& buffer)override 
     {
         buffer>>&id;
         buffer>>&msg;
@@ -41,13 +49,16 @@ public:
     std::wstring     id;
     std::wstring     msg;
 
-    void Serialize(Buffer& buffer)override 
+    PacketHeader* Serialize(Stream& buffer)override 
     {
-        buffer<<(int32_t)this->type();
+        PacketHeader* header;
+        buffer << header;
+        header->packetId = type();
         buffer<<id;
         buffer<<msg;
+        return header;
     }
-    void Deserialize(Buffer& buffer)override 
+    void Deserialize(Stream& buffer)override 
     {
         buffer>>&id;
         buffer>>&msg;

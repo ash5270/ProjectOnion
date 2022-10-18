@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Packet\Packet.h" />
+    <ClInclude Include="Packet\PacketAnalyzer.h" />
     <ClInclude Include="Packet\PacketFactory.h" />
     <ClInclude Include="Packet\PacketID.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSession.h" />
@@ -161,6 +162,8 @@
     <ClInclude Include="Socket\SessionManager.h" />
     <ClInclude Include="Socket\SocketCommon.h" />
     <ClInclude Include="System\Buffer.h" />
+    <ClInclude Include="System\BufferPool.h" />
+    <ClInclude Include="System\BufferQueue.h" />
     <ClInclude Include="System\CircularBuffer.h" />
     <ClInclude Include="System\Log.h" />
     <ClInclude Include="System\LogData.h" />
@@ -176,6 +179,7 @@
     <ClInclude Include="Util\SingleTon.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Packet\PacketAnalyzer.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSession.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSock.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPClient.cpp" />
@@ -189,6 +193,8 @@
     <ClCompile Include="Socket\Session.cpp" />
     <ClCompile Include="Socket\SessionManager.cpp" />
     <ClCompile Include="System\Buffer.cpp" />
+    <ClCompile Include="System\BufferPool.cpp" />
+    <ClCompile Include="System\BufferQueue.cpp" />
     <ClCompile Include="System\CircularBuffer.cpp" />
     <ClCompile Include="System\LogData.cpp" />
     <ClCompile Include="System\LogSystem.cpp" />

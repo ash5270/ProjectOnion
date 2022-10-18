@@ -47,12 +47,11 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 		{
 			RIOContext* context = reinterpret_cast<RIOContext*>(results[i].RequestContext);
 			RIOSession* session = reinterpret_cast<RIOSession*>(context->GetSession());
-			ULONG transferred = results[i].BytesTransferred;
+			ULONG transferred = results[i].BytesTransferred; 
 
-		
 			if(transferred==0)
 			{
-				PO_LOG(LOG_INFO, L" size =0 [%d] \n",GetLastError());
+				PO_LOG( LOG_INFO, L" error =0 [%d] ,context type = [%d]\n",GetLastError(),context->GetIOType());
 				session->OnClose();
 				continue;
 			}

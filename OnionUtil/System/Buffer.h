@@ -1,16 +1,18 @@
 #pragma once
 #include "../Util/Common.h"
-#include <string>
-#include <iostream>
+#include "Stream.h"
+
+class PacketHeader;
 namespace onion::system
 {
-	class Buffer
+	class Buffer :public Stream
 	{
 		char* m_data;
 		size_t m_offset;
 		size_t m_readOffset;
 		size_t m_capacity;
-
+	public:
+		size_t write_size;
 	public:
 		Buffer();
 		Buffer(size_t size);
@@ -36,35 +38,36 @@ namespace onion::system
 		//write
 		template<typename  T>
 		void operator<<(const T& value);
-		void operator<<(const bool& value);
-		void operator<<(const int8_t& value);
-		void operator<<(const uint8_t& value);
-		void operator<<(const int16_t& value);
-		void operator<<(const uint16_t& value);
-		void operator<<(const int32_t& value);
-		void operator<<(const uint32_t& value);
-		void operator<<(const int64_t& value);
-		void operator<<(const uint64_t& value);
-		void operator<<(const Buffer& buffer);
+		void operator<<(const bool& value) override;
+		void operator<<(const int8_t& value)override;
+		void operator<<(const uint8_t& value)override;
+		void operator<<(const int16_t& value)override;
+		void operator<<(const uint16_t& value)override;
+		void operator<<(const int32_t& value)override;
+		void operator<<(const uint32_t& value)override;
+		void operator<<(const int64_t& value)override;
+		void operator<<(const uint64_t& value)override;
+		bool operator<<(const Buffer& buffer);
 		//wstring
-		void operator<<(const std::wstring& value);
+		void operator<<(const std::wstring& value)override;
+		void operator<<(PacketHeader*& header) override;
 
 		//read
 		void Read(void* value, size_t size);
 
 		template<typename T>
 		void operator>>(T* value);
-		void operator>>(bool* value);
-		void operator>>(int8_t* value);
-		void operator>>(uint8_t* value);
-		void operator>>(int16_t* value);
-		void operator>>(uint16_t* value);
-		void operator>>(int32_t* value);
-		void operator>>(uint32_t* value);
-		void operator>>(int64_t* value);
-		void operator>>(uint64_t* value);
+		void operator>>(bool* value) override;
+		void operator>>(int8_t* value) override;
+		void operator>>(uint8_t* value) override;
+		void operator>>(int16_t* value) override;
+		void operator>>(uint16_t* value) override;
+		void operator>>(int32_t* value) override;
+		void operator>>(uint32_t* value) override;
+		void operator>>(int64_t* value) override;
+		void operator>>(uint64_t* value) override;
 		//wstring
-		void operator>>(std::wstring* value);
+		void operator>>(std::wstring* value) override;
 	};
 
 }
