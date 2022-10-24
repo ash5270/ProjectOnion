@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "../Util/Common.h"
 #include <memory.h>
 
