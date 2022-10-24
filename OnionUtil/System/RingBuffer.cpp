@@ -110,6 +110,7 @@ bool onion::system::RingBuffer::Read(char* data, size_t size)
 		{
 			m_tailPtr = nullptr;
 			m_tailSize = 0;
+			printf("당김3\n");
 			m_headPtr = m_data;
 			m_headSize = 0;
 		}
@@ -146,7 +147,9 @@ void onion::system::RingBuffer::Remove(size_t len)
 		{
 			//앞으로 당기기
 			if (m_tailPtr != m_data)
+			{
 				memmove(m_data, m_tailPtr, m_tailSize);
+			}
 
 			m_headSize = m_tailSize;
 			m_headPtr = m_data;
@@ -218,7 +221,7 @@ void onion::system::RingBuffer::Commit(size_t len)
 size_t onion::system::RingBuffer::GetReadableOffset() const
 {
 	//head쪽에 데이터가 있다면 그쪽부터 읽어라
-	if (m_headSize > 0 || m_tailPtr!=nullptr )
+	if (m_headSize > 0 || m_tailPtr==nullptr )
 		//근데 offset 읽는곳 부터 즉 쓰여진 곳 부터니깐 
 		//m_headPtr - m_data로 offset만 남음
 		return static_cast<size_t>(m_headPtr - m_data);
@@ -374,12 +377,21 @@ void onion::system::RingBuffer::operator>>(std::wstring* value)
 	{
 		wchar_t* buffer = new wchar_t[size + 1];
 
-		this->Read(reinterpret_cast<char*>(buffer), sizeof(wchar_t) * size);
-		buffer[size] = '\0';
+		if(this->Read(reinterpret_cast<char*>(buffer), sizeof(wchar_t) * size))
+		{
+			buffer[size] = '\0';
 
-		value->clear();
-		*value = buffer;
-		delete[] buffer;
+			value->clear();
+			*value = buffer;
+			delete[] buffer;
+		}else
+		{
+			printf("error 2\n");
+		}
+		
+	}else
+	{
+		printf("error\n");
 	}
 }
 

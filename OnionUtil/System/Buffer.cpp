@@ -48,7 +48,7 @@ void onion::system::Buffer::Clear()
 	m_readOffset = 0;
 	if(m_data==nullptr)
 		return;
-	ZERO_MEMORY(m_data, m_capacity);
+	// ZERO_MEMORY(m_data, m_capacity);
 }
 
 char* onion::system::Buffer::GetData() const
@@ -61,6 +61,12 @@ void onion::system::Buffer::AddOffset(size_t offset)
 	if(m_capacity < m_offset + offset)
 		return;
 	m_offset += offset;
+}
+
+void onion::system::Buffer::Commit(size_t size)
+{
+	memmove(m_data, m_data + size, m_offset);
+ 	m_offset -= size;
 }
 
 size_t onion::system::Buffer::size()
@@ -77,7 +83,7 @@ bool onion::system::Buffer::CheckWriteBound(size_t len)
 {
 	if (m_offset + len > m_capacity)
 	{
-		PO_LOG(LOG_ERROR, L"buffer overflow\n");
+		PO_LOG(LOG_ERROR, L"buffer Write overflow\n");
 		return false;
 	}
 	return true;
@@ -152,24 +158,21 @@ void onion::system::Buffer::operator<<(const uint64_t& value)
 	STREAM_WRITE(value);
 }
 
-bool onion::system::Buffer::operator<<(const Buffer& buffer)
-{
-	if (m_capacity < m_offset + buffer.m_offset)
-	{
-		PO_LOG(LOG_ERROR, L"Buffer overflow \n");
-		return false;
-	}
-
-	memcpy_s(m_data + m_offset, m_capacity - m_offset, buffer.m_data, buffer.m_offset);
-	m_offset += buffer.m_offset;
-	return true;
-}
+//bool onion::system::Buffer::operator<<(const Buffer& buffer)
+//{
+//	
+//}
 
 void onion::system::Buffer::operator<<(const std::wstring& value)
 {
 	*this << (int32_t)(value.length());
-	for (auto i : value)
-		*this << i;
+	//for (auto i : value)  wchar_t -> 
+	//	*this << i;
+	if (!CheckWriteBound(value.length()))
+		return;
+	memcpy(m_data + m_offset, value.c_str(), value.size() * sizeof(wchar_t));
+	m_offset += value.size() * sizeof(wchar_t);
+	write_size += value.size() * sizeof(wchar_t);
 	return;
 }
 
@@ -180,6 +183,7 @@ void onion::system::Buffer::operator<<(PacketHeader*&header)
 
 	header = reinterpret_cast<PacketHeader*>(m_data + m_offset);
 	m_offset += sizeof(PacketHeader);
+	/*write_size += sizeof(PacketHeader);*/
 }	
 
 void onion::system::Buffer::Read(void* value, size_t size)

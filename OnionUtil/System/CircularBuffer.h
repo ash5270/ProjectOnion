@@ -1,11 +1,13 @@
-#pragma once
+﻿#pragma once
 #include "../Util/Common.h"
 #include <memory.h>
+#include "Stream.h"
+#include "Buffer.h"
 
 
 namespace onion::system
 {
-	class CircularBuffer
+	class CircularBuffer : public Stream
 	{
 		//start
 		char* m_data;
@@ -17,7 +19,6 @@ namespace onion::system
 		//tail_ptr
 		char* m_tailPtr;
 		size_t m_tailSize;
-
 		//버퍼 넘쳤을 경우 쓰기 금지
 		bool isWirteStop;
 		bool isReadStop;
@@ -30,6 +31,8 @@ namespace onion::system
 		CircularBuffer(char* buffer, size_t capacity);
 		CircularBuffer(size_t capacity);
 		~CircularBuffer();
+
+		int write_size;
 		
 		bool CheckReadBound(size_t len);
 		bool CheckWriteBound(size_t len);
@@ -44,39 +47,64 @@ namespace onion::system
 		void Clear();
 		//data
 		char* GetData() const;
+		char* GetTail() const;
 
 		//head쪽 tail쪽 offset 더하기
 		void HeadCommit(size_t len);
 		void TailCommit(size_t len);
 
+		//앞쪽으로 남아있는 만큼 땡김
+		void Remove(size_t len);
+		//tail까지 쭉 비우기
+		void HeadClear();
+
 	public:
+		bool operator<<(Buffer& buffer)
+		{
+			if (m_capacity < m_headSize + buffer.size())
+			{
+				return false;
+			}
+
+			//return Write(buffer.GetData(), buffer.size());
+			memcpy_s(m_headPtr, m_capacity - m_headSize, buffer.GetData(), buffer.size());
+			m_headPtr += buffer.size();
+			m_headSize += buffer.size();
+			return  true;
+		}
+
 		template<typename  T>
-		void operator<<(const T& value);
-		void operator<<(const bool& value);
-		void operator<<(const int8_t& value);
-		void operator<<(const uint8_t& value);
-		void operator<<(const int16_t& value);
-		void operator<<(const uint16_t& value);
-		void operator<<(const int32_t& value);
-		void operator<<(const uint32_t& value);
-		void operator<<(const int64_t& value);
-		void operator<<(const uint64_t& value);
-		//wstring
-		void operator<<(const std::wstring& value);
+		inline void operator<<(const T& value);
+		inline void operator<<(const bool& value) override;
+		inline void operator<<(const int8_t& value) override;
+		inline void operator<<(const uint8_t& value) override;
+		inline void operator<<(const int16_t& value) override;
+		inline void operator<<(const uint16_t& value) override;
+		inline void operator<<(const int32_t& value) override;
+		inline void operator<<(const uint32_t& value) override;
+		inline void operator<<(const int64_t& value) override;
+		inline void operator<<(const uint64_t& value) override;
+
+		inline //wstring
+		inline void operator<<(const std::wstring& value) override;
+		inline void operator<<(PacketHeader*& header)override;
+		
 
 		template<typename T>
-		void operator>>(T* value);
-		void operator>>(bool* value);
-		void operator>>(int8_t* value);
-		void operator>>(uint8_t* value);
-		void operator>>(int16_t* value);
-		void operator>>(uint16_t* value);
-		void operator>>(int32_t* value);
-		void operator>>(uint32_t* value);
-		void operator>>(int64_t* value);
-		void operator>>(uint64_t* value);
+		inline void operator>>(T* value);
+		inline void operator>>(bool* value) override;
+		inline void operator>>(int8_t* value) override;
+		inline void operator>>(uint8_t* value) override;
+		inline void operator>>(int16_t* value) override;
+		inline void operator>>(uint16_t* value) override;
+		inline void operator>>(int32_t* value) override;
+		inline void operator>>(uint32_t* value) override;
+		inline void operator>>(int64_t* value) override;
+		inline void operator>>(uint64_t* value) override;
+
 		//wstring
-		void operator>>(std::wstring* value);
+		inline void operator>>(std::wstring* value) override;
+
 	};
 
 }

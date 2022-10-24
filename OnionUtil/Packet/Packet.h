@@ -26,7 +26,7 @@ public:
     std::wstring     id;
     std::wstring     msg;
 
-    PacketHeader* Serialize(Stream& buffer)override 
+	PacketHeader* Serialize(Stream& buffer)override 
     {
         PacketHeader* header;
         buffer << header;
@@ -35,7 +35,7 @@ public:
         buffer<<msg;
         return header;
     }
-    void Deserialize(Stream& buffer)override 
+	void Deserialize(Stream& buffer)override
     {
         buffer>>&id;
         buffer>>&msg;
@@ -48,20 +48,23 @@ public:
     PacketID type() override {return E_C_REQ_CHATTING;}
     std::wstring     id;
     std::wstring     msg;
+    int count = 0;
 
     PacketHeader* Serialize(Stream& buffer)override 
     {
-        PacketHeader* header;
+        PacketHeader* header = nullptr;
         buffer << header;
         header->packetId = type();
         buffer<<id;
         buffer<<msg;
+        buffer << count;
         return header;
     }
     void Deserialize(Stream& buffer)override 
     {
         buffer>>&id;
         buffer>>&msg;
+        buffer >> &count;
     }
 };
 

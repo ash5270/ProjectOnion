@@ -187,6 +187,11 @@ char* onion::system::CircularBuffer::GetData() const
 	return m_data;
 }
 
+char* onion::system::CircularBuffer::GetTail() const
+{
+	return m_tailPtr;
+}
+
 void onion::system::CircularBuffer::HeadCommit(size_t len)
 {
 	if(m_headPtr+len > m_dataEnd)
@@ -207,6 +212,29 @@ void onion::system::CircularBuffer::TailCommit(size_t len)
 	}
 	m_tailPtr += len;
 	m_tailSize += len;
+}
+
+void onion::system::CircularBuffer::Remove(size_t len)
+{
+	//remove
+	//데이터 앞쪽으로 옮김
+	if(len<0)
+		return;
+	memmove(m_data,m_tailPtr, m_headSize - m_tailSize);
+	m_headSize = m_headSize - m_tailSize;
+	m_tailPtr = m_data;
+	m_tailSize = 0;
+	m_headPtr = m_data + m_headSize;
+
+	memset(m_data + m_headSize, 0, m_capacity - m_headSize);
+}
+
+void onion::system::CircularBuffer::HeadClear()
+{
+	m_headPtr = m_data;
+	m_headSize = 0;
+	m_tailPtr = 0;
+	m_tailSize = 0;
 }
 
 
@@ -299,6 +327,14 @@ void onion::system::CircularBuffer::operator<<(const std::wstring& value)
 	STREAM_WRITE(size);
 	Write((char*)value.c_str(), size);
 }
+
+void onion::system::CircularBuffer::operator<<(PacketHeader*& header)
+{
+	//할당
+	header = reinterpret_cast<PacketHeader*>(m_data + m_headSize);
+	Write(m_data + m_headSize, sizeof(PacketHeader));
+}
+
 #define STREAM_READ(type,value)\
 	auto value_ptr = reinterpret_cast<char*>(value);\
 	auto offset = sizeof(type);\

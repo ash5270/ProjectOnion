@@ -8,7 +8,7 @@ namespace onion::system
 
 	class BufferQueue
 	{
-		std::queue<const Buffer*> queues;
+		std::queue< Buffer*> queues;
 		std::mutex m_lock;
 
 		SpinLock lock;
@@ -16,12 +16,12 @@ namespace onion::system
 		BufferQueue();
 		~BufferQueue();
 	public:
-		size_t push_back(const Buffer* buffer);
-		const Buffer* front();
+		size_t push_back(Buffer* buffer);
+		Buffer* front();
 		void pop()
 		{
-			SpinLockGuard loc(lock);
-			//std::lock_guard<std::mutex> lock(m_lock);
+			//SpinLockGuard loc(lock);
+			std::lock_guard<std::mutex> lock(m_lock);
 			if(queues.empty())
 				return;
 			queues.pop();
@@ -29,15 +29,15 @@ namespace onion::system
 
 		size_t size() 
 		{
-			//std::lock_guard<std::mutex> lock(m_lock);
-			SpinLockGuard loc(lock);
+			std::lock_guard<std::mutex> lock(m_lock);
+			//SpinLockGuard loc(lock);
 			return queues.size();
 		}
 
 		bool empty()
 		{
-			//std::lock_guard<std::mutex> lock(m_lock);
-			SpinLockGuard loc(lock);
+			std::lock_guard<std::mutex> lock(m_lock);
+			//SpinLockGuard loc(lock);
 			return queues.empty();
 		}
 	};

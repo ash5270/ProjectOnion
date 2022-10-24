@@ -2,6 +2,7 @@
 #include "../Util/Common.h"
 #include "Stream.h"
 #include "../Packet/PacketID.h"
+#include "Buffer.h"
 namespace onion::system
 {
 	class RingBuffer :public  Stream
@@ -52,32 +53,32 @@ namespace onion::system
 	public:
 		template<typename  T>
 		void operator<<(const T& value);
-		void operator<<(const bool& value) override;
-		void operator<<(const int8_t& value) override;
-		void operator<<(const uint8_t& value) override;
-		void operator<<(const int16_t& value) override;
-		void operator<<(const uint16_t& value) override;
-		void operator<<(const int32_t& value) override;
-		void operator<<(const uint32_t& value) override;
-		void operator<<(const int64_t& value) override;
-		void operator<<(const uint64_t& value) override;
+		inline	void operator<<(const bool& value) override;
+		inline	void operator<<(const int8_t& value) override;
+		inline	void operator<<(const uint8_t& value) override;
+		inline	void operator<<(const int16_t& value) override;
+		inline	void operator<<(const uint16_t& value) override;
+		inline	void operator<<(const int32_t& value) override;
+		inline	void operator<<(const uint32_t& value) override;
+		inline	void operator<<(const int64_t& value) override;
+		inline	void operator<<(const uint64_t& value) override;
 		//wstring
-		void operator<<(const std::wstring& value) override;
-		void operator<<(PacketHeader*& header)override;
+		inline	void operator<<(const std::wstring& value) override;
+		inline	void operator<<(PacketHeader*& header)override;
 
 		template<typename T>
 		void operator>>(T* value);
-		void operator>>(bool* value) override;
-		void operator>>(int8_t* value) override;
-		void operator>>(uint8_t* value) override;
-		void operator>>(int16_t* value)override;
-		void operator>>(uint16_t* value)override;
-		void operator>>(int32_t* value)override;
-		void operator>>(uint32_t* value)override;
-		void operator>>(int64_t* value)override;
-		void operator>>(uint64_t* value)override;
+		inline	void operator>>(bool* value) override;
+		inline	void operator>>(int8_t* value) override;
+		inline	void operator>>(uint8_t* value) override;
+		inline	void operator>>(int16_t* value)override;
+		inline	void operator>>(uint16_t* value)override;
+		inline	void operator>>(int32_t* value)override;
+		inline	void operator>>(uint32_t* value)override;
+		inline	void operator>>(int64_t* value)override;
+		inline	void operator>>(uint64_t* value)override;
 		//wstring
-		void operator>>(std::wstring* value)override;
+		inline	void operator>>(std::wstring* value)override;
 	};
 
 

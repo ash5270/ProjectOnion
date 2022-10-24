@@ -21,7 +21,7 @@ int main()
 	onion::system::LogSystem::getInstance().Start();
 	//이 부분 수정해야할듯   
 
-	onion::socket::IOCPClient client("127.0.0.1", 4590);
+	onion::socket::IOCPClient client("127.0.0.1", 3000);
 	client.InitializeClient();
 	client.StartClient();
 
@@ -39,16 +39,16 @@ int main()
 
 	auto end = chrono::steady_clock::now();
 	PO_LOG(LOG_DEBUG, L"%s\n", Clock::getInstance().NowTime(TIME_FORMAT).c_str());
-	for(int k=0; k<3; k++)
+	for(int k=0; k<1; k++)
 	{
 		auto start = chrono::steady_clock::now();
 		x = 0;
-		for (int i = 0; i < 100000000; i++)
+		for (int i = 0; i < 10000000; i++)
 		{
 			x++;
 			end = chrono::steady_clock::now();
 			auto re = chrono::duration_cast<std::chrono::seconds>(end - start).count();
-
+			packet.count = i;
 			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			client.GetSession()->SendPacket(&packet);
 			if (re > 1)
@@ -58,8 +58,13 @@ int main()
 		}
 		printf("i= %d\n", x);
 	}
-	
 
+
+	//PK_S_ANS_CHATTING end_packet;
+	//end_packet.id = L"";
+	//end_packet.msg = L"";
+	//client.GetSession()->SendPacket(&end_packet);
+	
 
 
 	while(1)

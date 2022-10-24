@@ -4,6 +4,8 @@
 #include "../../System/Buffer.h"
 #include "../../System/BufferQueue.h"
 
+#include<atomic>
+
 class Packet;
 
 namespace onion::socket
@@ -12,8 +14,9 @@ namespace onion::socket
 	{
 		//buffer queue send 용
 		system::BufferQueue m_buf_queue;
-		bool m_is_sending;
+		std::atomic_bool m_is_sending;
 		bool m_isConnect;
+
 	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;
 		void OnSend(size_t transferSize) override;

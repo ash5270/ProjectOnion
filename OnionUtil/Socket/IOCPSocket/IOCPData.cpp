@@ -1,6 +1,6 @@
 ﻿#include "IOCPData.h"
 
-onion::socket::IOCPData::IOCPData()
+onion::socket::IOCPData::IOCPData() : m_buffer(BUF_MAX_SIZE)
 {
 	m_type = IO_ERROR;
 	ZeroMemory(&m_overlapped, sizeof(m_overlapped));
@@ -41,7 +41,7 @@ OVERLAPPED* onion::socket::IOCPData::GetOverlapped()
 	return &m_overlapped;
 }
 
-onion::system::Buffer& onion::socket::IOCPData::GetBuffer()
+onion::system::CircularBuffer& onion::socket::IOCPData::GetBuffer()
 {
 	return m_buffer;
 }

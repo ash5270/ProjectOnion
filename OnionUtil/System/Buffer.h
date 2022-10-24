@@ -1,8 +1,8 @@
 #pragma once
 #include "../Util/Common.h"
+#include "../Packet/PacketID.h"
 #include "Stream.h"
 
-class PacketHeader;
 namespace onion::system
 {
 	class Buffer :public Stream
@@ -21,11 +21,12 @@ namespace onion::system
 		Buffer(char* setbuf, size_t size);
 
 		~Buffer();
-		
+
 		void Clear();
 		char* GetData() const;
 		//add offset -> 사용이유는 recv 했을때 버퍼 자체를 복사해오지만 이 offset값은 복사하지 않기 때문
 		void AddOffset(size_t offset);
+		void Commit(size_t size);
 		//offset
 		size_t size();
 		//capacity
@@ -38,36 +39,47 @@ namespace onion::system
 		//write
 		template<typename  T>
 		void operator<<(const T& value);
-		void operator<<(const bool& value) override;
-		void operator<<(const int8_t& value)override;
-		void operator<<(const uint8_t& value)override;
-		void operator<<(const int16_t& value)override;
-		void operator<<(const uint16_t& value)override;
-		void operator<<(const int32_t& value)override;
-		void operator<<(const uint32_t& value)override;
-		void operator<<(const int64_t& value)override;
-		void operator<<(const uint64_t& value)override;
-		bool operator<<(const Buffer& buffer);
+		inline	void operator<<(const bool& value) override;
+		inline	void operator<<(const int8_t& value)override;
+		inline	void operator<<(const uint8_t& value)override;
+		inline	void operator<<(const int16_t& value)override;
+		inline	void operator<<(const uint16_t& value)override;
+		inline	void operator<<(const int32_t& value)override;
+		inline	void operator<<(const uint32_t& value)override;
+		inline	void operator<<(const int64_t& value)override;
+		inline	void operator<<(const uint64_t& value)override;
+		bool operator<<(const Buffer& buffer)
+		{
+			if (m_capacity < m_offset + buffer.m_offset)
+			{
+				//PO_LOG(LOG_ERROR, L"Buffer overflow \n");
+				return false;
+			}
+
+			memcpy_s(m_data + m_offset, m_capacity - m_offset, buffer.m_data, buffer.m_offset);
+			m_offset += buffer.m_offset;
+			return true;
+		}
 		//wstring
-		void operator<<(const std::wstring& value)override;
-		void operator<<(PacketHeader*& header) override;
+		inline	void operator<<(const std::wstring& value)override;
+		inline	void operator<<(PacketHeader*& header) override;
 
 		//read
-		void Read(void* value, size_t size);
+		inline	void Read(void* value, size_t size);
 
 		template<typename T>
 		void operator>>(T* value);
-		void operator>>(bool* value) override;
-		void operator>>(int8_t* value) override;
-		void operator>>(uint8_t* value) override;
-		void operator>>(int16_t* value) override;
-		void operator>>(uint16_t* value) override;
-		void operator>>(int32_t* value) override;
-		void operator>>(uint32_t* value) override;
-		void operator>>(int64_t* value) override;
-		void operator>>(uint64_t* value) override;
+		inline	void operator>>(bool* value) override;
+		inline	void operator>>(int8_t* value) override;
+		inline	void operator>>(uint8_t* value) override;
+		inline	void operator>>(int16_t* value) override;
+		inline	void operator>>(uint16_t* value) override;
+		inline	void operator>>(int32_t* value) override;
+		inline	void operator>>(uint32_t* value) override;
+		inline	void operator>>(int64_t* value) override;
+		inline	void operator>>(uint64_t* value) override;
 		//wstring
-		void operator>>(std::wstring* value) override;
+		inline	void operator>>(std::wstring* value) override;
 	};
 
 }

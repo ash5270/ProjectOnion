@@ -2,7 +2,7 @@
 #include "RIOServer.h"
 #include "RIOSock.h"
 #include "../Session.h"
-#include "../../System/RingBuffer.h"
+#include "../../System/CircularBuffer.h"
 #include "../../System/Buffer.h"
 #include "../../System/SpinLock.h"
 #include "RIOSessionManager.h"
@@ -25,8 +25,8 @@ namespace onion::socket
 		RIO_BUFFERID m_rioBufferRecvID;
 		RIO_BUFFERID m_rioBufferSendID;
 
-		system::RingBuffer* m_recvBuffer;
-		system::RingBuffer* m_sendBuffer;
+		system::CircularBuffer* m_recvBuffer;
+		system::CircularBuffer* m_sendBuffer;
 		SpinLock lock;
 
 		RIOContext* m_rioSendContext;
@@ -58,6 +58,8 @@ namespace onion::socket
 		void SendPost();
 		void SendBuffer(system::Buffer* buffer);
 		void SendPacket(Packet* packet);
+
+		std::queue<Packet*> packets;
 	};
 
 }

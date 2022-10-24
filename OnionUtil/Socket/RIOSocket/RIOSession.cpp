@@ -24,8 +24,8 @@ onion::socket::RIOSession::~RIOSession()
 
 bool onion::socket::RIOSession::Init()
 {
-	m_recvBuffer = new system::RingBuffer(SESSION_BUFFER_SIZE);
-	m_sendBuffer = new system::RingBuffer(SESSION_BUFFER_SIZE);
+	m_recvBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
+	m_sendBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
 	m_rioBufferRecvPtr = m_recvBuffer->GetData();
 	if(m_rioBufferRecvPtr==nullptr)
 	{
@@ -57,6 +57,23 @@ bool onion::socket::RIOSession::Init()
 	//context init
 	m_rioSendContext = new RIOContext(this, IO_WRITE, m_rioBufferSendID);
 	m_rioRecvContext = new RIOContext(this, IO_READ, m_rioBufferRecvID);
+
+	//버퍼 초기화
+	char tmp_char;
+	u_long tmp_long = 0;
+	long i;
+	if (ioctlsocket(m_socket, FIONREAD, &tmp_long) != SOCKET_ERROR)
+	{
+		for (int i = 0; i < tmp_long; i++)
+		{
+			recv(m_socket, &tmp_char, sizeof(char), 0);
+		}
+	}
+	if(tmp_long>0)
+	{
+		printf("recv count %d \n", tmp_long);
+	}
+
 
 	return true;
 }
@@ -133,12 +150,12 @@ bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 
 void onion::socket::RIOSession::RecvReady()
 {
-	if (m_recvBuffer->GetFreeSpaceSize() == 0)
+	if (m_recvBuffer->capacity()-m_recvBuffer->offset() <= 0)
 		return;
 	m_rioRecvContext->BufferId = m_rioBufferRecvID;
 	//버퍼에서 남은 자리 
-	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->GetFreeSpaceSize());
-	m_rioRecvContext->Offset = m_recvBuffer->GetWritableOffset();
+	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->capacity()-m_recvBuffer->offset());
+	m_rioRecvContext->Offset = m_recvBuffer->offset();
 
 	DWORD recvBytes = 0;
 	DWORD flags = 0;
@@ -151,34 +168,99 @@ void onion::socket::RIOSession::RecvReady()
 		return;
 	}
 }
-
+Packet* last_p;
+size_t last_s;
 void onion::socket::RIOSession::OnRecv(size_t transferSize)
 {
 	//PO_LOG(LOG_DEBUG, L"recv success msg offset : [%d]\n",transferSize);
 
 	//tail쪽을 앞으로 미루어줌 
-	m_recvBuffer->Commit(transferSize);
+	m_recvBuffer->HeadCommit(transferSize);
 	//앞쪽에 8바이트를 복사해야함 지금은 4바이트만 존재
-	//
-	size_t count = transferSize;
-	size_t size = 0;
-	while(count>=0)
-	{
-		auto packet = packet::PacketAnalyzer::getInstance().Analyzer(m_recvBuffer->GetData(), m_recvBuffer->GetReadableOffset(),size);
-		auto msgPacket = reinterpret_cast<PK_C_REQ_CHATTING*>(packet);
-		m_recvBuffer->Remove(8);
-		msgPacket->Deserialize(*m_recvBuffer);
-		m_recvBuffer->Remove(size);
-		PO_LOG(LOG_DEBUG, L"packetId : %ls, msg : %ls\n", msgPacket->id.c_str(), msgPacket->msg.c_str());
-		count -= size - 8;
-	}
 
-	//m_recvBuffer->Remove(transferSize);
+	int count = transferSize;
+	size_t size = 0;
+
+
+	while(count >= 0)
+	{
+		auto packet = packet::PacketAnalyzer::getInstance().Analyzer(
+			m_recvBuffer->GetData(), m_recvBuffer->tailOffset(),size);
+		count -= size + 8;
+		if (count < 0)
+			break;
+		last_p = packet;
+		last_s = count;
+		//test 
+		if(packet->type() == 1 )
+		{
+			PO_LOG(LOG_DEBUG, L"packet all count : %d\n", packets.size());
+			auto last = reinterpret_cast<PK_C_REQ_CHATTING*>(packets.back());
+			PO_LOG(LOG_DEBUG, L"packet all last count : %d\n", last->count);
+
+			for (int i = 0; i < packets.size(); i++)
+			{
+				auto prev = reinterpret_cast<PK_C_REQ_CHATTING*>(packets.front());
+				packets.pop();
+				auto back = reinterpret_cast<PK_C_REQ_CHATTING*>(packets.front());
+
+				int result = back->count - prev->count;
+				if (result > 1)
+				{
+					printf("d");
+				}
+
+				if (result == 0)
+				{
+					printf("x");
+				}
+			}
+
+			break;
+		}
+		if (count < 0)
+		{
+			break;
+		}
+
+		m_recvBuffer->TailCommit(8);
+		auto msgPacket = reinterpret_cast<PK_C_REQ_CHATTING*>(packet);
+		msgPacket->Deserialize(*m_recvBuffer);
+		packets.push(msgPacket);
+	/*	PO_LOG(LOG_DEBUG, L"packetId : %ls, msg : %ls\n", msgPacket->id.c_str(), msgPacket->msg.c_str());*/
+		//PO_LOG(LOG_DEBUG, L"packetId : %d\n",packet->type());
+	}
+	m_recvBuffer->Remove(1);
+	//PO_LOG(LOG_DEBUG, L"packet all count : %d\n", packets.size());
 }
 
 void onion::socket::RIOSession::OnClose()
 {
+	PO_LOG(LOG_DEBUG, L"packet all count : %d\n", packets.size());
 	PO_LOG(LOG_INFO, L"Session OnClose\n");
+
+	PO_LOG(LOG_DEBUG, L"packet all count : %d\n", packets.size());
+	auto last = reinterpret_cast<PK_C_REQ_CHATTING*>(packets.back());
+	PO_LOG(LOG_DEBUG, L"packet all last count : %d\n", last->count);
+	int i = 0;
+	for (i = packets.size(); i > 0; i--)
+	{
+		auto prev = reinterpret_cast<PK_C_REQ_CHATTING*>(packets.front());
+		packets.pop();
+		auto back = reinterpret_cast<PK_C_REQ_CHATTING*>(packets.front());
+
+		int result = back->count - prev->count;
+		if (result > 1)
+		{
+			printf("d");
+		}
+
+		if (result == 0)
+		{
+			printf("x");
+		}
+	}
+
 	ReleaseRef();
 }
 
@@ -187,14 +269,14 @@ void onion::socket::RIOSession::SendPost()
 	SpinLockGuard m_guard(lock);
 	AddRef();
 
-	if (m_sendBuffer->GetContiguiousBytes() == 0)
-		return;
+	//if (m_sendBuffer->GetContiguiousBytes() == 0)
+	//	return;
 
-	m_rioSendContext->BufferId = m_rioBufferSendID;
-	//버퍼에서 보낼 길이
-	m_rioSendContext->Length = static_cast<ULONG>(m_sendBuffer->GetContiguiousBytes());
-	//버퍼 오프셋
-	m_rioSendContext->Offset = m_sendBuffer->GetReadableOffset();
+	//m_rioSendContext->BufferId = m_rioBufferSendID;
+	////버퍼에서 보낼 길이
+	//m_rioSendContext->Length = static_cast<ULONG>(m_sendBuffer->GetContiguiousBytes());
+	////버퍼 오프셋
+	//m_rioSendContext->Offset = m_sendBuffer->GetReadableOffset();
 
 	DWORD sendBytes = 0;
 	DWORD flags = 0;
@@ -209,7 +291,7 @@ void onion::socket::RIOSession::OnSend(size_t transferSize)
 {
 	SpinLockGuard m_guard(lock);
 	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
-	m_sendBuffer->Remove(transferSize);
+	//m_sendBuffer->Remove(transferSize);
 }
 
 void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)

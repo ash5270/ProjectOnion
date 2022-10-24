@@ -52,6 +52,8 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 			if(transferred==0)
 			{
 				PO_LOG( LOG_INFO, L" error =0 [%d] ,context type = [%d]\n",GetLastError(),context->GetIOType());
+				closesocket(session->GetSocket());
+				shutdown(session->GetSocket(), 2);
 				session->OnClose();
 				continue;
 			}

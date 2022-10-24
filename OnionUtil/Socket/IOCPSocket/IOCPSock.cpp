@@ -2,6 +2,7 @@
 #include "IOCPSession.h"
 #include <process.h>
 
+
 unsigned int WINAPI CallWorkerThread(LPVOID p)
 {
 	onion::socket::IOCPSock* pOverlappedEvent = static_cast<onion::socket::IOCPSock*>(p);
@@ -62,7 +63,6 @@ void onion::socket::IOCPSock::WorkingThread()
 	IOCPData* pSocketinfo;
 	DWORD dwFlags = 0;
 
-
 	while (m_bWorkerThread)
 	{
 		//이 함수로 인해 쓰레들은 waitingThread Queue에 대기상태로 들어가게 됨
@@ -73,6 +73,7 @@ void onion::socket::IOCPSock::WorkingThread()
 		{
 			PO_LOG(LOG_INFO, L"socket(%I64d) connect close\n", pSocketinfo->GetSocket());
 			pSession->OnClose();
+			shutdown(pSocketinfo->GetSocket(), 2);
 			closesocket(pSocketinfo->GetSocket());
 			free(pSocketinfo);
 			continue;

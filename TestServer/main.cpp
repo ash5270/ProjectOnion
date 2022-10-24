@@ -10,7 +10,7 @@
 
 int main()
 {
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+	//_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
 	//onion::socket::IOCPServer iocp(3000);
 	//iocp.InitializeServer();
 	//iocp.StartServer();
@@ -24,7 +24,7 @@ int main()
 	//iocp.StopServer();
 
 
-	onion::socket::RIOServer server(4590);
+	onion::socket::RIOServer server(3000);
 	server.InitializeServer();
 	server.StartServer();
 
