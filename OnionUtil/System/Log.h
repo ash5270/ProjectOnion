@@ -3,7 +3,6 @@
 #include "LogSystem.h"
 #include "LogData.h"
 
-//수정해야할 곳 
 #define PO_LOG(log_level,format,...)\
 	{\
 	auto log_str = wstring_format(format,##__VA_ARGS__);\

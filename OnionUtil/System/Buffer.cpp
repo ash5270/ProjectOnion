@@ -174,6 +174,9 @@ void onion::system::Buffer::operator<<(const std::wstring& value)
 	m_offset += value.size() * sizeof(wchar_t);
 	write_size += value.size() * sizeof(wchar_t);
 	return;
+
+
+
 }
 
 void onion::system::Buffer::operator<<(PacketHeader*&header)

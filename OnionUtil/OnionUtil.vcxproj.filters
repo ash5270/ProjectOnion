@@ -16,9 +16,6 @@
     <Filter Include="System">
       <UniqueIdentifier>{29dedd6b-0bf0-43e1-a3e8-b33038d6d59f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="System\Object">
-      <UniqueIdentifier>{8ce86407-6653-486d-840e-fac9ca037247}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network\Socket\RIO">
       <UniqueIdentifier>{2dbac9df-77af-484c-bade-98768bce4a65}</UniqueIdentifier>
     </Filter>
@@ -71,12 +68,6 @@
     </ClInclude>
     <ClInclude Include="Util\MutexQueue.h">
       <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="System\Object\Object.h">
-      <Filter>System\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="System\Object\GameObject.h">
-      <Filter>System\Object</Filter>
     </ClInclude>
     <ClInclude Include="Util\Clock.h">
       <Filter>Util</Filter>
@@ -192,9 +183,6 @@
       <Filter>Packet</Filter>
     </ClCompile>
     <ClCompile Include="System\BufferPool.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="System\BufferQueue.cpp">
       <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>

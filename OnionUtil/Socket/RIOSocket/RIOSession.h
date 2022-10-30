@@ -5,6 +5,7 @@
 #include "../../System/CircularBuffer.h"
 #include "../../System/Buffer.h"
 #include "../../System/SpinLock.h"
+#include "../../System/BufferQueue.h"
 #include "RIOSessionManager.h"
 
 class Packet;
@@ -16,6 +17,8 @@ namespace onion::socket
 		volatile long m_refCount;
 		
 		int m_threadID;
+
+		int m_recvCount;
 
 		char* m_rioBufferRecvPtr;
 		char* m_rioBufferSendPtr;
@@ -31,6 +34,14 @@ namespace onion::socket
 
 		RIOContext* m_rioSendContext;
 		RIOContext* m_rioRecvContext;
+
+		//send buffer queue
+		//모아서 보내는 용
+		system::BufferQueue m_sendQueue;
+		//queue lock
+		std::atomic_bool m_isSending;
+		bool m_isConnect;
+
 	public:
 		RIOSession(const SOCKET& socket);
 		~RIOSession() override;

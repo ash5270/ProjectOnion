@@ -168,8 +168,6 @@
     <ClInclude Include="System\Log.h" />
     <ClInclude Include="System\LogData.h" />
     <ClInclude Include="System\LogSystem.h" />
-    <ClInclude Include="System\Object\GameObject.h" />
-    <ClInclude Include="System\Object\Object.h" />
     <ClInclude Include="System\RingBuffer.h" />
     <ClInclude Include="System\SpinLock.h" />
     <ClInclude Include="System\Stream.h" />
@@ -194,7 +192,6 @@
     <ClCompile Include="Socket\SessionManager.cpp" />
     <ClCompile Include="System\Buffer.cpp" />
     <ClCompile Include="System\BufferPool.cpp" />
-    <ClCompile Include="System\BufferQueue.cpp" />
     <ClCompile Include="System\CircularBuffer.cpp" />
     <ClCompile Include="System\LogData.cpp" />
     <ClCompile Include="System\LogSystem.cpp" />

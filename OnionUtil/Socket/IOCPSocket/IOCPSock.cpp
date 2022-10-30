@@ -75,7 +75,7 @@ void onion::socket::IOCPSock::WorkingThread()
 			pSession->OnClose();
 			shutdown(pSocketinfo->GetSocket(), 2);
 			closesocket(pSocketinfo->GetSocket());
-			free(pSocketinfo);
+			delete pSocketinfo;
 			continue;
 		}
 
@@ -83,7 +83,7 @@ void onion::socket::IOCPSock::WorkingThread()
 		{
 			//PO_LOG(LOG_ERROR, L"recvBytes size 0\n");
 			closesocket(pSocketinfo->GetSocket());
-			free(pSocketinfo);
+			delete pSocketinfo;
 			continue;
 		}
 

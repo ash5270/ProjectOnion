@@ -49,7 +49,7 @@ void onion::socket::IOCPClient::StartClient()
 
 	m_hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
-	if(!CreateWorkerThread(1))
+	if(!CreateWorkerThread(4))
 	{
 		return; 
 	}

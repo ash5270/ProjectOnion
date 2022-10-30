@@ -38,7 +38,7 @@ WSABUF onion::socket::IOCPData::GetWSABuf()
 
 OVERLAPPED* onion::socket::IOCPData::GetOverlapped()
 {
-	return &m_overlapped;
+	return &m_overlapped ;
 }
 
 onion::system::CircularBuffer& onion::socket::IOCPData::GetBuffer()

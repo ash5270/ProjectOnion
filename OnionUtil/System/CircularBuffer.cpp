@@ -197,7 +197,7 @@ void onion::system::CircularBuffer::HeadCommit(size_t len)
 	if(m_headPtr+len > m_dataEnd)
 	{
 		m_headPtr = m_data;
-		m_tailSize = 0;
+		m_headSize = 0;
 	}
 	m_headPtr += len;
 	m_headSize += len;
@@ -225,7 +225,6 @@ void onion::system::CircularBuffer::Remove(size_t len)
 	m_tailPtr = m_data;
 	m_tailSize = 0;
 	m_headPtr = m_data + m_headSize;
-
 	memset(m_data + m_headSize, 0, m_capacity - m_headSize);
 }
 
@@ -395,15 +394,13 @@ void onion::system::CircularBuffer::operator>>(std::wstring* value)
 {
 	int32_t size = 0;
 	*this >> (int32_t*)& size;
+	//wchar_t* buffer = new wchar_t[size + 1];
+	this->Read((char*)(value->c_str()), sizeof(wchar_t) * size);
+	//buffer[size] = '\0';
+	//value->clear();
+	/**value = buffer;
 
-	wchar_t* buffer = new wchar_t[size + 1];
-
-	this->Read(reinterpret_cast<char*>(buffer), sizeof(wchar_t) * size);
-	buffer[size] = '\0';
-
-	value->clear();
-	*value = buffer;
-	delete[] buffer;
+	delete[] buffer;*/
 }
 
 template <typename T>

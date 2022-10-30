@@ -4,8 +4,6 @@
 #include "../../System/Buffer.h"
 #include "../../System/BufferQueue.h"
 
-#include<atomic>
-
 class Packet;
 
 namespace onion::socket

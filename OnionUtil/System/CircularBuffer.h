@@ -66,7 +66,6 @@ namespace onion::system
 				return false;
 			}
 
-			//return Write(buffer.GetData(), buffer.size());
 			memcpy_s(m_headPtr, m_capacity - m_headSize, buffer.GetData(), buffer.size());
 			m_headPtr += buffer.size();
 			m_headSize += buffer.size();
