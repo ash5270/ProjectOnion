@@ -148,6 +148,7 @@
     <ClInclude Include="Packet\PacketAnalyzer.h" />
     <ClInclude Include="Packet\PacketFactory.h" />
     <ClInclude Include="Packet\PacketID.h" />
+    <ClInclude Include="safe_list.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSession.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPClient.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="System\Log.h" />
     <ClInclude Include="System\LogData.h" />
     <ClInclude Include="System\LogSystem.h" />
+    <ClInclude Include="System\safe_queue.h" />
     <ClInclude Include="System\RingBuffer.h" />
     <ClInclude Include="System\SpinLock.h" />
     <ClInclude Include="System\Stream.h" />
@@ -178,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Packet\PacketAnalyzer.cpp" />
+    <ClCompile Include="safe_list.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSession.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSock.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPClient.cpp" />

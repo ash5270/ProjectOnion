@@ -1,4 +1,9 @@
-﻿#pragma once
+﻿///IOCP Session
+///이곳에서 I/O데이터를 받은것을 처리
+///
+///
+
+#pragma once
 #include "../Session.h"
 #include "IOCPData.h"
 #include "../../System/Buffer.h"

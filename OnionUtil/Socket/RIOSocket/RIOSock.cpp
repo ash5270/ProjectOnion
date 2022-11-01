@@ -18,7 +18,8 @@ onion::socket::RIOSock::~RIOSock()
 unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 {
 	auto threadID = reinterpret_cast<UINT32>(p);
-	m_Rio_CompletionQueue[threadID] = RIOSock::m_Rio_func_table.RIOCreateCompletionQueue(MAX_CQ_SIZE_PER_RIO_THREAD, 0);
+	m_Rio_CompletionQueue[threadID] = 
+		RIOSock::m_Rio_func_table.RIOCreateCompletionQueue(MAX_CQ_SIZE_PER_RIO_THREAD, 0);
 	if(m_Rio_CompletionQueue[threadID] == RIO_INVALID_CQ)
 	{
 		return -1;

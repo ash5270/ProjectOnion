@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿///LogSystem
+///로그 처리를 위한 클래스
+
+#pragma once
 #include "../Util/Common.h"
 
 #include "../Util/SingleTon.h"

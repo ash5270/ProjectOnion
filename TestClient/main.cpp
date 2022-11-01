@@ -29,7 +29,6 @@ int main()
 	packet.msg = L"테스트 메시지";
 
 	int x= 0;
-	PO_LOG(LOG_DEBUG, L"%s\n", Clock::getInstance().NowTime(TIME_FORMAT).c_str());
 	auto end = chrono::steady_clock::now();
 	for(int k=0; k<3; k++)
 	{
@@ -41,15 +40,14 @@ int main()
 			end = chrono::steady_clock::now();
 			auto re = chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 			packet.count = i;
-			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			client.GetSession()->SendPacket(&packet);
 			if (re > 1000)
 			{
-				//printf("%d\n", re);
+				PO_LOG(LOG_INFO, L"send packet count : %d\n", i);
 				break;
 			}
 		}
-		printf("i= %d\n", x);
+		
 	}
 
 	PK_S_ANS_CHATTING end_packet;

@@ -159,15 +159,12 @@ void onion::socket::RIOSession::RecvReady()
 
 void onion::socket::RIOSession::OnRecv(size_t transferSize)
 {
-	//PO_LOG(LOG_DEBUG, L"recv success msg offset : [%d]\n",transferSize);
 	//tail쪽을 앞으로 미루어줌
 	m_recvBuffer->HeadCommit(transferSize);
-	//PO_LOG(LOG_ERROR, L"%p\n", this);
-	//PO_LOG(LOG_DEBUG,L"%d\n", size_i);
 	int count = transferSize + m_recvCount;
 	int headerSize = sizeof(PacketHeader);
 	size_t size = 0;
-
+	//데이터가 다 받아졌는지 확인
 	while(count >= 0)
 	{
 		auto packet = packet::PacketAnalyzer::getInstance().Analyzer(
@@ -183,7 +180,7 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		//test 용 코드 
 		if (packet->type() == 1)
 		{
-			PO_LOG(LOG_DEBUG, L"packet all count : %d\n", packets.size());
+			PO_LOG(LOG_DEBUG, L"recv packet all count : %d\n", packets.size());
 			break;
 		}
 
@@ -239,6 +236,7 @@ void onion::socket::RIOSession::SendPacket(Packet* packet)
 	if(!m_isConnect)
 		return;
 	//여기서 버퍼 생성
+	//수정해야할 곳
 	Buffer* buf = new Buffer(1024);
   	auto header =  packet->Serialize(*buf);
 	header->size = buf->write_size;

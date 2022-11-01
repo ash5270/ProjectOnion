@@ -18,5 +18,4 @@ namespace onion::socket
 		Session* GetSession() const; 
 		void SetSession(Session* session);
 	};
-
 }
