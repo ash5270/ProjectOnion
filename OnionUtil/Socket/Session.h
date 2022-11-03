@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "SocketCommon.h"
-
+#include "../Packet/Packet.h"
 #include <mstcpip.h>
 
 namespace onion::socket
@@ -20,6 +20,7 @@ namespace onion::socket
 		virtual void RecvReady();
 		virtual void OnRecv(size_t transferSize);
 		virtual void OnClose();
+		virtual void SendPacket(Packet* packet);
 	};
 }
 

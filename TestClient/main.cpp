@@ -25,8 +25,8 @@ int main()
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	PK_C_REQ_CHATTING packet;
-	packet.id = L"테스트";
-	packet.msg = L"테스트 메시지";
+	packet.id = L"123213213213213";
+	packet.msg = L"sadsadsadsads";
 
 	int x= 0;
 	auto end = chrono::steady_clock::now();
@@ -41,13 +41,12 @@ int main()
 			auto re = chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 			packet.count = i;
 			client.GetSession()->SendPacket(&packet);
-			if (re > 1000)
+			if (re >= 1000)
 			{
-				PO_LOG(LOG_INFO, L"send packet count : %d\n", i);
+				PO_LOG(LOG_INFO, L"send packet count : %d , time : %d\n", i, re);
 				break;
 			}
 		}
-		
 	}
 
 	PK_S_ANS_CHATTING end_packet;

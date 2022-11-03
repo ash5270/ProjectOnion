@@ -1,21 +1,25 @@
 ﻿#include "RIOServer.h"
-
 #include "RIOSession.h"
+
+#include "../../System/BufferPool.h"
+
 
 onion::socket::RIOServer::RIOServer(int port)
 {
 	m_bAccept = true;
 	m_port = port;
+	packets = new safe_queue<PacketObject*>();
 }
 
 onion::socket::RIOServer::~RIOServer()
 {
-
+	
 }
 
 bool onion::socket::RIOServer::InitializeServer()
 {
 	onion::system::LogSystem::getInstance().Start();
+	onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
 
 	if (!WSAInit())
 		return false;
@@ -104,6 +108,23 @@ void onion::socket::RIOServer::StartServer()
 
 void onion::socket::RIOServer::StopServer()
 {
+	onion::system::LogSystem::getInstance().Stop();
+	onion::system::BufferPool::getInstance().Delete();
+}
+
+void onion::socket::RIOServer::Update()
+{
+	while(true)
+	{
+		if(!packets->size()>0)
+			continue;
+		for(int i=0; i<=packets->size(); i++)
+		{
+			PacketObject* obj;
+			packets->try_Dequeue(obj);
+			obj->session->SendPacket(obj->packet);
+		}
+	}
 }
 
 onion::socket::RIOSessionManager& onion::socket::RIOServer::GetSessionManger()

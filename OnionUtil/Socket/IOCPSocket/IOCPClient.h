@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "IOCPSock.h"
 #include "IOCPSession.h"
+#include "../../System/BufferPool.h"
 #include <string>
 
 
@@ -32,6 +33,7 @@ namespace onion::socket
 		char sendBuf[1024] = " dasdsadasd";
 
 		IOCPSession* m_session;
+	
 	};
 }
 

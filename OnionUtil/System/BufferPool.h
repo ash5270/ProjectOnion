@@ -7,37 +7,32 @@
 #include "safe_queue.h"
 #include "Buffer.h"
 
+#include "../Util/SingleTon.h"
+
 namespace onion::system
 {
-	class BufferPool
+	class BufferPool : public util::SingleTon<BufferPool>
 	{
 	private:
 		int m_pool_size;
 		int m_buf_size;
-		safe_queue<Buffer*> m_usingPool;
 		safe_queue<Buffer*> m_readyPool;
+
 	public:
-		BufferPool(int pool_size, int buffer_size = 1024) :
-			m_pool_size(pool_size), m_usingPool(), m_readyPool(), m_buf_size(buffer_size)
+		void Init(int pool_size,int buffer_size =1024)
 		{
-			for (int i = 0; i < pool_size; i++)
-			{
-				m_usingPool.push(new Buffer(buffer_size));
-			}
+			m_pool_size = pool_size;
+			m_buf_size = buffer_size;
+
+			InitPool();
 		}
-		~BufferPool()
+
+		void Delete()
 		{
 			for (int i = 0; i < m_readyPool.size(); i++)
 			{
 				Buffer* buffer;
 				m_readyPool.try_Dequeue(buffer);
-				delete buffer;
-			}
-
-			for (int i = 0; i < m_usingPool.size(); i++)
-			{
-				Buffer* buffer;
-				m_usingPool.try_Dequeue(buffer);
 				delete buffer;
 			}
 		}
@@ -46,16 +41,24 @@ namespace onion::system
 		{
 			Buffer* buffer;
 			m_readyPool.try_Dequeue(buffer);
-			m_usingPool.push(buffer);
 			return buffer;
 		}
 
 		void Relese(Buffer* buffer)
 		{
-			
+			buffer->Clear();
+			m_readyPool.push(buffer); 
 		}
 
+	private:
 
+		void InitPool()
+		{
+			for(int i=0; i< m_pool_size;i++)
+			{
+				m_readyPool.push(new Buffer(m_buf_size));
+			}
+		}
 	};
 
 }

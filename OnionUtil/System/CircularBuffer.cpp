@@ -394,13 +394,14 @@ void onion::system::CircularBuffer::operator>>(std::wstring* value)
 {
 	int32_t size = 0;
 	*this >> (int32_t*)& size;
-	//wchar_t* buffer = new wchar_t[size + 1];
-	this->Read((char*)(value->c_str()), sizeof(wchar_t) * size);
-	//buffer[size] = '\0';
-	//value->clear();
-	/**value = buffer;
+	wchar_t* buffer = new wchar_t[size + 1];
+	this->Read((char*)(buffer), sizeof(wchar_t) * size);
+	buffer[size] = '\0';
+	value->clear();
+	*value = buffer;
 
-	delete[] buffer;*/
+
+	delete[] buffer;
 }
 
 template <typename T>

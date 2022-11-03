@@ -16,8 +16,8 @@ namespace onion::socket
 	class IOCPSession : public Session 
 	{
 		//buffer queue send 용
-		system::BufferQueue m_buf_queue;
-		std::atomic_bool m_is_sending;
+		system::BufferQueue m_bufQueue;
+		std::atomic_bool m_isSending;
 		bool m_isConnect;
 
 	public:
@@ -32,7 +32,7 @@ namespace onion::socket
 		void Recv(WSABUF buffer);
 
 		void SendBuffer(system::Buffer* buffer);
-		void SendPacket(Packet* packet);
+		void SendPacket(Packet* packet) override;
 
 	public:
 		IOCPData* m_data[2];

@@ -1,5 +1,6 @@
 ﻿#include "IOCPClient.h"
-#include "../../System/LogSystem.h"
+#include "../../System/BufferPool.h"
+
 
 onion::socket::IOCPClient::IOCPClient(std::string ip, int port) : m_ip(ip),m_port(port),m_isConnect(false)
 {
@@ -13,6 +14,8 @@ onion::socket::IOCPClient::~IOCPClient()
 
 bool onion::socket::IOCPClient::InitializeClient()
 {
+	system::BufferPool::getInstance().Init(CLIENT_BUFFER_POOL_SIZE);
+
 	if (!WSAInit())
 		return false;
 	int nResult = 0;
@@ -43,6 +46,8 @@ bool onion::socket::IOCPClient::InitializeClient()
 
 void onion::socket::IOCPClient::StartClient()
 {
+
+
 	int nResult = 0;
 	DWORD recvBytes = 0;
 	DWORD flags = 0;
@@ -77,9 +82,11 @@ void onion::socket::IOCPClient::StartClient()
 void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
+	onion::system::BufferPool::getInstance().Delete();
 }
 
 onion::socket::IOCPSession* onion::socket::IOCPClient::GetSession()
 {
 	return m_session;
 }
+

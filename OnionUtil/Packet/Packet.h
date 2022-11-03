@@ -30,6 +30,7 @@ public:
     {
         PacketHeader* header;
         buffer << header;
+   
         header->packetId = type();
         buffer<<id;
         buffer<<msg;

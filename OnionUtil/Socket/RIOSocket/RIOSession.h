@@ -37,7 +37,8 @@ namespace onion::socket
 
 		//send buffer queue
 		//모아서 보내는 용
-		system::BufferQueue m_sendQueue;
+		system::BufferQueue m_bufQueue;
+		system::BufferQueue m_packtes;
 		//queue lock
 		std::atomic_bool m_isSending;
 		bool m_isConnect;
@@ -68,9 +69,9 @@ namespace onion::socket
 
 		void SendPost();
 		void SendBuffer(system::Buffer* buffer);
-		void SendPacket(Packet* packet);
+		void SendPacket(Packet* packet) override;
 
-		std::queue<Packet*> packets;
+		
 	};
 
 }

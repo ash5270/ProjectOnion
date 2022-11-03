@@ -6,8 +6,6 @@
 
 namespace onion::socket
 {
-	#define BUF_SIZE 
-
 	class IOCPSock
 	{
 	public:

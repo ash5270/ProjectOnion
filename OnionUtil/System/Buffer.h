@@ -19,7 +19,6 @@ namespace onion::system
 		Buffer(const Buffer& buffer, size_t size);
 		//다른 버퍼에서 데이터 복사하는게 아님
 		Buffer(char* setbuf, size_t size);
-
 		~Buffer();
 
 		void Clear();

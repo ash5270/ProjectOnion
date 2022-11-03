@@ -1,5 +1,6 @@
 ﻿#include "IOCPServer.h"
 #include "IOCPSession.h"
+#include"../../System/BufferPool.h"
 
 onion::socket::IOCPServer::IOCPServer(int port) :IOCPSock()
 {
@@ -16,7 +17,7 @@ bool onion::socket::IOCPServer::InitializeServer()
 {
 	//log system 시작
 	onion::system::LogSystem::getInstance().Start();
-
+	onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
 	if (!WSAInit())
 		return false;
 	int nResult = 0;
@@ -130,4 +131,5 @@ void onion::socket::IOCPServer::StopServer()
 	WSACleanup();
 	//log system 종료
 	onion::system::LogSystem::getInstance().Stop();
+	onion::system::BufferPool::getInstance().Delete();
 }

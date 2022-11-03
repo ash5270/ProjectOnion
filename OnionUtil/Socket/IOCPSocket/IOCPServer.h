@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "IOCPSock.h"
 #include "../SessionManager.h"
+#include "../../System/BufferPool.h"
 #include <thread>
 
 namespace onion::socket

@@ -45,10 +45,11 @@ void onion::system::Buffer::Clear()
 {
 	//PO_LOG(LOG_ERROR,L"√ ±‚»≠ buffer\n");
 	m_offset = 0;
+	write_size = 0;
 	m_readOffset = 0;
 	if(m_data==nullptr)
 		return;
-	// ZERO_MEMORY(m_data, m_capacity);
+	ZERO_MEMORY(m_data, m_capacity);
 }
 
 char* onion::system::Buffer::GetData() const
@@ -182,10 +183,13 @@ void onion::system::Buffer::operator<<(const std::wstring& value)
 void onion::system::Buffer::operator<<(PacketHeader*&header)
 {
 	if(!CheckWriteBound(sizeof(PacketHeader)))
+	{
 		return;
+	}
 
 	header = reinterpret_cast<PacketHeader*>(m_data + m_offset);
 	m_offset += sizeof(PacketHeader);
+	
 	/*write_size += sizeof(PacketHeader);*/
 }	
 

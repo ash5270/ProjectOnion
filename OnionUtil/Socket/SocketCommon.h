@@ -3,13 +3,14 @@
 #pragma comment(lib,"mswsock.lib")
 
 #define SERVER_PORT 3000
-#include "../Util/Common.h"
+#define SERVER_BUFFER_POOL_SIZE 3000
+#define CLIENT_BUFFER_POOL_SIZE 1000000
 
+#include "../Util/Common.h"
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 #include <atomic>
-
 #include "../System/LogSystem.h"
 
 typedef enum

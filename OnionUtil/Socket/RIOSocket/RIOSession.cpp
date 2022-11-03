@@ -48,7 +48,7 @@ bool onion::socket::RIOSession::Init()
 		return false;
 	}
 
-	m_rioBufferSendID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferSendPtr, TEST_BUFFER_SIZE);
+	m_rioBufferSendID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferSendPtr, SESSION_BUFFER_SIZE);
 	if(m_rioBufferSendID==RIO_INVALID_BUFFERID)
 	{
 		PO_LOG(LOG_ERROR, L"RIORegister SendBuffer Error : [%d]\n", GetLastError());
@@ -62,6 +62,7 @@ bool onion::socket::RIOSession::Init()
 	m_recvCount = 0;
 	m_isSending.store(false);
 
+	m_isConnect = true;
 	return true;
 }
 
@@ -180,14 +181,18 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		//test 용 코드 
 		if (packet->type() == 1)
 		{
-			PO_LOG(LOG_DEBUG, L"recv packet all count : %d\n", packets.size());
+			PO_LOG(LOG_DEBUG, L"recv packet all count : %d\n", m_packtes.size());
 			break;
 		}
 
 		m_recvBuffer->TailCommit(headerSize);
 		auto msgPacket = reinterpret_cast<PK_C_REQ_CHATTING*>(packet);
 		msgPacket->Deserialize(*m_recvBuffer);
-		packets.push(msgPacket);
+
+		PacketObject *obj =new PacketObject();
+		obj->session = this;
+		obj->packet = msgPacket;
+		server->packets->push(obj);
 	}
 
 	m_recvBuffer->Remove(1);
@@ -195,13 +200,14 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 
 void onion::socket::RIOSession::OnClose()
 {
+	m_isConnect = false;
 	PO_LOG(LOG_INFO, L"Session OnClose\n");
 	ReleaseRef();
 }
 
 void onion::socket::RIOSession::SendPost()
 {
-	SpinLockGuard m_guard(lock);
+	//SpinLockGuard m_guard(lock);
 	AddRef();
 
 	m_rioSendContext->BufferId = m_rioBufferSendID;
@@ -215,15 +221,46 @@ void onion::socket::RIOSession::SendPost()
 	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)m_rioSendContext, 1, flags, m_rioSendContext))
 	{
 		PO_LOG(LOG_ERROR, L"RIOSend Error : [%d]\n", GetLastError());
+		ReleaseRef();
 		return;
 	}
 }
 
 void onion::socket::RIOSession::OnSend(size_t transferSize)
 {
-	SpinLockGuard m_guard(lock);
+	//SpinLockGuard m_guard(lock);
 	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
 	//m_sendBuffer->Remove(transferSize);
+	if(m_bufQueue.empty())
+	{
+		m_isSending.exchange(false);
+		return;
+	}
+
+	if(!m_isConnect)
+		return;
+
+	m_sendBuffer->Clear();
+
+	for(int i=0; i< m_bufQueue.size(); i++)
+	{
+		Buffer* send_buf = m_bufQueue.front();
+		if(send_buf==nullptr)
+		{
+			PO_LOG(LOG_INFO, L"[error] send buffer is nullptr\n");
+			return;
+		}
+		if(!(*m_sendBuffer << *send_buf))
+		{
+			break;
+		}
+		m_bufQueue.pop();
+	}
+
+	if(m_sendBuffer->size()>0)
+	{
+		this->SendPost();
+	}
 }
 
 void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
@@ -238,19 +275,18 @@ void onion::socket::RIOSession::SendPacket(Packet* packet)
 	//여기서 버퍼 생성
 	//수정해야할 곳
 	Buffer* buf = new Buffer(1024);
+	//auto buf= RIOServer::GetBufPool().GetBuffer();
   	auto header =  packet->Serialize(*buf);
 	header->size = buf->write_size;
 
-	m_sendQueue.push_back(buf);
+	m_bufQueue.push_back(buf);
 
 	bool check = false;
 	if(m_isSending.compare_exchange_strong(check,true))
 	{
 		m_sendBuffer->Clear();
-		m_sendQueue.pop();
+		m_bufQueue.pop();
 		*m_sendBuffer << *buf;
-		delete buf;
 		this->SendPost();
 	}
-	
 }

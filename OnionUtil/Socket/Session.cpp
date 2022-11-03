@@ -35,3 +35,8 @@ void onion::socket::Session::OnClose()
 {
 
 }
+
+void onion::socket::Session::SendPacket(Packet* packet)
+{
+
+}

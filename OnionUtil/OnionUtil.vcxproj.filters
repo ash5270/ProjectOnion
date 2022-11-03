@@ -120,7 +120,12 @@
     <ClInclude Include="System\safe_queue.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="safe_list.h" />
+    <ClInclude Include="System\safe_list.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketObject.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -186,9 +191,5 @@
     <ClCompile Include="Packet\PacketAnalyzer.cpp">
       <Filter>Packet</Filter>
     </ClCompile>
-    <ClCompile Include="System\BufferPool.cpp">
-      <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="safe_list.cpp" />
   </ItemGroup>
 </Project>
