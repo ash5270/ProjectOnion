@@ -17,5 +17,8 @@ Packet* onion::packet::PacketAnalyzer::Analyzer(const char* data,size_t offset,_
 	//PO_LOG(LOG_DEBUG, L"packet packetId : %d, packet size : %d\n", id,size);
 	const auto packet = PacketFactory::getInstance().getPacket(id);
 	headerSize = size;
+
+	//PO_LOG(LOG_DEBUG, L"size : %d , id : %d\n", size, id);
+
 	return packet;
 }

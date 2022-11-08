@@ -20,6 +20,8 @@ namespace onion::socket
 		std::atomic_bool m_isSending;
 		bool m_isConnect;
 
+		int m_recvCount;
+
 	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;
 		void OnSend(size_t transferSize) override;

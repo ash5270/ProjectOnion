@@ -1,4 +1,4 @@
-﻿#include "RIOSession.h"
+#include "RIOSession.h"
 #include "../../Util/Common.h"
 #include "../../System/Buffer.h"
 #include "../../Packet/Packet.h"
@@ -179,15 +179,17 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		}
 
 		//test 용 코드 
-		if (packet->type() == 1)
+		/*if (packet->type() == 1)
 		{
 			PO_LOG(LOG_DEBUG, L"recv packet all count : %d\n", m_packtes.size());
 			break;
-		}
+		}*/
 
 		m_recvBuffer->TailCommit(headerSize);
 		auto msgPacket = reinterpret_cast<PK_C_REQ_CHATTING*>(packet);
 		msgPacket->Deserialize(*m_recvBuffer);
+
+		PO_LOG(LOG_DEBUG, L"recv : %s , %s\n", msgPacket->id.c_str(),msgPacket->msg.c_str());
 
 		PacketObject *obj =new PacketObject();
 		obj->session = this;

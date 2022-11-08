@@ -159,6 +159,16 @@ void onion::system::Buffer::operator<<(const uint64_t& value)
 	STREAM_WRITE(value);
 }
 
+void onion::system::Buffer::operator<<(const float& value)
+{
+	STREAM_WRITE(value);
+}
+
+void onion::system::Buffer::operator<<(const double& value)
+{
+	STREAM_WRITE(value);
+}
+
 //bool onion::system::Buffer::operator<<(const Buffer& buffer)
 //{
 //	
@@ -166,18 +176,16 @@ void onion::system::Buffer::operator<<(const uint64_t& value)
 
 void onion::system::Buffer::operator<<(const std::wstring& value)
 {
-	*this << (int32_t)(value.length());
+	int32_t size = (int32_t)(value.length() * sizeof(wchar_t));
+	*this << size;
 	//for (auto i : value)  wchar_t -> 
 	//	*this << i;
-	if (!CheckWriteBound(value.length()))
+	if (!CheckWriteBound(size))
 		return;
-	memcpy(m_data + m_offset, value.c_str(), value.size() * sizeof(wchar_t));
-	m_offset += value.size() * sizeof(wchar_t);
-	write_size += value.size() * sizeof(wchar_t);
+	memcpy(m_data + m_offset, value.c_str(), size);
+	m_offset += size;
+	write_size += size;
 	return;
-
-
-
 }
 
 void onion::system::Buffer::operator<<(PacketHeader*&header)
@@ -189,8 +197,6 @@ void onion::system::Buffer::operator<<(PacketHeader*&header)
 
 	header = reinterpret_cast<PacketHeader*>(m_data + m_offset);
 	m_offset += sizeof(PacketHeader);
-	
-	/*write_size += sizeof(PacketHeader);*/
 }	
 
 void onion::system::Buffer::Read(void* value, size_t size)
@@ -272,3 +278,14 @@ void onion::system::Buffer::operator>>(std::wstring* value)
 
 	delete[] buffer;
 }
+
+void onion::system::Buffer::operator>>(float* value)
+{
+	STREAM_READ(float, value);
+}
+
+void onion::system::Buffer::operator>>(double* value)
+{
+	STREAM_READ(double, value);
+}
+

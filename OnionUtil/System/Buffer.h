@@ -47,6 +47,8 @@ namespace onion::system
 		inline	void operator<<(const uint32_t& value)override;
 		inline	void operator<<(const int64_t& value)override;
 		inline	void operator<<(const uint64_t& value)override;
+		inline void operator<<(const float& value) override;
+		inline void operator<<(const double& value) override;
 		bool operator<<(const Buffer& buffer)
 		{
 			if (m_capacity < m_offset + buffer.m_offset)
@@ -79,6 +81,8 @@ namespace onion::system
 		inline	void operator>>(uint64_t* value) override;
 		//wstring
 		inline	void operator>>(std::wstring* value) override;
+		inline void operator>>(float* value) override;
+		inline void operator>>(double* value) override;
 	};
 
 }

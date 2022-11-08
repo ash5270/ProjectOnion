@@ -319,10 +319,22 @@ void onion::system::CircularBuffer::operator<<(const uint64_t& value)
 	STREAM_WRITE(value);
 }
 
+void onion::system::CircularBuffer::operator<<(const float& value)
+{
+	STREAM_WRITE(value);
+}
+
+void onion::system::CircularBuffer::operator<<(const double& value)
+{
+	STREAM_WRITE(value);
+}
+
+
+
 void onion::system::CircularBuffer::operator<<(const std::wstring& value)
 {
 	//char 사이즈가 아니기 때문에 capacity + 1 
-	auto size = (int32_t)value.capacity()+1;
+	auto size = (int32_t)value.size()*sizeof(wchar_t);
 	STREAM_WRITE(size);
 	Write((char*)value.c_str(), size);
 }
@@ -394,14 +406,27 @@ void onion::system::CircularBuffer::operator>>(std::wstring* value)
 {
 	int32_t size = 0;
 	*this >> (int32_t*)& size;
-	wchar_t* buffer = new wchar_t[size + 1];
-	this->Read((char*)(buffer), sizeof(wchar_t) * size);
-	buffer[size] = '\0';
+	if(size<=0)
+	{
+		PO_LOG(LOG_ERROR, L"wstring write error : %d", size);
+		return;
+	}
+	wchar_t* buffer = new wchar_t[size/(sizeof(wchar_t)) + 1];
+	this->Read((char*)(buffer), size);
+	buffer[size / (sizeof(wchar_t))] = '\0';
 	value->clear();
 	*value = buffer;
-
-
 	delete[] buffer;
+}
+
+void onion::system::CircularBuffer::operator>>(float* value)
+{
+	STREAM_READ(float, value);
+}
+
+void onion::system::CircularBuffer::operator>>(double* value)
+{
+	STREAM_READ(double, value);
 }
 
 template <typename T>
@@ -409,3 +434,4 @@ void onion::system::CircularBuffer::operator<<(const T& value)
 {
 	STREAM_WRITE(value);
 }
+

@@ -62,6 +62,8 @@ namespace onion::system
 		inline	void operator<<(const uint32_t& value) override;
 		inline	void operator<<(const int64_t& value) override;
 		inline	void operator<<(const uint64_t& value) override;
+		inline void operator<<(const float& value) override;
+		inline void operator<<(const double& value) override;
 		//wstring
 		inline	void operator<<(const std::wstring& value) override;
 		inline	void operator<<(PacketHeader*& header)override;
@@ -77,8 +79,11 @@ namespace onion::system
 		inline	void operator>>(uint32_t* value)override;
 		inline	void operator>>(int64_t* value)override;
 		inline	void operator>>(uint64_t* value)override;
+		inline void operator>>(float* value) override;
+		inline void operator>>(double* value) override;
 		//wstring
 		inline	void operator>>(std::wstring* value)override;
+	
 	};
 
 

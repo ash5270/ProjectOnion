@@ -32,7 +32,6 @@ void onion::system::LogSystem::Update()
 		{
 			//lock
 			std::lock_guard<std::mutex> lock(m_lock);
-
 			
 			std::wstring result_str;
 			result_str += util::Clock::getInstance().NowTime(DATETIME_FORMAT);

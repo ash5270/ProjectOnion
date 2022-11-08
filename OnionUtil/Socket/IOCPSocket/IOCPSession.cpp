@@ -3,7 +3,9 @@
 #include "../../Packet/PacketFactory.h"
 #include "../../System/BufferPool.h"
 
-onion::socket::IOCPSession::IOCPSession(const SOCKET& socket) : Session(socket)
+#include "../../Packet/PacketAnalyzer.h"
+
+onion::socket::IOCPSession::IOCPSession(const SOCKET& socket) : Session(socket) , m_recvCount(0)
 {
 	m_data[0] = new IOCPData();
 	m_data[1] = new IOCPData();
@@ -86,10 +88,28 @@ void onion::socket::IOCPSession::OnSend(size_t transferSize)
 
 void onion::socket::IOCPSession::OnRecv(size_t transferSize)
 {
-	//m_data[IO_READ]->GetBuffer().HeadCommit(transferSize);
-	m_data[IO_READ]->GetBuffer().Clear();
+	m_data[IO_READ]->GetBuffer().HeadCommit(transferSize);
 	PO_LOG(LOG_INFO, L"[info] recv size : [%d]\n", transferSize);
-	
+
+	int count = transferSize + m_recvCount;
+	int headerSize = sizeof(PacketHeader);
+	size_t packet_size = 0;
+
+	while(count>=0)
+	{
+		CircularBuffer* buf = &m_data[IO_READ]->GetBuffer();
+		auto packet = packet::PacketAnalyzer::getInstance().Analyzer(
+			buf->GetData(), buf->tailOffset(), packet_size);
+		m_recvCount = count;	
+		count -= packet_size + headerSize;
+
+		if(count<0)
+			break;
+
+		buf->TailCommit(headerSize);
+
+	}
+	m_data[IO_READ]->GetBuffer().Remove(1);
 }
 
 void onion::socket::IOCPSession::OnClose()

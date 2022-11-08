@@ -306,6 +306,16 @@ void onion::system::RingBuffer::operator<<(const uint64_t& value)
 	Write(reinterpret_cast<char*>(value), sizeof(value));
 }
 
+void onion::system::RingBuffer::operator<<(const float& value)
+{
+	Write(&value, sizeof(value));
+}
+
+void onion::system::RingBuffer::operator<<(const double& value)
+{
+	Write(&value, sizeof(value));
+}
+
 void onion::system::RingBuffer::operator<<(const std::wstring& value)
 {
 	auto size = (int32_t)value.capacity()+1;
@@ -318,6 +328,9 @@ void onion::system::RingBuffer::operator<<(PacketHeader*& header)
 	header = reinterpret_cast<PacketHeader*>(m_data + GetWritableOffset());
 	Write(header, sizeof(PacketHeader));
 }
+
+
+
 
 template <typename T>
 void onion::system::RingBuffer::operator>>(T* value)
@@ -393,6 +406,18 @@ void onion::system::RingBuffer::operator>>(std::wstring* value)
 	{
 		printf("error\n");
 	}
+}
+
+
+
+void onion::system::RingBuffer::operator>>(float* value)
+{
+	Read(reinterpret_cast<char*>(value), sizeof(value));
+}
+
+void onion::system::RingBuffer::operator>>(double* value)
+{
+	Read(reinterpret_cast<char*>(value), sizeof(value));
 }
 
 

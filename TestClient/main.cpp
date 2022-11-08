@@ -39,7 +39,7 @@ int main()
 			x++;
 			end = chrono::steady_clock::now();
 			auto re = chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-			packet.count = i;
+			
 			client.GetSession()->SendPacket(&packet);
 			if (re >= 1000)
 			{

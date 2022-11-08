@@ -49,7 +49,6 @@ public:
     PacketID type() override {return E_C_REQ_CHATTING;}
     std::wstring     id;
     std::wstring     msg;
-    int count = 0;
 
     PacketHeader* Serialize(Stream& buffer)override 
     {
@@ -58,14 +57,12 @@ public:
         header->packetId = type();
         buffer<<id;
         buffer<<msg;
-        buffer << count;
         return header;
     }
     void Deserialize(Stream& buffer)override 
     {
         buffer>>&id;
         buffer>>&msg;
-        buffer >> &count;
     }
 };
 
