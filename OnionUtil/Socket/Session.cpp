@@ -1,6 +1,6 @@
 ﻿#include "Session.h"
 
-onion::socket::Session::Session(const SOCKET& socket) : m_socket(socket)
+onion::socket::Session::Session(const SOCKET& socket) : m_socket(socket) ,userId()
 {
 
 }

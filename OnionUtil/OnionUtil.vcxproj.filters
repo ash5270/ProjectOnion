@@ -22,6 +22,9 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{de5c5c2a-570c-406f-8e66-fbc26ec928d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet\PacketProcess">
+      <UniqueIdentifier>{66601859-e7d9-466a-af4f-fa9c5646dc6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h">
@@ -126,6 +129,24 @@
     <ClInclude Include="Packet\PacketObject.h">
       <Filter>Packet</Filter>
     </ClInclude>
+    <ClInclude Include="Packet\PacketProcessSystem.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\LoginProcess.h">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\CharacterProcess.h">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\ProcessCommon.h">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\ChannelProcess.h">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="System\ChannelSystem.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -190,6 +211,21 @@
     </ClCompile>
     <ClCompile Include="Packet\PacketAnalyzer.cpp">
       <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketProcessSystem.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\LoginProcess.cpp">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\CharacterProcess.cpp">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\ChannelProcess.cpp">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="System\ChannelSystem.cpp">
+      <Filter>System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

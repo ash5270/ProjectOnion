@@ -59,7 +59,8 @@ void onion::socket::IOCPSession::OnSend(size_t transferSize)
 
 	m_data[IO_WRITE]->GetBuffer().Clear();
 
-	for(int i=0; i < m_bufQueue.size(); i++)
+	int size =  m_bufQueue.size();
+	for(int i=0; i<size; i++)
 	{
 		Buffer* send_buf = m_bufQueue.front();
 		if (send_buf == nullptr)

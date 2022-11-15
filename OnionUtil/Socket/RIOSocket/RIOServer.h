@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "RIOSock.h"
 #include"RIOSessionManager.h"
-#include"../../System/BufferPool.h"
-#include"../../Packet/PacketObject.h"
+#include"../../Packet/ProcessCommon.h"
 #include <thread>
 
 namespace onion::socket
@@ -18,8 +17,7 @@ namespace onion::socket
 		int m_port;
 		
 	public:
-		system::safe_queue<PacketObject*>* packets;
-
+		PacketProcessSystem* packet_process;
 		RIOServer(int port);
 		~RIOServer();
 		//
@@ -33,6 +31,13 @@ namespace onion::socket
 
 		RIOSessionManager& GetSessionManger();
 
+
+		//Login
+		packet::process::LoginProcess* login_process;
+		packet::process::CharacterProcess* character_process;
+		packet::process::ChannelProcess* channel_process;
+		
+		
 		
 	};
 

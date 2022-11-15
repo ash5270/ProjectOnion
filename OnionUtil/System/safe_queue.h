@@ -23,13 +23,13 @@ namespace onion::system
 
 		void push(T data)
 		{
-			std::unique_lock<std::mutex> lock(m_lock);
+			std::lock_guard<std::mutex> lock(m_lock);
 			m_queue.push(std::move(data));
 		}
 
-		bool try_Dequeue(T& data,std::chrono::milliseconds timer= std::chrono::milliseconds(1))
+		bool try_Dequeue(T& data)
 		{
-			std::unique_lock<std::mutex> lock(m_lock);
+			std::lock_guard<std::mutex> lock(m_lock);
 			data = std::move(m_queue.front());
 			m_queue.pop();
 			return true;
@@ -37,7 +37,13 @@ namespace onion::system
 			
 		size_t size()
 		{
+			std::lock_guard<std::mutex> lock(m_lock);
 			return m_queue.size();
+		}
+
+		bool empty()
+		{
+			return m_queue.size() == 0 ? true : false;
 		}
 	};
 }

@@ -24,6 +24,11 @@ namespace onion::socket
 		RIOSession* IssueSession();
 
 		void ReturnSession(RIOSession* session);
+
+		std::list<RIOSession*>* GetUserSessionList()
+		{
+			return &m_useSessionList;
+		}
 	};
 }
 

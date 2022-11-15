@@ -18,5 +18,4 @@ namespace onion::packet
 		 */
 		Packet* Analyzer(const char* data,size_t offset, __out size_t& headerSize);
 	};
-
 }

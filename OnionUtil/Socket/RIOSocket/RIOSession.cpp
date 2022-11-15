@@ -3,6 +3,7 @@
 #include "../../System/Buffer.h"
 #include "../../Packet/Packet.h"
 #include "../../Packet/PacketAnalyzer.h"
+#include "../../Packet/PacketObject.h"
 
 onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 {
@@ -177,24 +178,14 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		{
 			break;
 		}
-
-		//test 용 코드 
-		/*if (packet->type() == 1)
-		{
-			PO_LOG(LOG_DEBUG, L"recv packet all count : %d\n", m_packtes.size());
-			break;
-		}*/
-
+		PO_LOG(LOG_INFO, L"recv : packet id : %d, size : %d\n", packet->type(), size);
 		m_recvBuffer->TailCommit(headerSize);
-		auto msgPacket = reinterpret_cast<PK_C_REQ_CHATTING*>(packet);
-		msgPacket->Deserialize(*m_recvBuffer);
-
-		PO_LOG(LOG_DEBUG, L"recv : %s , %s\n", msgPacket->id.c_str(),msgPacket->msg.c_str());
+		packet->Deserialize(*m_recvBuffer);
 
 		PacketObject *obj =new PacketObject();
 		obj->session = this;
-		obj->packet = msgPacket;
-		server->packets->push(obj);
+		obj->packet = packet;
+		server->packet_process->PushPacket(obj);
 	}
 
 	m_recvBuffer->Remove(1);

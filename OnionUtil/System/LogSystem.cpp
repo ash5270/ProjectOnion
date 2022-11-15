@@ -7,6 +7,7 @@ void onion::system::LogSystem::Start()
 	//error
 	setlocale(LC_ALL, "");
 	std::wcout.imbue(std::locale(""));
+	PO_LOG(LOG_INFO, L"LogSystem Start...\n");
 }
 
 void onion::system::LogSystem::Stop()

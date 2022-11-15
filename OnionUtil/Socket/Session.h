@@ -10,7 +10,8 @@ namespace onion::socket
 	protected:
 		SOCKET m_socket;
 		SOCKADDR_IN m_addrInfo;
-
+	public:
+		std::wstring userId;
 	public:
 		Session(const SOCKET& socket);
 		virtual ~Session();

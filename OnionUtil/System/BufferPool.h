@@ -25,6 +25,7 @@ namespace onion::system
 			m_buf_size = buffer_size;
 
 			InitPool();
+			PO_LOG(LOG_INFO, L"Buffer pool init sucess...\n");
 		}
 
 		void Delete()

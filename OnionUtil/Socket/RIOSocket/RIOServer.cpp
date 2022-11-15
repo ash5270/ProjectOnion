@@ -8,7 +8,7 @@ onion::socket::RIOServer::RIOServer(int port)
 {
 	m_bAccept = true;
 	m_port = port;
-	packets = new safe_queue<PacketObject*>();
+	
 }
 
 onion::socket::RIOServer::~RIOServer()
@@ -18,9 +18,27 @@ onion::socket::RIOServer::~RIOServer()
 
 bool onion::socket::RIOServer::InitializeServer()
 {
+	//system start 중요 시스템 시작 및 초기화
 	onion::system::LogSystem::getInstance().Start();
 	onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
+	packet_process = new PacketProcessSystem();
+	packet_process->Start();
+	//process
+	login_process = new packet::process::LoginProcess(&m_session_manager);
+	character_process = new packet::process::CharacterProcess(&m_session_manager);
+	channel_process = new packet::process::ChannelProcess(&m_session_manager);
+	//
+	packet_process->RegisterPacketProcess(PacketID::E_C_REQ_LOGIN,
+		std::bind(&packet::process::LoginProcess::Process, *login_process,std::placeholders::_1,std::placeholders::_2));
+	packet_process->RegisterPacketProcess(PacketID::E_S_ANS_LOGIN,
+		std::bind(&packet::process::LoginProcess::Process, *login_process, std::placeholders::_1, std::placeholders::_2));
 
+	packet_process->RegisterPacketProcess(PacketID::E_C_NOTIFY_POSION, 
+		std::bind(&packet::process::CharacterProcess::Process,*character_process, std::placeholders::_1, std::placeholders::_2));
+
+	packet_process->RegisterPacketProcess(PacketID::E_C_REQ_CHANNEL_USERINFO,
+		std::bind(&packet::process::ChannelProcess::Process, *channel_process, std::placeholders::_1, std::placeholders::_2));
+	//
 	if (!WSAInit())
 		return false;
 	int nResult = 0;
@@ -96,8 +114,8 @@ void onion::socket::RIOServer::StartServer()
 				SOCKET client = accept(m_listenSocket, (sockaddr*)&clientAddr, &addLen);
 				if(client ==INVALID_SOCKET)
 				{
-					PO_LOG(LOG_ERROR, L" Accept failed\n");
-					return;
+					PO_LOG(LOG_ERROR, L" Accept failed ,error : %d\n",GetLastError());
+					continue;;
 				}
 				RIOSession* session = m_session_manager.IssueSession();
 				session->server = this;
@@ -114,17 +132,24 @@ void onion::socket::RIOServer::StopServer()
 
 void onion::socket::RIOServer::Update()
 {
-	while(true)
+	/*while(true)
 	{
-		if(!packets->size()>0)
-			continue;
-		for(int i=0; i<=packets->size(); i++)
+		if(packets->size()<=0)
 		{
-			PacketObject* obj;
-			packets->try_Dequeue(obj);
-			obj->session->SendPacket(obj->packet);
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			continue;
 		}
-	}
+		else
+		{
+			for (int i = 0; i <= packets->size(); i++)
+			{
+				PacketObject* obj;
+				packets->try_Dequeue(obj);
+				obj->session->SendPacket(obj->packet);
+			}
+		}
+		
+	}*/
 }
 
 onion::socket::RIOSessionManager& onion::socket::RIOServer::GetSessionManger()
