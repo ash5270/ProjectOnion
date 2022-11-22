@@ -1,4 +1,5 @@
 ﻿#include "Session.h"
+#include"../Packet/PacketProcessSystem.h"
 
 onion::socket::Session::Session(const SOCKET& socket) : m_socket(socket) ,userId()
 {

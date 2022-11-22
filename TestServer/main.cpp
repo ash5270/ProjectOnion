@@ -1,7 +1,3 @@
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
 #include "System/LogSystem.h"
 #include "System/LogData.h"
 #include "Socket/IOCPSocket/IOCPServer.h"

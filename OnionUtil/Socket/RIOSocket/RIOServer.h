@@ -2,6 +2,7 @@
 #include "RIOSock.h"
 #include"RIOSessionManager.h"
 #include"../../Packet/ProcessCommon.h"
+#include"../../System/ChannelSystem.h"
 #include <thread>
 
 namespace onion::socket
@@ -17,7 +18,7 @@ namespace onion::socket
 		int m_port;
 		
 	public:
-		PacketProcessSystem* packet_process;
+		PacketProcessSystem* m_packet_process;
 		RIOServer(int port);
 		~RIOServer();
 		//
@@ -30,16 +31,13 @@ namespace onion::socket
 		void Update();
 
 		RIOSessionManager& GetSessionManger();
-
-
 		//Login
 		packet::process::LoginProcess* login_process;
 		packet::process::CharacterProcess* character_process;
 		packet::process::ChannelProcess* channel_process;
-		
-		
-		
-	};
 
+	private:
+		Channel* m_channel;
+	};
 }
 

@@ -12,9 +12,8 @@ namespace onion::packet::process
 		RIOSessionManager* m_sessionManager;
 	public:
 		LoginProcess(RIOSessionManager* manager);
-		~LoginProcess();
+		~LoginProcess();	
 
 		void Process(onion::socket::Session* session, Packet* packet);
-	private:
 	};
 }

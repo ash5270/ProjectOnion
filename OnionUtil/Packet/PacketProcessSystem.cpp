@@ -21,8 +21,10 @@ void PacketProcessSystem::Start()
 
 void PacketProcessSystem::Process(PacketObject* packetObject)
 {
-	auto func= m_packetTable.at(packetObject->packet->type());
-	func(packetObject->session,packetObject->packet);
+	auto func= m_packetTable.find(packetObject->packet->type());
+	if(func==m_packetTable.end())
+		return;
+	func->second(packetObject->session,packetObject->packet);
 }
 
 void PacketProcessSystem::Update()

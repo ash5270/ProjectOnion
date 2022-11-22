@@ -175,17 +175,15 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		count -= size + headerSize;
 
 		if (count < 0)
-		{
 			break;
-		}
-		PO_LOG(LOG_INFO, L"recv : packet id : %d, size : %d\n", packet->type(), size);
+		//PO_LOG(LOG_INFO, L"recv : packet id : %d, size : %d\n", packet->type(), size);
 		m_recvBuffer->TailCommit(headerSize);
 		packet->Deserialize(*m_recvBuffer);
 
 		PacketObject *obj =new PacketObject();
 		obj->session = this;
 		obj->packet = packet;
-		server->packet_process->PushPacket(obj);
+		m_packet_process_system->PushPacket(obj);
 	}
 
 	m_recvBuffer->Remove(1);
@@ -222,11 +220,12 @@ void onion::socket::RIOSession::SendPost()
 void onion::socket::RIOSession::OnSend(size_t transferSize)
 {
 	//SpinLockGuard m_guard(lock);
-	PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
+	//PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
 	//m_sendBuffer->Remove(transferSize);
 	if(m_bufQueue.empty())
 	{
 		m_isSending.exchange(false);
+		//PO_LOG(LOG_INFO, L"all send Success\n");
 		return;
 	}
 

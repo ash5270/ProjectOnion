@@ -144,6 +144,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameObject\GameObject.h" />
+    <ClInclude Include="GameObject\OnionMath.h" />
+    <ClInclude Include="GameObject\Object.h" />
+    <ClInclude Include="GameObject\Transform.h" />
+    <ClInclude Include="GameObject\Vector2.h" />
+    <ClInclude Include="GameObject\Vector3.h" />
     <ClInclude Include="Packet\ChannelProcess.h" />
     <ClInclude Include="Packet\CharacterProcess.h" />
     <ClInclude Include="Packet\LoginProcess.h" />
@@ -154,7 +160,9 @@
     <ClInclude Include="Packet\PacketObject.h" />
     <ClInclude Include="Packet\PacketProcessSystem.h" />
     <ClInclude Include="Packet\ProcessCommon.h" />
+    <ClInclude Include="Socket\IOCPSocket\IOCPDummyClient.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSession.h" />
+    <ClInclude Include="Socket\IOCPSocket\IOCPSessionManager.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPClient.h" />
     <ClInclude Include="Socket\IOCPSocket\IOCPData.h" />
@@ -186,12 +194,18 @@
     <ClInclude Include="Util\SingleTon.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameObject\GameObject.cpp" />
+    <ClCompile Include="GameObject\Transform.cpp" />
+    <ClCompile Include="GameObject\Vector2.cpp" />
+    <ClCompile Include="GameObject\Vector3.cpp" />
     <ClCompile Include="Packet\ChannelProcess.cpp" />
     <ClCompile Include="Packet\CharacterProcess.cpp" />
     <ClCompile Include="Packet\LoginProcess.cpp" />
     <ClCompile Include="Packet\PacketAnalyzer.cpp" />
     <ClCompile Include="Packet\PacketProcessSystem.cpp" />
+    <ClCompile Include="Socket\IOCPSocket\IOCPDummyClient.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSession.cpp" />
+    <ClCompile Include="Socket\IOCPSocket\IOCPSessionManager.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPSock.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPClient.cpp" />
     <ClCompile Include="Socket\IOCPSocket\IOCPData.cpp" />

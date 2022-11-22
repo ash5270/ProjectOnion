@@ -1,19 +1,23 @@
 ﻿#pragma once
 #include "../Socket/Session.h"
-#include <list>
 #include <vector>
+#include <unordered_map>
+#include"../GameObject/GameObject.h"
 
 namespace onion::system
 {
+	using object::GameObject;
 	class Channel
 	{
 	public:
 		Channel();
 		~Channel();
-
-		std::list<socket::Session*>* GetChannelUsers();
+		const std::unordered_map<std::wstring, socket::Session*>& GetUsersSession() const;
+		const std::unordered_map<std::wstring, object::GameObject*>& GetPlayerObject() const;
+		void AddPlayer(const std::wstring& userID, object::GameObject* gameobject);
 	private:
-		std::list<socket::Session*> m_channelUsers;
+		std::unordered_map<std::wstring, socket::Session*> m_channelUsers;
+		std::unordered_map<std::wstring, object::GameObject*> m_gameObjects;
 	};
 
 	class ChannelSystem
@@ -22,6 +26,7 @@ namespace onion::system
 		ChannelSystem();
 		~ChannelSystem();
 
+	private:
 	private:
 		std::vector<Channel*> m_channels;
 	};

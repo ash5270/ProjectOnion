@@ -25,6 +25,12 @@
     <Filter Include="Packet\PacketProcess">
       <UniqueIdentifier>{66601859-e7d9-466a-af4f-fa9c5646dc6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{ceffeea3-25cd-413c-800a-45c77a8dcab8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\OnionMath">
+      <UniqueIdentifier>{d6827900-ea06-4d2e-b9ba-29899da46803}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Socket\IOCPSocket\IOCPSock.h">
@@ -147,6 +153,30 @@
     <ClInclude Include="System\ChannelSystem.h">
       <Filter>System</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Object.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Vector2.h">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Vector3.h">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Transform.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\OnionMath.h">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\IOCPSocket\IOCPDummyClient.h">
+      <Filter>Network\Socket\IOCPSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket\IOCPSocket\IOCPSessionManager.h">
+      <Filter>Network\Socket\IOCPSocket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -226,6 +256,24 @@
     </ClCompile>
     <ClCompile Include="System\ChannelSystem.cpp">
       <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\GameObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Vector2.cpp">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Vector3.cpp">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Transform.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\IOCPSocket\IOCPDummyClient.cpp">
+      <Filter>Network\Socket\IOCPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket\IOCPSocket\IOCPSessionManager.cpp">
+      <Filter>Network\Socket\IOCPSocket</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

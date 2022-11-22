@@ -2,6 +2,7 @@
 #include "PacketProcessSystem.h"
 #include "../Socket/Session.h"
 #include"../Socket/RIOSocket/RIOSessionManager.h"
+#include"../System/ChannelSystem.h"
 
 namespace  onion::packet::process
 {
@@ -10,7 +11,9 @@ namespace  onion::packet::process
 	{
 		RIOSessionManager* m_sessionManager;
 	public:
-		CharacterProcess(RIOSessionManager* manager);
+		CharacterProcess(RIOSessionManager* manager, Channel* channel);
 		void Process(onion::socket::Session* session, Packet* packet);
+	private:
+		Channel* m_channel;
 	};
 }

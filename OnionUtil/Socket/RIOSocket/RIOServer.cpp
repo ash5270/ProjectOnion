@@ -21,22 +21,23 @@ bool onion::socket::RIOServer::InitializeServer()
 	//system start 중요 시스템 시작 및 초기화
 	onion::system::LogSystem::getInstance().Start();
 	onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
-	packet_process = new PacketProcessSystem();
-	packet_process->Start();
+	m_packet_process = new PacketProcessSystem();
+	m_channel = new Channel();
+	m_packet_process->Start();
 	//process
 	login_process = new packet::process::LoginProcess(&m_session_manager);
-	character_process = new packet::process::CharacterProcess(&m_session_manager);
-	channel_process = new packet::process::ChannelProcess(&m_session_manager);
+	character_process = new packet::process::CharacterProcess(&m_session_manager, m_channel);
+	channel_process = new packet::process::ChannelProcess(&m_session_manager, m_channel);
 	//
-	packet_process->RegisterPacketProcess(PacketID::E_C_REQ_LOGIN,
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_LOGIN,
 		std::bind(&packet::process::LoginProcess::Process, *login_process,std::placeholders::_1,std::placeholders::_2));
-	packet_process->RegisterPacketProcess(PacketID::E_S_ANS_LOGIN,
+	m_packet_process->RegisterPacketProcess(PacketID::E_S_ANS_LOGIN,
 		std::bind(&packet::process::LoginProcess::Process, *login_process, std::placeholders::_1, std::placeholders::_2));
 
-	packet_process->RegisterPacketProcess(PacketID::E_C_NOTIFY_POSION, 
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_NOTIFY_POSION, 
 		std::bind(&packet::process::CharacterProcess::Process,*character_process, std::placeholders::_1, std::placeholders::_2));
 
-	packet_process->RegisterPacketProcess(PacketID::E_C_REQ_CHANNEL_USERINFO,
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_CHANNEL_USERINFO,
 		std::bind(&packet::process::ChannelProcess::Process, *channel_process, std::placeholders::_1, std::placeholders::_2));
 	//
 	if (!WSAInit())
@@ -114,12 +115,14 @@ void onion::socket::RIOServer::StartServer()
 				SOCKET client = accept(m_listenSocket, (sockaddr*)&clientAddr, &addLen);
 				if(client ==INVALID_SOCKET)
 				{
-					PO_LOG(LOG_ERROR, L" Accept failed ,error : %d\n",GetLastError());
-					continue;;
+					PO_LOG(LOG_ERROR, L"Accept failed ,error : %d\n",GetLastError());
+					continue;
 				}
+				PO_LOG(LOG_INFO, L" Accept success \n");
 				RIOSession* session = m_session_manager.IssueSession();
 				session->server = this;
 				session->OnAccept(client, clientAddr);
+				session->SetPacketProcessSystem(m_packet_process);
 			}
 		});
 }

@@ -29,6 +29,7 @@ void packet::process::LoginProcess::Process(onion::socket::Session* session, Pac
 		PK_S_ANS_LOGIN login_result;
 		login_result.id = session->userId;
 		login_result.result = 400;
+		//밑에 부분은 채널 시스템에서 따로 실행
 		session->SendPacket(&login_result);
 
 		//현제 세션 유저 정보 저장
@@ -45,16 +46,15 @@ void packet::process::LoginProcess::Process(onion::socket::Session* session, Pac
 			user_info.id = session->userId;
 			other->SendPacket(&user_info);
 			//나머지 유저 정보 저장
-			users_info.append(other->userId);
-			users_info.append(L",");
+
+			/*PK_S_ANS_CHANNEL_USERINFO users_info_packets;
+			users_info_packets.user_count = count;
+			users_info_packets.users = other->userId;
+			users_info_packets.
+
+			session->SendPacket(&users_info_packets);*/
 			count++;
 		}
-
-		PK_S_ANS_CHANNEL_USERINFO users_info_packets;
-		users_info_packets.user_count = count;
-		users_info_packets.users = users_info;
-
-		session->SendPacket(&users_info_packets);
 
 		delete packet;
 		break;

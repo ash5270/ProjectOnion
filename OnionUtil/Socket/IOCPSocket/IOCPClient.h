@@ -27,13 +27,8 @@ namespace onion::socket
 		SOCKADDR_IN m_serverAddr;
 		int m_port;
 		std::string m_ip;
-
 		bool m_isConnect;
-
-		char sendBuf[1024] = " dasdsadasd";
-
 		IOCPSession* m_session;
-	
 	};
 }
 

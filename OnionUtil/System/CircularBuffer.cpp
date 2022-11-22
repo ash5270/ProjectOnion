@@ -408,7 +408,7 @@ void onion::system::CircularBuffer::operator>>(std::wstring* value)
 	*this >> (int32_t*)& size;
 	if(size<=0)
 	{
-		PO_LOG(LOG_ERROR, L"wstring write error : %d", size);
+		PO_LOG(LOG_ERROR, L"wstring write error : %d\n", size);
 		return;
 	}
 	wchar_t* buffer = new wchar_t[size/(sizeof(wchar_t)) + 1];

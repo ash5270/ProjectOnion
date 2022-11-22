@@ -9,7 +9,7 @@ namespace onion::socket
 	{
 		SESSION_BUFFER_SIZE = 65536,
 
-		MAX_THREAD = 8,
+		MAX_THREAD = 16,
 		MAX_RESULT = 64,
 		MAX_SEND_RQ_SIZE_PER_SOCK = 32,
 		MAX_RECV_RQ_SIZE_PER_SOCK = 32,

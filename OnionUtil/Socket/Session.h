@@ -3,15 +3,28 @@
 #include "../Packet/Packet.h"
 #include <mstcpip.h>
 
+class PacketProcessSystem;
+
 namespace onion::socket
 {
+	
 	class Session
 	{
 	protected:
 		SOCKET m_socket;
 		SOCKADDR_IN m_addrInfo;
+		PacketProcessSystem* m_packet_process_system;
 	public:
 		std::wstring userId;
+		const SOCKET& GetSocket() const
+		{
+			return m_socket;
+		}
+
+		void SetPacketProcessSystem(PacketProcessSystem* packet_process)
+		{
+			m_packet_process_system = packet_process;
+		}
 	public:
 		Session(const SOCKET& socket);
 		virtual ~Session();
@@ -22,6 +35,8 @@ namespace onion::socket
 		virtual void OnRecv(size_t transferSize);
 		virtual void OnClose();
 		virtual void SendPacket(Packet* packet);
+
+
 	};
 }
 

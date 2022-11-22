@@ -2,8 +2,8 @@
 #include "cstdio"
 #include "../../Packet/PacketFactory.h"
 #include "../../System/BufferPool.h"
-
 #include "../../Packet/PacketAnalyzer.h"
+#include "../../Packet/PacketObject.h"
 
 onion::socket::IOCPSession::IOCPSession(const SOCKET& socket) : Session(socket) , m_recvCount(0)
 {
@@ -41,7 +41,7 @@ bool onion::socket::IOCPSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 	int opt = 1;
 	setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, (const char*)&opt, sizeof(opt));
 
-	PO_LOG(LOG_INFO, L"Accpet client\n");
+	//PO_LOG(LOG_INFO, L"Accpet client\n");
 	m_isConnect = true;
 	m_isSending.store(false);
 	return true;
@@ -90,7 +90,7 @@ void onion::socket::IOCPSession::OnSend(size_t transferSize)
 void onion::socket::IOCPSession::OnRecv(size_t transferSize)
 {
 	m_data[IO_READ]->GetBuffer().HeadCommit(transferSize);
-	PO_LOG(LOG_INFO, L"[info] recv size : [%d]\n", transferSize);
+	//PO_LOG(LOG_INFO, L"[info] recv size : [%d]\n", transferSize);
 
 	int count = transferSize + m_recvCount;
 	int headerSize = sizeof(PacketHeader);
@@ -105,10 +105,15 @@ void onion::socket::IOCPSession::OnRecv(size_t transferSize)
 		count -= packet_size + headerSize;
 
 		if(count<0)
+		{
 			break;
-
+		}
 		buf->TailCommit(headerSize);
-
+		packet->Deserialize(m_data[IO_READ]->GetBuffer());
+		PacketObject* obj = new PacketObject();
+		obj->session = this;
+		obj->packet = packet;
+		m_packet_process_system->PushPacket(obj);
 	}
 	m_data[IO_READ]->GetBuffer().Remove(1);
 }
@@ -161,7 +166,7 @@ void onion::socket::IOCPSession::SendPacket(Packet* packet)
 		return;
 
 	//auto buf = system::BufferPool::getInstance().GetBuffer();
-	Buffer* buf = new Buffer(128);
+	Buffer* buf = new Buffer(1024);
 	auto header = packet->Serialize(*buf);
 	header->size = buf->write_size;
 	
@@ -184,10 +189,10 @@ void onion::socket::IOCPSession::SendPacket(Packet* packet)
 void onion::socket::IOCPSession::RecvReady()
 {
 	//수정해야할곳 
-	m_data[IO_READ]->Clear();
+	//m_data[IO_READ]->Clear();
 	WSABUF buf;
-	buf.buf = m_data[IO_READ]->GetBuffer().GetData();
-	buf.len = m_data[IO_READ]->GetBuffer().capacity();
+	buf.buf = m_data[IO_READ]->GetBuffer().GetData()+m_data[IO_READ]->GetBuffer().offset();
+	buf.len = m_data[IO_READ]->GetBuffer().capacity()- m_data[IO_READ]->GetBuffer().offset();
 
 	this->Recv(buf);
 }
