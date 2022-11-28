@@ -19,7 +19,7 @@ namespace onion::system
 		safe_queue<Buffer*> m_readyPool;
 
 	public:
-		void Init(int pool_size,int buffer_size =1024)
+		void Init(int pool_size,int buffer_size =512)
 		{
 			m_pool_size = pool_size;
 			m_buf_size = buffer_size;
@@ -41,8 +41,12 @@ namespace onion::system
 		Buffer* GetBuffer()
 		{
 			Buffer* buffer;
-			m_readyPool.try_Dequeue(buffer);
-			return buffer;
+			if (m_readyPool.try_Dequeue(buffer))
+				return buffer;
+			else
+			{
+				return nullptr;
+			}
 		}
 
 		void Relese(Buffer* buffer)

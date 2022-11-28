@@ -137,6 +137,9 @@ public:
     PacketID type() override {return E_C_REQ_CHANNEL_USERINFO;}
     std::wstring     id;
     int32_t     channel_number;
+    float     pos_x;
+    float     pos_y;
+    float     pos_z;
 
     PacketHeader* Serialize(Stream& buffer)override 
     {
@@ -145,12 +148,18 @@ public:
         header->packetId = type();
         buffer<<id;
         buffer<<channel_number;
+        buffer<<pos_x;
+        buffer<<pos_y;
+        buffer<<pos_z;
         return header;
     }
     void Deserialize(Stream& buffer)override 
     {
         buffer>>&id;
         buffer>>&channel_number;
+        buffer>>&pos_x;
+        buffer>>&pos_y;
+        buffer>>&pos_z;
     }
 };
 
@@ -221,6 +230,46 @@ public:
         buffer>>&pos_z;
         buffer>>&velocity_x;
         buffer>>&velocity_y;
+    }
+};
+
+class PK_S_ANS_PING : public Packet 
+{
+public:
+    PacketID type() override {return E_S_ANS_PING;}
+    int32_t     result;
+
+    PacketHeader* Serialize(Stream& buffer)override 
+    {
+        PacketHeader* header;
+        buffer << header;
+        header->packetId = type();
+        buffer<<result;
+        return header;
+    }
+    void Deserialize(Stream& buffer)override 
+    {
+        buffer>>&result;
+    }
+};
+
+class PK_C_REQ_PING : public Packet 
+{
+public:
+    PacketID type() override {return E_C_REQ_PING;}
+    int32_t     result;
+
+    PacketHeader* Serialize(Stream& buffer)override 
+    {
+        PacketHeader* header;
+        buffer << header;
+        header->packetId = type();
+        buffer<<result;
+        return header;
+    }
+    void Deserialize(Stream& buffer)override 
+    {
+        buffer>>&result;
     }
 };
 

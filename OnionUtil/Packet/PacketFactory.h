@@ -25,6 +25,10 @@ public:
             return new PK_S_ANS_CHANNEL_USERINFO();
         case E_C_NOTIFY_POSION: 
             return new PK_C_NOTIFY_POSION();
+        case E_S_ANS_PING: 
+            return new PK_S_ANS_PING();
+        case E_C_REQ_PING: 
+            return new PK_C_REQ_PING();
         default:
             return nullptr;
         }

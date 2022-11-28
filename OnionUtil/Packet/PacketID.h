@@ -10,6 +10,8 @@ enum PacketID : int32_t{
     /*5*/  E_C_REQ_CHANNEL_USERINFO = 5,
     /*6*/  E_S_ANS_CHANNEL_USERINFO = 6,
     /*7*/  E_C_NOTIFY_POSION = 7,
+    /*8*/  E_S_ANS_PING = 8,
+    /*9*/  E_C_REQ_PING = 9,
 };
 struct PacketHeader
 {

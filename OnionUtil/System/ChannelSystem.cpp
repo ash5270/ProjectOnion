@@ -2,6 +2,8 @@
 #include"../GameObject/GameObject.h"
 Channel::Channel()
 {
+	object::math::Rect rect = { object::math::Vector2(-105,105),object::math::Vector2(105,-105) };
+	m_world = new object::WorldMap(rect);
 }
 
 Channel::~Channel()
@@ -24,6 +26,13 @@ void Channel::AddPlayer(const std::wstring& userID, object::GameObject* gameobje
 		return;
 	auto make= std::make_pair(userID, gameobject);
 	m_gameObjects.insert(make);
+	m_world->AddGameObject(gameobject);
+}
+
+void Channel::AddPlayerSession(const std::wstring& userId,  socket::Session* session)
+{
+	auto make = std::make_pair(userId, session);
+	m_channelUsers.insert(make);
 }
 
 ChannelSystem::ChannelSystem()

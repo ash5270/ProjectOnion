@@ -3,7 +3,7 @@
 #pragma comment(lib,"mswsock.lib")
 
 #define SERVER_PORT 3000
-#define SERVER_BUFFER_POOL_SIZE 3000
+#define SERVER_BUFFER_POOL_SIZE 1000000*3
 #define CLIENT_BUFFER_POOL_SIZE 1000000
 
 #include "../Util/Common.h"

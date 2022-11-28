@@ -147,9 +147,13 @@
     <ClInclude Include="GameObject\GameObject.h" />
     <ClInclude Include="GameObject\OnionMath.h" />
     <ClInclude Include="GameObject\Object.h" />
+    <ClInclude Include="GameObject\QuadTree.h" />
+    <ClInclude Include="GameObject\Rect.h" />
     <ClInclude Include="GameObject\Transform.h" />
     <ClInclude Include="GameObject\Vector2.h" />
     <ClInclude Include="GameObject\Vector3.h" />
+    <ClInclude Include="GameObject\WorldMap.h" />
+    <ClInclude Include="Packet\BasicPacketProcess.h" />
     <ClInclude Include="Packet\ChannelProcess.h" />
     <ClInclude Include="Packet\CharacterProcess.h" />
     <ClInclude Include="Packet\LoginProcess.h" />
@@ -195,9 +199,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject\GameObject.cpp" />
+    <ClCompile Include="GameObject\QuadTree.cpp" />
+    <ClCompile Include="GameObject\Rect.cpp" />
     <ClCompile Include="GameObject\Transform.cpp" />
     <ClCompile Include="GameObject\Vector2.cpp" />
     <ClCompile Include="GameObject\Vector3.cpp" />
+    <ClCompile Include="GameObject\WorldMap.cpp" />
+    <ClCompile Include="Packet\BasicPacketProcess.cpp" />
     <ClCompile Include="Packet\ChannelProcess.cpp" />
     <ClCompile Include="Packet\CharacterProcess.cpp" />
     <ClCompile Include="Packet\LoginProcess.cpp" />

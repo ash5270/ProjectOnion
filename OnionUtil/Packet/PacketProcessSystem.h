@@ -35,7 +35,7 @@ private:
 private:
 	void Process(PacketObject* packetObject);
 	void Update();
-
+	void Loop();
 public:
 	void RegisterPacketProcess(PacketID id ,std::function<void(socket::Session*,Packet*)> func)
 	{

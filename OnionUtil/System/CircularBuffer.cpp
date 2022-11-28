@@ -175,7 +175,7 @@ size_t onion::system::CircularBuffer::tailOffset()
 
 void onion::system::CircularBuffer::Clear()
 {
-	memset(m_data, 0, m_capacity);
+	//memset(m_data, 0, m_capacity);
 	m_headPtr = m_data;
 	m_tailPtr = m_data;
 	m_headSize = 0;

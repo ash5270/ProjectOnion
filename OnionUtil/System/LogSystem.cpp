@@ -54,7 +54,7 @@ void onion::system::LogSystem::Update()
 			wprintf_s(L"%s", result_str.c_str());
 			m_logDatas.pop();
 		}
-		std::this_thread::sleep_for(std::chrono::microseconds(20));
+		std::this_thread::sleep_for(std::chrono::microseconds(1));
 	}
 }
 

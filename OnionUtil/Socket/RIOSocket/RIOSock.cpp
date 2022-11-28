@@ -54,7 +54,6 @@ unsigned int WINAPI onion::socket::RIOSock::CallWorkerThread(LPVOID p)
 			{
 				closesocket(session->GetSocket());
 				shutdown(session->GetSocket(), 2);
-				session->ReleaseRef();
 				session->OnClose();
 				continue;
 			}

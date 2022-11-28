@@ -2,6 +2,7 @@
 
 #include "IOCPSession.h"
 #include"../../System/LogSystem.h"
+#include "../../System/BufferPool.h"
 
 onion::socket::IOCPDummyClient::IOCPDummyClient(std::string ip, int port) : m_ip(ip), m_port(port)
 {
@@ -14,6 +15,7 @@ onion::socket::IOCPDummyClient::~IOCPDummyClient()
 
 bool onion::socket::IOCPDummyClient::InitializeClient(int SessionCount)
 {
+	system::BufferPool::getInstance().Init(CLIENT_BUFFER_POOL_SIZE);
 	system::LogSystem::getInstance().Start();
 	m_packetProcess = new PacketProcessSystem();
 	m_packetProcess->Start();
@@ -58,7 +60,7 @@ void onion::socket::IOCPDummyClient::StartDummyClient()
 
 	SYSTEM_INFO system_info;
 	GetSystemInfo(&system_info);
-	if (!CreateWorkerThread(system_info.dwNumberOfProcessors))
+	if (!CreateWorkerThread(system_info.dwNumberOfProcessors/2))
 	{
 		return;
 	}
@@ -93,6 +95,7 @@ void onion::socket::IOCPDummyClient::StartDummyClient()
 void onion::socket::IOCPDummyClient::StopClient()
 {
 	system::LogSystem::getInstance().Stop();
+	onion::system::BufferPool::getInstance().Delete();
 	m_packetProcess->Stop();
 	WSACleanup();
 }

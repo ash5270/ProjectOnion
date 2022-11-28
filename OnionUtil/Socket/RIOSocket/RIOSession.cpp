@@ -5,6 +5,8 @@
 #include "../../Packet/PacketAnalyzer.h"
 #include "../../Packet/PacketObject.h"
 
+#include"../../System/BufferPool.h"
+
 onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 {
 	server = nullptr;
@@ -15,8 +17,8 @@ onion::socket::RIOSession::~RIOSession()
 	RIOSock::m_Rio_func_table.RIODeregisterBuffer(m_rioBufferRecvID);
 	RIOSock::m_Rio_func_table.RIODeregisterBuffer(m_rioBufferSendID);
 
-	VirtualFreeEx(GetCurrentProcess(), m_rioBufferRecvPtr,0, MEM_RELEASE);
-	VirtualFreeEx(GetCurrentProcess(), m_rioBufferSendPtr,0, MEM_RELEASE);
+	VirtualFreeEx(GetCurrentProcess(), m_rioBufferRecvPtr, 0, MEM_RELEASE);
+	VirtualFreeEx(GetCurrentProcess(), m_rioBufferSendPtr, 0, MEM_RELEASE);
 
 	delete m_recvBuffer;
 	delete m_sendBuffer;
@@ -29,28 +31,28 @@ bool onion::socket::RIOSession::Init()
 	m_recvBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
 	m_sendBuffer = new system::CircularBuffer(SESSION_BUFFER_SIZE);
 	m_rioBufferRecvPtr = m_recvBuffer->GetData();
-	if(m_rioBufferRecvPtr==nullptr)
+	if (m_rioBufferRecvPtr == nullptr)
 	{
 		PO_LOG(LOG_ERROR, L"RecvBuffer VirtualAllocEx Error : [%d]\n", GetLastError());
 		return false;
 	}
-	
+
 	m_rioBufferSendPtr = m_sendBuffer->GetData();
-	if(m_rioBufferSendPtr==nullptr)
+	if (m_rioBufferSendPtr == nullptr)
 	{
 		PO_LOG(LOG_ERROR, L"SendBuffer VirtualAllocEx Error : [%d]\n", GetLastError());
 		return false;
 	}
 
 	m_rioBufferRecvID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferRecvPtr, SESSION_BUFFER_SIZE);
-	if(m_rioBufferRecvID == RIO_INVALID_BUFFERID)
+	if (m_rioBufferRecvID == RIO_INVALID_BUFFERID)
 	{
 		PO_LOG(LOG_ERROR, L"RIORegister RecvBuffer  Error : [%d]\n", GetLastError());
 		return false;
 	}
 
 	m_rioBufferSendID = RIOSock::m_Rio_func_table.RIORegisterBuffer(m_rioBufferSendPtr, SESSION_BUFFER_SIZE);
-	if(m_rioBufferSendID==RIO_INVALID_BUFFERID)
+	if (m_rioBufferSendID == RIO_INVALID_BUFFERID)
 	{
 		PO_LOG(LOG_ERROR, L"RIORegister SendBuffer Error : [%d]\n", GetLastError());
 		return false;
@@ -59,7 +61,7 @@ bool onion::socket::RIOSession::Init()
 	//context init
 	m_rioSendContext = new RIOContext(this, IO_WRITE, m_rioBufferSendID);
 	m_rioRecvContext = new RIOContext(this, IO_READ, m_rioBufferRecvID);
-	
+
 	m_recvCount = 0;
 	m_isSending.store(false);
 
@@ -70,7 +72,7 @@ bool onion::socket::RIOSession::Init()
 void onion::socket::RIOSession::AddRef()
 {
 	long ref = InterlockedIncrement(&m_refCount);
-	if(ref<0)
+	if (ref < 0)
 	{
 		PO_LOG(LOG_ERROR, L"session refcount add error\n");
 		return;
@@ -103,7 +105,7 @@ void onion::socket::RIOSession::SetSocket(const SOCKET& socket)
 	m_socket = socket;
 }
 
-SOCKET& onion::socket::RIOSession::GetSocket() 
+SOCKET& onion::socket::RIOSession::GetSocket()
 {
 	return m_socket;
 }
@@ -125,8 +127,8 @@ bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 	//create socket rq
 	//send랑 recv 를 한 cq에 씀 두개로 만들어서 사용해도 됨
 	m_requestQueue = RIOSock::m_Rio_func_table.RIOCreateRequestQueue(m_socket, MAX_RECV_RQ_SIZE_PER_SOCK, 1, MAX_SEND_RQ_SIZE_PER_SOCK, 1
-		, server->GetCompletionQueue(m_threadID),server->GetCompletionQueue(m_threadID),NULL);
-	if(m_requestQueue==RIO_INVALID_RQ)
+		, server->GetCompletionQueue(m_threadID), server->GetCompletionQueue(m_threadID), NULL);
+	if (m_requestQueue == RIO_INVALID_RQ)
 	{
 		PO_LOG(LOG_ERROR, L"RIO create request queue Error : [%d]\n", GetLastError());
 		return false;
@@ -139,11 +141,11 @@ bool onion::socket::RIOSession::OnAccept(SOCKET socket, SOCKADDR_IN addrInfo)
 
 void onion::socket::RIOSession::RecvReady()
 {
-	if (m_recvBuffer->capacity()-m_recvBuffer->offset() <= 0)
+	if (m_recvBuffer->capacity() - m_recvBuffer->offset() <= 0)
 		return;
 	m_rioRecvContext->BufferId = m_rioBufferRecvID;
 	//버퍼에서 남은 자리 
-	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->capacity()-m_recvBuffer->offset());
+	m_rioRecvContext->Length = static_cast<ULONG>(m_recvBuffer->capacity() - m_recvBuffer->offset());
 	m_rioRecvContext->Offset = m_recvBuffer->offset();
 
 	DWORD recvBytes = 0;
@@ -167,11 +169,11 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 	int headerSize = sizeof(PacketHeader);
 	size_t size = 0;
 	//데이터가 다 받아졌는지 확인
-	while(count >= 0)
+	while (count >= 0)
 	{
 		auto packet = packet::PacketAnalyzer::getInstance().Analyzer(
-			m_recvBuffer->GetData(), m_recvBuffer->tailOffset(),size);
-		m_recvCount = count	;
+			m_recvBuffer->GetData(), m_recvBuffer->tailOffset(), size);
+		m_recvCount = count;
 		count -= size + headerSize;
 
 		if (count < 0)
@@ -180,7 +182,7 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		m_recvBuffer->TailCommit(headerSize);
 		packet->Deserialize(*m_recvBuffer);
 
-		PacketObject *obj =new PacketObject();
+		PacketObject* obj = new PacketObject();
 		obj->session = this;
 		obj->packet = packet;
 		m_packet_process_system->PushPacket(obj);
@@ -198,7 +200,6 @@ void onion::socket::RIOSession::OnClose()
 
 void onion::socket::RIOSession::SendPost()
 {
-	//SpinLockGuard m_guard(lock);
 	AddRef();
 
 	m_rioSendContext->BufferId = m_rioBufferSendID;
@@ -219,37 +220,36 @@ void onion::socket::RIOSession::SendPost()
 
 void onion::socket::RIOSession::OnSend(size_t transferSize)
 {
-	//SpinLockGuard m_guard(lock);
-	//PO_LOG(LOG_INFO, L"send success [%d] \n", transferSize);
-	//m_sendBuffer->Remove(transferSize);
-	if(m_bufQueue.empty())
+	if (m_bufQueue.empty())
 	{
 		m_isSending.exchange(false);
 		//PO_LOG(LOG_INFO, L"all send Success\n");
 		return;
 	}
 
-	if(!m_isConnect)
+	if (!m_isConnect)
 		return;
 
 	m_sendBuffer->Clear();
 
-	for(int i=0; i< m_bufQueue.size(); i++)
+	for (int i = 0; i < m_bufQueue.size(); i++)
 	{
 		Buffer* send_buf = m_bufQueue.front();
-		if(send_buf==nullptr)
+		if (send_buf == nullptr)
 		{
 			PO_LOG(LOG_INFO, L"[error] send buffer is nullptr\n");
 			return;
 		}
-		if(!(*m_sendBuffer << *send_buf))
+		if (!(*m_sendBuffer << *send_buf))
 		{
 			break;
 		}
 		m_bufQueue.pop();
+		auto pool = &BufferPool::getInstance();
+		pool->Relese(send_buf);
 	}
 
-	if(m_sendBuffer->size()>0)
+	if (m_sendBuffer->size() > 0)
 	{
 		this->SendPost();
 	}
@@ -262,23 +262,26 @@ void onion::socket::RIOSession::SendBuffer(system::Buffer* buffer)
 
 void onion::socket::RIOSession::SendPacket(Packet* packet)
 {
-	if(!m_isConnect)
+	if (!m_isConnect)
 		return;
 	//여기서 버퍼 생성
 	//수정해야할 곳
-	Buffer* buf = new Buffer(1024);
-	//auto buf= RIOServer::GetBufPool().GetBuffer();
-  	auto header =  packet->Serialize(*buf);
+	//Buffer* buf = new Buffer(1024);
+
+	auto pool = &BufferPool::getInstance();
+	auto buf = pool->GetBuffer();
+	auto header = packet->Serialize(*buf);
 	header->size = buf->write_size;
 
 	m_bufQueue.push_back(buf);
 
 	bool check = false;
-	if(m_isSending.compare_exchange_strong(check,true))
+	if (m_isSending.compare_exchange_strong(check, true))
 	{
 		m_sendBuffer->Clear();
 		m_bufQueue.pop();
 		*m_sendBuffer << *buf;
+		onion::system::BufferPool::getInstance().Relese(buf);
 		this->SendPost();
 	}
 }

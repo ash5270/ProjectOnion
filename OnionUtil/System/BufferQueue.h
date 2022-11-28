@@ -18,26 +18,26 @@ namespace onion::system
 	public:
 		size_t push_back(Buffer* buffer)
 		{
-			SpinLockGuard loc(lock);
-			//std::lock_guard<std::mutex> lock(m_lock);
-			queues.emplace(buffer);
+			//SpinLockGuard loc(lock);
+			std::lock_guard<std::mutex> lock(m_lock);
+			queues.push(buffer);
 			return queues.size();
 		}
 
 		Buffer* front()
 		{
-			SpinLockGuard loc(lock);
-			//std::lock_guard<std::mutex> lock(m_lock);
-			if (queues.empty())
-				return nullptr;
+			//SpinLockGuard loc(lock);
+			std::lock_guard<std::mutex> lock(m_lock);
 			const auto buf = queues.front();
+			if (buf == nullptr)
+				return nullptr;
 			return buf;
 		}
 
 		void pop()
 		{
-			SpinLockGuard loc(lock);
-			//std::lock_guard<std::mutex> lock(m_lock);
+			//SpinLockGuard loc(lock);
+			std::lock_guard<std::mutex> lock(m_lock);
 			if(queues.empty())
 				return;
 			queues.pop();

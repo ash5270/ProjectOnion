@@ -35,7 +35,7 @@ namespace onion::socket
 		packet::process::LoginProcess* login_process;
 		packet::process::CharacterProcess* character_process;
 		packet::process::ChannelProcess* channel_process;
-
+		packet::process::BasicPacketProcess* basic_process;
 	private:
 		Channel* m_channel;
 	};

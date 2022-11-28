@@ -1,6 +1,6 @@
 ﻿#include "ChannelProcess.h"
 #include "../Socket/RIOSocket/RIOSession.h"
-
+#include"../GameObject/OnionMath.h"
 packet::process::ChannelProcess::ChannelProcess(RIOSessionManager* manager, Channel* channel)
 {
 	this->m_sessionManager = manager;
@@ -12,15 +12,17 @@ void packet::process::ChannelProcess::Process(onion::socket::Session* session, P
 	switch (packet->type())
 	{
 		//새로운 유저 입장
-		//
+
 	case E_C_REQ_CHANNEL_USERINFO:
 	{
 		PK_C_REQ_CHANNEL_USERINFO* user_packet = reinterpret_cast<PK_C_REQ_CHANNEL_USERINFO*>(packet);
 	
 		int32_t count = 0;
 		auto obj = new object::GameObject();
-		obj->name = user_packet->id;	
+		obj->name = user_packet->id;
+		obj->transform.position = object::math::Vector3(user_packet->pos_x, user_packet->pos_y, user_packet->pos_z);
 		m_channel->AddPlayer(user_packet->id, obj);
+		m_channel->AddPlayerSession(user_packet->id, session);
 
 		for (auto it : *m_sessionManager->GetUserSessionList())
 		{

@@ -177,6 +177,18 @@
     <ClInclude Include="Socket\IOCPSocket\IOCPSessionManager.h">
       <Filter>Network\Socket\IOCPSocket</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject\Rect.h">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\QuadTree.h">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\WorldMap.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\BasicPacketProcess.h">
+      <Filter>Packet\PacketProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Socket\Session.cpp">
@@ -274,6 +286,18 @@
     </ClCompile>
     <ClCompile Include="Socket\IOCPSocket\IOCPSessionManager.cpp">
       <Filter>Network\Socket\IOCPSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Rect.cpp">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\QuadTree.cpp">
+      <Filter>GameObject\OnionMath</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\WorldMap.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\BasicPacketProcess.cpp">
+      <Filter>Packet\PacketProcess</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

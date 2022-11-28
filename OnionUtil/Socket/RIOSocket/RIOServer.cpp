@@ -28,6 +28,7 @@ bool onion::socket::RIOServer::InitializeServer()
 	login_process = new packet::process::LoginProcess(&m_session_manager);
 	character_process = new packet::process::CharacterProcess(&m_session_manager, m_channel);
 	channel_process = new packet::process::ChannelProcess(&m_session_manager, m_channel);
+	basic_process = new packet::process::BasicPacketProcess(&m_session_manager);
 	//
 	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_LOGIN,
 		std::bind(&packet::process::LoginProcess::Process, *login_process,std::placeholders::_1,std::placeholders::_2));
@@ -39,6 +40,11 @@ bool onion::socket::RIOServer::InitializeServer()
 
 	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_CHANNEL_USERINFO,
 		std::bind(&packet::process::ChannelProcess::Process, *channel_process, std::placeholders::_1, std::placeholders::_2));
+
+
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_PING,
+		std::bind(&packet::process::BasicPacketProcess::Process, *basic_process, std::placeholders::_1, std::placeholders::_2));
+
 	//
 	if (!WSAInit())
 		return false;
@@ -118,7 +124,6 @@ void onion::socket::RIOServer::StartServer()
 					PO_LOG(LOG_ERROR, L"Accept failed ,error : %d\n",GetLastError());
 					continue;
 				}
-				PO_LOG(LOG_INFO, L" Accept success \n");
 				RIOSession* session = m_session_manager.IssueSession();
 				session->server = this;
 				session->OnAccept(client, clientAddr);
@@ -135,27 +140,14 @@ void onion::socket::RIOServer::StopServer()
 
 void onion::socket::RIOServer::Update()
 {
-	/*while(true)
+	while(true)
 	{
-		if(packets->size()<=0)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			continue;
-		}
-		else
-		{
-			for (int i = 0; i <= packets->size(); i++)
-			{
-				PacketObject* obj;
-				packets->try_Dequeue(obj);
-				obj->session->SendPacket(obj->packet);
-			}
-		}
-		
-	}*/
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
 }
 
 onion::socket::RIOSessionManager& onion::socket::RIOServer::GetSessionManger()
 {
 	return m_session_manager;
 }
+	

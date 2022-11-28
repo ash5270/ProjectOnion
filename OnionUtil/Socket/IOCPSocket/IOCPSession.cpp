@@ -74,7 +74,7 @@ void onion::socket::IOCPSession::OnSend(size_t transferSize)
 			break;
 		}
 		m_bufQueue.pop();
-		//system::BufferPool::getInstance().Relese(send_buf);
+		system::BufferPool::getInstance().Relese(send_buf);
 	}
 
 	if (m_data[IO_WRITE]->GetBuffer().size() > 0)
@@ -165,8 +165,8 @@ void onion::socket::IOCPSession::SendPacket(Packet* packet)
 	if (!m_isConnect)
 		return;
 
-	//auto buf = system::BufferPool::getInstance().GetBuffer();
-	Buffer* buf = new Buffer(1024);
+	auto buf = system::BufferPool::getInstance().GetBuffer();
+	//Buffer* buf = new Buffer(1024);
 	auto header = packet->Serialize(*buf);
 	header->size = buf->write_size;
 	
@@ -178,7 +178,7 @@ void onion::socket::IOCPSession::SendPacket(Packet* packet)
 		m_data[IO_WRITE]->Clear();
 		m_bufQueue.pop();
 		m_data[IO_WRITE]->GetBuffer() << *buf;
-		//system::BufferPool::getInstance().Relese(buf);
+		system::BufferPool::getInstance().Relese(buf);
 		WSABUF Wsabuf;
 		Wsabuf.buf = m_data[IO_WRITE]->GetBuffer().GetData();
 		Wsabuf.len = m_data[IO_WRITE]->GetBuffer().offset()-m_data[IO_WRITE]->GetBuffer().tailOffset();
