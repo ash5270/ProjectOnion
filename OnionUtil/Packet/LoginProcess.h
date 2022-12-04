@@ -6,12 +6,12 @@
 
 namespace onion::packet::process
 {
-	using socket::RIOSessionManager;
+	using socket::SessionManager;
 	class LoginProcess
 	{
-		RIOSessionManager* m_sessionManager;
+		SessionManager* m_sessionManager;
 	public:
-		LoginProcess(RIOSessionManager* manager);
+		LoginProcess(SessionManager* manager);
 		~LoginProcess();	
 
 		void Process(onion::socket::Session* session, Packet* packet);

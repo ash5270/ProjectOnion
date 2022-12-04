@@ -23,6 +23,8 @@ public:
             return new PK_C_REQ_CHANNEL_USERINFO();
         case E_S_ANS_CHANNEL_USERINFO: 
             return new PK_S_ANS_CHANNEL_USERINFO();
+        case E_S_NOTIFY_POSION: 
+            return new PK_S_NOTIFY_POSION();
         case E_C_NOTIFY_POSION: 
             return new PK_C_NOTIFY_POSION();
         case E_S_ANS_PING: 

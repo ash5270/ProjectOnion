@@ -3,8 +3,11 @@
 #include<random>
 #include<thread>
 #include<list>
+#include<functional>
 #include "Packet/Packet.h"
 #include"Socket/IOCPSocket/IOCPDummyClient.h"
+
+
 
 #include"GameObject/WorldMap.h"
 #include"PlayerForThread.h"
@@ -78,7 +81,7 @@ int main()
 
 	vector<PlayerForThread*> player_threads;
 
-	const int clinet_size = 500;
+	const int clinet_size = 700;
 	onion::socket::IOCPDummyClient dummy("127.0.0.1", 3000);
 	dummy.InitializeClient(clinet_size);
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -91,13 +94,15 @@ int main()
 	//player_threads.reserve(4);
 	player_threads.push_back(new PlayerForThread());
 
-	for (auto session : dummy.GetSessions()->GetSessionList())
+	for (auto session : *dummy.GetSessions()->GetUserSessionList())
 	{
 		PK_C_REQ_LOGIN login;
 		login.id = std::to_wstring(i);
 		login.password = L"password";
 		auto object = new object::GameObject();
 		object->name = login.id;
+		session->userHash = std::hash<std::wstring>{}(login.id);
+		object->object_id = session->userHash;
 		session->SendPacket(&login);
 		if (check > clinet_size / 4)
 		{
@@ -117,7 +122,6 @@ int main()
 	{
 		player_threads[i]->Channel();
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
 	}
 
 	while (true)

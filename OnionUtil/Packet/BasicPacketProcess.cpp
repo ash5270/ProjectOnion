@@ -1,6 +1,6 @@
 ﻿#include "BasicPacketProcess.h"
 
-onion::packet::process::BasicPacketProcess::BasicPacketProcess(RIOSessionManager* manager)
+onion::packet::process::BasicPacketProcess::BasicPacketProcess(SessionManager* manager)
 {
 	m_sessionManager = manager;
 }

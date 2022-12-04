@@ -6,12 +6,13 @@
 #include <queue>
 #include "safe_queue.h"
 #include "Buffer.h"
+#include"../System/LogSystem.h"
 
 #include "../Util/SingleTon.h"
 
 namespace onion::system
 {
-	class BufferPool : public util::SingleTon<BufferPool>
+	class BufferPool 
 	{
 	private:
 		int m_pool_size;
@@ -19,13 +20,12 @@ namespace onion::system
 		safe_queue<Buffer*> m_readyPool;
 
 	public:
-		void Init(int pool_size,int buffer_size =512)
+		void Init(int pool_size,int buffer_size)
 		{
 			m_pool_size = pool_size;
 			m_buf_size = buffer_size;
 
 			InitPool();
-			PO_LOG(LOG_INFO, L"Buffer pool init sucess...\n");
 		}
 
 		void Delete()
@@ -45,14 +45,14 @@ namespace onion::system
 				return buffer;
 			else
 			{
-				return nullptr;
+				return new Buffer(m_buf_size);
 			}
 		}
 
 		void Relese(Buffer* buffer)
 		{
 			buffer->Clear();
-			m_readyPool.push(buffer); 
+			m_readyPool.push(buffer);
 		}
 
 	private:

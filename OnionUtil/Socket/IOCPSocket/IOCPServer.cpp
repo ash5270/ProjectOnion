@@ -1,6 +1,7 @@
 ﻿#include "IOCPServer.h"
 #include "IOCPSession.h"
 #include"../../System/BufferPool.h"
+#include<chrono>
 
 onion::socket::IOCPServer::IOCPServer(int port) :IOCPSock()
 {
@@ -17,7 +18,38 @@ bool onion::socket::IOCPServer::InitializeServer()
 {
 	//log system 시작
 	onion::system::LogSystem::getInstance().Start();
-	onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
+	//onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
+
+	m_packet_process = new PacketProcessSystem();
+	m_channel = new Channel();
+	m_packet_process->Start();
+
+	//process
+	login_process = new packet::process::LoginProcess(&m_session_manager);
+	character_process = new packet::process::CharacterProcess(&m_session_manager, m_channel);
+	channel_process = new packet::process::ChannelProcess(&m_session_manager, m_channel);
+	basic_process = new packet::process::BasicPacketProcess(&m_session_manager);
+
+	//
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_LOGIN,
+		std::bind(&packet::process::LoginProcess::Process, *login_process, std::placeholders::_1, std::placeholders::_2));
+	m_packet_process->RegisterPacketProcess(PacketID::E_S_ANS_LOGIN,
+		std::bind(&packet::process::LoginProcess::Process, *login_process, std::placeholders::_1, std::placeholders::_2));
+
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_NOTIFY_POSION,
+		std::bind(&packet::process::CharacterProcess::Process, *character_process, std::placeholders::_1, std::placeholders::_2));
+
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_CHANNEL_USERINFO,
+		std::bind(&packet::process::ChannelProcess::Process, *channel_process, std::placeholders::_1, std::placeholders::_2));
+
+
+	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_PING,
+		std::bind(&packet::process::BasicPacketProcess::Process, *basic_process, std::placeholders::_1, std::placeholders::_2));
+
+
+	//update
+	m_packet_process->RegisterPakcetUpdate(std::bind(&packet::process::CharacterProcess::Update, *character_process));
+
 	if (!WSAInit())
 		return false;
 	int nResult = 0;
@@ -57,8 +89,6 @@ void onion::socket::IOCPServer::StartServer()
 	SOCKADDR_IN clientAddr;
 
 	ZeroMemory(&clientAddr, sizeof(clientAddr));
-
-	int addrLen = sizeof(clientAddr);
 	SOCKET clientSocket = 0;
 	DWORD recvBytes;
 	DWORD flags;
@@ -81,7 +111,7 @@ void onion::socket::IOCPServer::StartServer()
 
 	PO_LOG(LOG_INFO, L"Server Start\n");
 
-	nResult = listen(m_listenSocket, 5);
+	nResult = listen(m_listenSocket, 100);
 	if (nResult != 0)
 	{
 		PO_LOG(LOG_ERROR, L"listen failed\n");
@@ -90,24 +120,25 @@ void onion::socket::IOCPServer::StartServer()
 		return;
 	}
 
-
 	//accept 
 	m_thAccept = ::std::thread([&, this]()
 		{
+			int addrLen = sizeof(clientAddr);
+
 			while (m_bAccept)
 			{
 				//client connect
-				clientSocket = WSAAccept(m_listenSocket, (sockaddr*)&clientAddr, &addrLen, NULL, NULL);
+				clientSocket = WSAAccept(m_listenSocket, (SOCKADDR*)&clientAddr, &addrLen, NULL, NULL);
 				if (clientSocket == INVALID_SOCKET)
 				{
-					PO_LOG(LOG_ERROR, L" Accept failed\n");
+					PO_LOG(LOG_ERROR, L" Accept failed msg : %d\n",GetLastError());
 					return;
 				}
 				//session 생성
 				auto session = new IOCPSession(clientSocket);
 				//session 매니저에 추가
-				SessionManager::getInstance().RegisterSession(session);
-
+				m_session_manager.RegisterSession(session);
+				session->SetPacketProcessSystem(this->m_packet_process);
 				auto io_data = session->m_data[IO_READ];
 				//recv 받을 준비 해두기
 				session->RecvReady();
@@ -131,5 +162,13 @@ void onion::socket::IOCPServer::StopServer()
 	WSACleanup();
 	//log system 종료
 	onion::system::LogSystem::getInstance().Stop();
-	onion::system::BufferPool::getInstance().Delete();
+	//onion::system::BufferPool::getInstance().Delete();
+}
+
+void socket::IOCPServer::Update()
+{
+	while (true)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
 }

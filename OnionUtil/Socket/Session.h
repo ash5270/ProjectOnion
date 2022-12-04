@@ -16,6 +16,7 @@ namespace onion::socket
 		PacketProcessSystem* m_packet_process_system;
 	public:
 		std::wstring userId;
+		std::size_t userHash;
 		const SOCKET& GetSocket() const
 		{
 			return m_socket;

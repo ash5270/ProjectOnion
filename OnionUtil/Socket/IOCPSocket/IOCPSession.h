@@ -9,18 +9,23 @@
 #include "../../System/Buffer.h"
 #include "../../System/BufferQueue.h"
 #include"../../Packet/PacketProcessSystem.h"
+#include"../../System/BufferPool.h"
+
 class Packet;
 
 namespace onion::socket
 {
 	class IOCPSession : public Session 
 	{
+	private:
 		//buffer queue send 용
 		system::BufferQueue m_bufQueue;
 		std::atomic_bool m_isSending;
 		bool m_isConnect;
-
 		int m_recvCount;
+
+		//buffer pool
+		system::BufferPool* m_bufPool;
 
 	public:
 		bool OnAccept(SOCKET socket, SOCKADDR_IN addrInfo) override;

@@ -6,13 +6,14 @@
 
 namespace  onion::packet::process
 {
-	using socket::RIOSessionManager;
+	using socket::SessionManager;
 	class CharacterProcess
 	{
-		RIOSessionManager* m_sessionManager;
+		SessionManager* m_sessionManager;
 	public:
-		CharacterProcess(RIOSessionManager* manager, Channel* channel);
+		CharacterProcess(SessionManager* manager, Channel* channel);
 		void Process(onion::socket::Session* session, Packet* packet);
+		void Update();
 	private:
 		Channel* m_channel;
 	};

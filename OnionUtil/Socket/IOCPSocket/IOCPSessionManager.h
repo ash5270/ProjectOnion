@@ -2,24 +2,29 @@
 #include <list>
 #include "IOCPSock.h"
 #include "../../System/SpinLock.h"
+#include"../SessionManager.h"
 
 namespace onion::socket {
+	class Session;
 	class IOCPSession;
-	class IOCPSessionManager
+	class IOCPSessionManager :public SessionManager
 	{
 	public:
-		std::list<IOCPSession*> m_sessionList;
+		std::list<Session*> m_sessionList;
 
 		SpinLock m_lock;
 	public:
 		IOCPSessionManager();
 		~IOCPSessionManager();
 
+		void RegisterSession(Session* session);
+		void UnregisterSession(Session* session);
+
 		bool InitSessionPool();
 
 		void ReturnSession(IOCPSession* session);
 
-		std::list<IOCPSession*>& GetSessionList();
+		std::list<Session*>* GetUserSessionList() override;
 		
 	};
 }

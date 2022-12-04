@@ -6,6 +6,7 @@
 #include "../../System/Buffer.h"
 #include "../../System/SpinLock.h"
 #include "../../System/BufferQueue.h"
+#include "../../System/BufferPool.h"
 #include "RIOSessionManager.h"
 
 class Packet;
@@ -15,9 +16,7 @@ namespace onion::socket
 	class RIOSession : public Session
 	{
 		volatile long m_refCount;
-		
 		int m_threadID;
-
 		int m_recvCount;
 
 		char* m_rioBufferRecvPtr;
@@ -42,7 +41,8 @@ namespace onion::socket
 		//queue lock
 		std::atomic_bool m_isSending;
 		bool m_isConnect;
-
+		//buffer pool
+		system::BufferPool* m_bufPool;
 	public:
 		RIOSession(const SOCKET& socket);
 		~RIOSession() override;

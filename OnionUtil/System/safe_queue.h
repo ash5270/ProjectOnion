@@ -30,10 +30,24 @@ namespace onion::system
 			m_queue.push(std::move(data));
 		}
 
+		T Dequeue()
+		{
+			T data;
+			std::lock_guard<std::mutex> lock(m_lock);
+			if (m_queue.size() <= 0)
+				return nullptr;
+			data = std::move(m_queue.front());
+			if (data == nullptr)
+				return nullptr;
+			m_queue.pop();
+		}
+
 		bool try_Dequeue(T& data)
 		{
 			std::lock_guard<std::mutex> lock(m_lock);
 			//SpinLockGuard locking(m_spin_lock);
+			if (m_queue.size() <= 0)
+				return false;
 			data = std::move(m_queue.front());
 			if (data==nullptr)
 				return false;

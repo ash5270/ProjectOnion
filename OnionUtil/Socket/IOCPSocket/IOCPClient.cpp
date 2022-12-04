@@ -14,7 +14,7 @@ onion::socket::IOCPClient::~IOCPClient()
 
 bool onion::socket::IOCPClient::InitializeClient()
 {
-	system::BufferPool::getInstance().Init(CLIENT_BUFFER_POOL_SIZE);
+	//system::BufferPool::getInstance().Init(CLIENT_BUFFER_POOL_SIZE);
 
 	if (!WSAInit())
 		return false;
@@ -83,7 +83,7 @@ void onion::socket::IOCPClient::StartClient()
 void onion::socket::IOCPClient::StopClient()
 {
 	WSACleanup();
-	onion::system::BufferPool::getInstance().Delete();
+	//onion::system::BufferPool::getInstance().Delete();
 }
 
 onion::socket::IOCPSession* onion::socket::IOCPClient::GetSession()

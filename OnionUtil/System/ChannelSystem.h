@@ -13,17 +13,17 @@ namespace onion::system
 	public:
 		Channel();
 		~Channel();
-		const std::unordered_map<std::wstring, socket::Session*>& GetUsersSession() const;
-		const std::unordered_map<std::wstring, object::GameObject*>& GetPlayerObject() const;
-		void AddPlayer(const std::wstring& userID, object::GameObject* gameobject);
-		void AddPlayerSession(const std::wstring& userId, socket::Session* session);
+		const std::unordered_map<size_t, socket::Session*>& GetUsersSession() const;
+		const std::unordered_map<size_t, object::GameObject*>& GetPlayerObject() const;
+		void AddPlayer(const size_t& userID, object::GameObject* gameobject);
+		void AddPlayerSession(const size_t& userId, socket::Session* session);
 		object::WorldMap& GetWorldMap()
 		{
 			return *m_world;
 		}
 	private:
-		std::unordered_map<std::wstring, socket::Session*> m_channelUsers;
-		std::unordered_map<std::wstring, object::GameObject*> m_gameObjects;
+		std::unordered_map<size_t, socket::Session*> m_channelUsers;
+		std::unordered_map<size_t, object::GameObject*> m_gameObjects;
 		object::WorldMap* m_world;
 	};
 

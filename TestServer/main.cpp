@@ -7,9 +7,16 @@
 int main()
 {
 	onion::socket::RIOServer server(3000);
+	//onion::socket::IOCPServer server(3000);
 	server.InitializeServer();
 	server.StartServer();
-	server.Update();
+	//server.Update();
+
+	while (true)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
+
 	server.StopServer();
 	return 0;
 }

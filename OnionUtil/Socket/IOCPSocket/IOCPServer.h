@@ -2,6 +2,8 @@
 #include "IOCPSock.h"
 #include "../SessionManager.h"
 #include "../../System/BufferPool.h"
+#include"../../Packet/ProcessCommon.h"
+#include"IOCPSessionManager.h"
 #include <thread>
 
 namespace onion::socket
@@ -18,6 +20,8 @@ namespace onion::socket
 		void StartServer();
 		//서버 닫기
 		void StopServer();
+		//서버 업데이트
+		void Update();
 
 	private:
 		std::thread m_thAccept;
@@ -26,6 +30,16 @@ namespace onion::socket
 		
 		bool m_bAccept;
 		int m_port;
+
+		IOCPSessionManager m_session_manager;
+
+		Channel* m_channel;
+		PacketProcessSystem* m_packet_process;
+		//Login
+		packet::process::LoginProcess* login_process;
+		packet::process::CharacterProcess* character_process;
+		packet::process::ChannelProcess* channel_process;
+		packet::process::BasicPacketProcess* basic_process;
 	};
 
 }

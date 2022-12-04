@@ -31,7 +31,7 @@ private:
 	bool m_isUpdate;
 	system::safe_queue<PacketObject*> m_packetQueue;
 	std::unordered_map<int32_t, std::function<void(socket::Session*, Packet*)>> m_packetTable;
-
+	std::vector<std::function<void()>> m_funcs;
 private:
 	void Process(PacketObject* packetObject);
 	void Update();
@@ -40,6 +40,11 @@ public:
 	void RegisterPacketProcess(PacketID id ,std::function<void(socket::Session*,Packet*)> func)
 	{
 		m_packetTable.insert(std::make_pair(id, func));
+	}
+
+	void RegisterPakcetUpdate(std::function<void()> func)
+	{
+		m_funcs.push_back(func);
 	}
 	void Start();
 	void Stop();

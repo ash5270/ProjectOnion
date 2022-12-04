@@ -26,6 +26,7 @@ void PacketProcessSystem::Process(PacketObject* packetObject)
 		return;
 	func->second(packetObject->session, packetObject->packet);
 }
+int fps_count = 0;
 
 void PacketProcessSystem::Update()
 {
@@ -34,7 +35,7 @@ void PacketProcessSystem::Update()
 		return;
 	}
 
-	for(int i=0; i< m_packetQueue.size(); i++)
+	for (int i = 0; i < m_packetQueue.size(); i++)
 	{
 		PacketObject* obj;
 		bool check = m_packetQueue.try_Dequeue(obj);
@@ -43,6 +44,15 @@ void PacketProcessSystem::Update()
 		else
 			continue;
 	}
+	if(fps_count>3)
+	{
+		for (int i = 0; i < m_funcs.size(); i++)
+		{
+			m_funcs[i]();
+		}
+		fps_count = 0;
+	}
+	fps_count++;
 }
 
 void PacketProcessSystem::Loop()

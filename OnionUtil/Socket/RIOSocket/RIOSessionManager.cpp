@@ -49,7 +49,7 @@ onion::socket::RIOSession* onion::socket::RIOSessionManager::IssueSession()
 		return nullptr;
 	}
 
-	RIOSession* session = m_freeSessionList[threadID].back();
+	RIOSession* session =reinterpret_cast<RIOSession*>(m_freeSessionList[threadID].back());
 	m_freeSessionList[threadID].pop_back();
 
 	session->AddRef();

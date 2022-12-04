@@ -27,5 +27,6 @@ private:
 	const int32_t seed;
 	std::mt19937 generator;
 	void Update();
+	void Start();
 
 };

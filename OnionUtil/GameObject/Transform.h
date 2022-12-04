@@ -9,5 +9,6 @@ namespace onion::object
 		~Transform();
 
 		math::Vector3 position;
+		math::Vector2 velocity;
 	};
 }

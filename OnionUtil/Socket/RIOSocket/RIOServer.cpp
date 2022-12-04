@@ -20,7 +20,7 @@ bool onion::socket::RIOServer::InitializeServer()
 {
 	//system start 중요 시스템 시작 및 초기화
 	onion::system::LogSystem::getInstance().Start();
-	onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
+	//onion::system::BufferPool::getInstance().Init(SERVER_BUFFER_POOL_SIZE);
 	m_packet_process = new PacketProcessSystem();
 	m_channel = new Channel();
 	m_packet_process->Start();
@@ -44,6 +44,10 @@ bool onion::socket::RIOServer::InitializeServer()
 
 	m_packet_process->RegisterPacketProcess(PacketID::E_C_REQ_PING,
 		std::bind(&packet::process::BasicPacketProcess::Process, *basic_process, std::placeholders::_1, std::placeholders::_2));
+
+
+	//update
+	m_packet_process->RegisterPakcetUpdate(std::bind(&packet::process::CharacterProcess::Update, *character_process));
 
 	//
 	if (!WSAInit())
@@ -135,7 +139,7 @@ void onion::socket::RIOServer::StartServer()
 void onion::socket::RIOServer::StopServer()
 {
 	onion::system::LogSystem::getInstance().Stop();
-	onion::system::BufferPool::getInstance().Delete();
+    //onion::system::BufferPool::getInstance().Delete();
 }
 
 void onion::socket::RIOServer::Update()

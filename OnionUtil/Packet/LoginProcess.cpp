@@ -1,8 +1,8 @@
 ﻿#include "LoginProcess.h"
-
 #include "../Socket/RIOSocket/RIOSession.h"
+#include <functional>
 
-packet::process::LoginProcess::LoginProcess(RIOSessionManager* manager)
+packet::process::LoginProcess::LoginProcess(SessionManager* manager)
 {
 	this->m_sessionManager = manager;
 }
@@ -25,9 +25,10 @@ void packet::process::LoginProcess::Process(onion::socket::Session* session, Pac
 		PO_LOG(LOG_INFO, L"id : %s, password : %s \n", login_packet->id.c_str(), login_packet->password.c_str());
 
 		session->userId = login_packet->id;
-
+		session->userHash = std::hash<std::wstring>{}(session->userId);
 		PK_S_ANS_LOGIN login_result;
 		login_result.id = session->userId;
+		login_result.uid = session->userHash;
 		login_result.result = 400;
 		//밑에 부분은 채널 시스템에서 따로 실행
 		session->SendPacket(&login_result);
@@ -44,6 +45,7 @@ void packet::process::LoginProcess::Process(onion::socket::Session* session, Pac
 				continue;
 			PK_S_NOTIFY_USER_REGISTER  user_info;
 			user_info.id = session->userId;
+			user_info.uid = session->userHash;
 			other->SendPacket(&user_info);
 			//나머지 유저 정보 저장
 

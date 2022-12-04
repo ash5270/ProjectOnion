@@ -7,15 +7,18 @@
 
 namespace onion::socket
 {
-	class SessionManager : public util::SingleTon<SessionManager>
+	class SessionManager
 	{
-		std::list<Session*> m_sessions;
+	
 	public:
 		SessionManager();
-		~SessionManager();
+		virtual  ~SessionManager();
 
 		void RegisterSession(Session* session);
 		void UnregisterSession(Session* session);
+
+		virtual std::list<Session*>* GetUserSessionList() = 0;
+		
 	};
 }
 

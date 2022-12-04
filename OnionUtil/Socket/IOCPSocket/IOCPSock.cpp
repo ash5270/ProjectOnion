@@ -71,7 +71,7 @@ void onion::socket::IOCPSock::WorkingThread()
 
 		if (!bResult && recvBytes == 0)
 		{
-			PO_LOG(LOG_INFO, L"socket(%I64d) connect close\n", pSocketinfo->GetSocket());
+			PO_LOG(LOG_INFO, L"socket(%I64d) connect close\n", pSocketinfo->GetSocket())
 			pSession->OnClose();
 			shutdown(pSocketinfo->GetSocket(), 2);
 			closesocket(pSocketinfo->GetSocket());
@@ -81,7 +81,7 @@ void onion::socket::IOCPSock::WorkingThread()
 
 		if (recvBytes == 0)
 		{
-			//PO_LOG(LOG_ERROR, L"recvBytes size 0\n");
+			PO_LOG(LOG_ERROR, L"recvBytes size 0\n")
 			closesocket(pSocketinfo->GetSocket());
 			delete pSocketinfo;
 			continue;

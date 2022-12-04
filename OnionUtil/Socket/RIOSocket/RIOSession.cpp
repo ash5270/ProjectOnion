@@ -10,6 +10,8 @@
 onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 {
 	server = nullptr;
+	m_bufPool = new system::BufferPool();
+	m_bufPool->Init(1000,4096);
 }
 
 onion::socket::RIOSession::~RIOSession()
@@ -19,6 +21,8 @@ onion::socket::RIOSession::~RIOSession()
 
 	VirtualFreeEx(GetCurrentProcess(), m_rioBufferRecvPtr, 0, MEM_RELEASE);
 	VirtualFreeEx(GetCurrentProcess(), m_rioBufferSendPtr, 0, MEM_RELEASE);
+
+	m_bufPool->Delete();
 
 	delete m_recvBuffer;
 	delete m_sendBuffer;
@@ -185,6 +189,7 @@ void onion::socket::RIOSession::OnRecv(size_t transferSize)
 		PacketObject* obj = new PacketObject();
 		obj->session = this;
 		obj->packet = packet;
+
 		m_packet_process_system->PushPacket(obj);
 	}
 
@@ -208,7 +213,12 @@ void onion::socket::RIOSession::SendPost()
 	//버퍼 오프셋
 	m_rioSendContext->Offset = m_sendBuffer->tailOffset();
 
-	DWORD sendBytes = 0;
+	if (m_rioSendContext->Length <= 0)
+	{
+		PO_LOG(LOG_ERROR, L"rio send buffer error : %d\n", m_rioSendContext->Length)
+			return;
+	}
+
 	DWORD flags = 0;
 	if (!RIOSock::m_Rio_func_table.RIOSend(m_requestQueue, (PRIO_BUF)m_rioSendContext, 1, flags, m_rioSendContext))
 	{
@@ -223,7 +233,6 @@ void onion::socket::RIOSession::OnSend(size_t transferSize)
 	if (m_bufQueue.empty())
 	{
 		m_isSending.exchange(false);
-		//PO_LOG(LOG_INFO, L"all send Success\n");
 		return;
 	}
 
@@ -231,8 +240,8 @@ void onion::socket::RIOSession::OnSend(size_t transferSize)
 		return;
 
 	m_sendBuffer->Clear();
-
-	for (int i = 0; i < m_bufQueue.size(); i++)
+	int size = m_bufQueue.size();
+	for (int i = 0; i <size; i++)
 	{
 		Buffer* send_buf = m_bufQueue.front();
 		if (send_buf == nullptr)
@@ -245,7 +254,7 @@ void onion::socket::RIOSession::OnSend(size_t transferSize)
 			break;
 		}
 		m_bufQueue.pop();
-		auto pool = &BufferPool::getInstance();
+		auto pool = m_bufPool;
 		pool->Relese(send_buf);
 	}
 
@@ -264,11 +273,8 @@ void onion::socket::RIOSession::SendPacket(Packet* packet)
 {
 	if (!m_isConnect)
 		return;
-	//여기서 버퍼 생성
-	//수정해야할 곳
-	//Buffer* buf = new Buffer(1024);
 
-	auto pool = &BufferPool::getInstance();
+	auto pool = m_bufPool;
 	auto buf = pool->GetBuffer();
 	auto header = packet->Serialize(*buf);
 	header->size = buf->write_size;
@@ -278,10 +284,14 @@ void onion::socket::RIOSession::SendPacket(Packet* packet)
 	bool check = false;
 	if (m_isSending.compare_exchange_strong(check, true))
 	{
+		if (m_bufQueue.empty())
+			return;
+
 		m_sendBuffer->Clear();
 		m_bufQueue.pop();
 		*m_sendBuffer << *buf;
-		onion::system::BufferPool::getInstance().Relese(buf);
+		pool->Relese(buf);
+		//onion::system::BufferPool::getInstance().Relese(buf);
 		this->SendPost();
 	}
 }

@@ -8,18 +8,17 @@
 
 namespace onion::packet::process
 {
-	using socket::RIOSessionManager;
+	using socket::SessionManager;
 	class ChannelProcess
 	{
-		
 	public:
-		ChannelProcess(RIOSessionManager* manager,Channel* channel);
+		ChannelProcess(SessionManager* manager,Channel* channel);
 		~ChannelProcess();
 
 		void Process(onion::socket::Session* session, Packet* packet);
 	private:
 		Channel* m_channel;
-		RIOSessionManager* m_sessionManager;
+		SessionManager* m_sessionManager;
 	};
 };
 

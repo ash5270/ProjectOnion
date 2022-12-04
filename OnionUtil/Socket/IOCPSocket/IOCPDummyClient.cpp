@@ -15,7 +15,7 @@ onion::socket::IOCPDummyClient::~IOCPDummyClient()
 
 bool onion::socket::IOCPDummyClient::InitializeClient(int SessionCount)
 {
-	system::BufferPool::getInstance().Init(CLIENT_BUFFER_POOL_SIZE);
+	//system::BufferPool::getInstance().Init(CLIENT_BUFFER_POOL_SIZE);
 	system::LogSystem::getInstance().Start();
 	m_packetProcess = new PacketProcessSystem();
 	m_packetProcess->Start();
@@ -40,7 +40,7 @@ bool onion::socket::IOCPDummyClient::InitializeClient(int SessionCount)
 	{
 		SOCKET socekt = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 		IOCPSession* session = new IOCPSession(socekt);
-		m_sessions.GetSessionList().push_back(session);
+		m_sessions.GetUserSessionList()->push_back(session);
 		session->SetPacketProcessSystem(m_packetProcess);
 	}
 
@@ -67,7 +67,7 @@ void onion::socket::IOCPDummyClient::StartDummyClient()
 
 	PO_LOG(LOG_INFO, L"start client...\n");
 
-	for (auto session : m_sessions.GetSessionList())
+	for (auto session : *m_sessions.GetUserSessionList())
 	{
 		nResult = connect(session->GetSocket(), reinterpret_cast<SOCKADDR*>(&m_serverAddr), sizeof(SOCKADDR_IN));
 		if (nResult == SOCKET_ERROR)
@@ -82,7 +82,7 @@ void onion::socket::IOCPDummyClient::StartDummyClient()
 
 	if (nResult == SOCKET_ERROR)
 	{
-		for(auto session : m_sessions.GetSessionList())
+		for(auto session : *m_sessions.GetUserSessionList())
 		{
 			PO_LOG(LOG_ERROR, L"connect failed\n");
 			closesocket(session->GetSocket());
@@ -95,7 +95,7 @@ void onion::socket::IOCPDummyClient::StartDummyClient()
 void onion::socket::IOCPDummyClient::StopClient()
 {
 	system::LogSystem::getInstance().Stop();
-	onion::system::BufferPool::getInstance().Delete();
+	//onion::system::BufferPool::getInstance().Delete();
 	m_packetProcess->Stop();
 	WSACleanup();
 }
