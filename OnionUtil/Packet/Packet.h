@@ -121,6 +121,10 @@ public:
     PacketID type() override {return E_S_NOTIFY_USER_REGISTER;}
     std::wstring     id;
     size_t     uid;
+    int32_t     channel_number;
+    float     pos_x;
+    float     pos_y;
+    float     pos_z;
 
     PacketHeader* Serialize(Stream& buffer)override 
     {
@@ -129,12 +133,20 @@ public:
         header->packetId = type();
         buffer<<id;
         buffer<<uid;
+        buffer << channel_number;
+        buffer << pos_x;
+        buffer << pos_y;
+        buffer << pos_z;
         return header;
     }
     void Deserialize(Stream& buffer)override 
     {
         buffer>>&id;
         buffer>>&uid;
+        buffer >> &channel_number;
+        buffer >> &pos_x;
+        buffer >> &pos_y;
+        buffer >> &pos_z;
     }
 };
 
@@ -142,6 +154,7 @@ class PK_C_REQ_CHANNEL_USERINFO : public Packet
 {
 public:
     PacketID type() override {return E_C_REQ_CHANNEL_USERINFO;}
+    std::wstring     id;
     size_t     uid;
     int32_t     channel_number;
     float     pos_x;
@@ -153,6 +166,7 @@ public:
         PacketHeader* header;
         buffer << header;
         header->packetId = type();
+        buffer << id;
         buffer<<uid;
         buffer<<channel_number;
         buffer<<pos_x;
@@ -162,6 +176,7 @@ public:
     }
     void Deserialize(Stream& buffer)override 
     {
+        buffer >> &id;
         buffer>>&uid;
         buffer>>&channel_number;
         buffer>>&pos_x;

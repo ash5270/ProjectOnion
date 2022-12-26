@@ -6,8 +6,8 @@
 
 int main()
 {
-	onion::socket::RIOServer server(3000);
-	//onion::socket::IOCPServer server(3000);
+//	onion::socket::RIOServer server(3000);
+	onion::socket::IOCPServer server(3000);
 	server.InitializeServer();
 	server.StartServer();
 	//server.Update();

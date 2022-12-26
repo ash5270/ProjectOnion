@@ -26,8 +26,9 @@ void PacketProcessSystem::Process(PacketObject* packetObject)
 		return;
 	func->second(packetObject->session, packetObject->packet);
 }
-int fps_count = 0;
 
+int fps_count = 0;
+//패킷을 꺼내서 작업함
 void PacketProcessSystem::Update()
 {
 	if (m_packetQueue.empty())

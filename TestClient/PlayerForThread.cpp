@@ -14,11 +14,12 @@ void PlayerForThread::Channel()
 	for (int i = 0; i < sessions.size(); i++)
 	{
 		PK_C_REQ_CHANNEL_USERINFO channel;
+		channel.id = sessions[i].object->name;
 		channel.uid = sessions[i].object->object_id;
-		channel.channel_number = 1;
-		channel.pos_x = distribution(generator);
-		channel.pos_y = distribution(generator);
-		channel.pos_z = distribution(generator);
+		channel.channel_number = 0;
+		channel.pos_x =  0+ distribution(generator);
+		channel.pos_y =  0+ distribution(generator);
+		channel.pos_z =  0+ distribution(generator);
 		sessions[i].object->transform.position = onion::object::math::Vector3(channel.pos_x, channel.pos_y, channel.pos_z);
 		sessions[i].session->SendPacket(&channel);
 	}
@@ -62,4 +63,10 @@ void PlayerForThread::Start()
 			t += dt;
 		}
 	}
+}
+
+void PlayerForThread::Stop()
+{
+	if (m_thread.joinable())
+		m_thread.join();
 }

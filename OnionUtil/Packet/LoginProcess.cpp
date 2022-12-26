@@ -37,26 +37,26 @@ void packet::process::LoginProcess::Process(onion::socket::Session* session, Pac
 		std::wstring users_info;
 		int count = 0;
 		//다른 클라이언트에 로그인 정보 보냄
-		for (auto other : *m_sessionManager->GetUserSessionList())
-		{
-			if ((socket::Session*)other == session)
-				continue;
-			if (other->userId == L"")
-				continue;
-			PK_S_NOTIFY_USER_REGISTER  user_info;
-			user_info.id = session->userId;
-			user_info.uid = session->userHash;
-			other->SendPacket(&user_info);
-			//나머지 유저 정보 저장
+		//for (auto other : *m_sessionManager->GetUserSessionList())
+		//{
+		//	if ((socket::Session*)other == session)
+		//		continue;
+		//	if (other->userId == L"")
+		//		continue;
+		//	PK_S_NOTIFY_USER_REGISTER  user_info;
+		//	user_info.id = session->userId;
+		//	user_info.uid = session->userHash;
+		//	other->SendPacket(&user_info);
+		//	//나머지 유저 정보 저장
 
-			/*PK_S_ANS_CHANNEL_USERINFO users_info_packets;
-			users_info_packets.user_count = count;
-			users_info_packets.users = other->userId;
-			users_info_packets.
+		//	/*PK_S_ANS_CHANNEL_USERINFO users_info_packets;
+		//	users_info_packets.user_count = count;
+		//	users_info_packets.users = other->userId;
+		//	users_info_packets.
 
-			session->SendPacket(&users_info_packets);*/
-			count++;
-		}
+		//	session->SendPacket(&users_info_packets);*/
+		//	count++;
+		//}
 
 		delete packet;
 		break;

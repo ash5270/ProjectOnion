@@ -1,4 +1,5 @@
 ﻿#include "CharacterProcess.h"
+#include<iterator>
 
 #include "../Socket/RIOSocket/RIOSession.h"
 
@@ -33,42 +34,11 @@ void packet::process::CharacterProcess::Process(onion::socket::Session* session,
 			m_channel->GetWorldMap().RemoveGameObject(player_object);
 			player_object->transform.position = vec3;
 			m_channel->GetWorldMap().AddGameObject(player_object);
-		}else
-		{
-			player_object->transform.position = vec3;
-		}
-		/*auto cell = m_channel->GetWorldMap().FindCell(player_object);
-
-		if (!cell->GetRect().BoundRect(vec3))
-		{
-			m_channel->GetWorldMap().RemoveGameObject(player_object);
-			player_object->transform.position = vec3;
-			m_channel->GetWorldMap().AddGameObject(player_object);
 		}
 		else
 		{
 			player_object->transform.position = vec3;
 		}
-
-
-		object::math::Rect find_rect;
-		find_rect.VecToRec(vec3, 10);
-
-		for (auto obj : m_channel->GetWorldMap().FindGameObject(vec3))
-		{
-			auto session = m_channel->GetUsersSession().find(obj->name);
-			if (session == m_channel->GetUsersSession().end())
-				break;
-			else
-				session->second->SendPacket(posion_packet);
-		}*/
-
-		////PO_LOG(LOG_INFO, L"position : {%f,%f,%f}\n", posion_packet->pos_x, posion_packet->pos_y, posion_packet->pos_z);\
-		///player_object->transform.position = vec3;
-		//for (auto it : *m_sessionManager->GetUserSessionList())
-		//{
-		//	it->SendPacket(posion_packet);
-		//}
 		delete packet;
 	}
 	default:
@@ -79,40 +49,81 @@ void packet::process::CharacterProcess::Process(onion::socket::Session* session,
 void packet::process::CharacterProcess::Update()
 {
 	//모든 세션에 위치정보 보냄
-	for (auto session: m_channel->GetUsersSession())
+	//접속 중인 세션 데이터를 보냄
+	for (auto session : m_channel->GetUsersSession())
 	{
-		//오브젝트 구해옴
+		//오브젝트 
 		auto object = m_channel->GetPlayerObject().find(session.second->userHash);
-		if(object==m_channel->GetPlayerObject().end())
+		if (object == m_channel->GetPlayerObject().end())
 			continue;
 		//오브젝트가 있는 맵에 있는 유저들만 가져옴
 		object::math::Rect find_rect;
 		find_rect.VecToRec(object->second->transform.position, 10);
 		auto objects = m_channel->GetWorldMap().FindGameObject(object->second->transform.position);
-		//데이터 패킷
-		PK_S_NOTIFY_POSION pos_packet;
-		pos_packet.user_count = objects.size();
-		for (auto obj : objects)
+
+		//데이터를 최대한 맞게 보내기 위해
+		size_t packet_size = sizeof(PlayerPos);
+		size_t packet_header_size = sizeof(PacketHeader);
+		if (objects.size() * packet_size + packet_header_size > BUF_SIZE)
 		{
-			PlayerPos player_pos{ static_cast<size_t>(obj->object_id),
-				obj->transform.position.x,
-				obj->transform.position.y,
-				obj->transform.position.z,
-				0,
-				0
-			};
-			pos_packet.player_pos.push_back(player_pos);
+			//오브젝트 즉 플레이어 x 패킷 사이즈가 버퍼 사이즈를 넘어가게 되면
+			//오브젝트를 반으로 나누어 보냄
+			//만약 이것보다 크면 더 반으로 나눠야 하지만 게임 자체가 그렇게 크지 않기 떄문에 반만 나눔
+			//데이터 패킷
+
+			PK_S_NOTIFY_POSION pos_packet;
+			pos_packet.user_count = objects.size()/2;
+			auto mid = std::next(objects.begin(), objects.size() / 2);
+			auto i = objects.begin();
+
+			for (; i != mid; i++)
+			{
+				PlayerPos player_pos{ static_cast<size_t>((*i)->object_id),
+					(*i)->transform.position.x,
+					(*i)->transform.position.y,
+					(*i)->transform.position.z,
+					0,
+					0
+				};
+				pos_packet.player_pos.push_back(player_pos);
+			}
+			session.second->SendPacket(&pos_packet);
+
+			//두번째
+			PK_S_NOTIFY_POSION pos_packet_2;
+			pos_packet_2.user_count = objects.size()/2;
+			for (; i != objects.end(); i++)
+			{
+				PlayerPos player_pos{ static_cast<size_t>((*i)->object_id),
+					(*i)->transform.position.x,
+					(*i)->transform.position.y,
+					(*i)->transform.position.z,
+					0,
+					0
+				};
+				pos_packet_2.player_pos.push_back(player_pos);
+			}
+			session.second->SendPacket(&pos_packet_2);
 		}
-		session.second->SendPacket(&pos_packet);
+		else
+		{
+
+			//플레이어 수 x 패킷 사이즈가 버퍼 사이즈 보다 작을때
+			//한번에 뭉쳐서 보낸다.
+			PK_S_NOTIFY_POSION pos_packet;
+			pos_packet.user_count = objects.size();
+			for (auto obj : objects)
+			{
+				PlayerPos player_pos{ static_cast<size_t>(obj->object_id),
+					obj->transform.position.x,
+					obj->transform.position.y,
+					obj->transform.position.z,
+					0,
+					0
+				};
+				pos_packet.player_pos.push_back(player_pos);
+			}
+			session.second->SendPacket(&pos_packet);
+		}
 	}
 }
-
-
-//PK_C_NOTIFY_POSION posion_packet;
-//posion_packet.uid = obj->object_id;
-//posion_packet.pos_x = obj->transform.position.x;
-//posion_packet.pos_y = obj->transform.position.y;
-//posion_packet.pos_z = obj->transform.position.z;
-//posion_packet.velocity_x = obj->transform.velocity.x;
-//posion_packet.velocity_y = obj->transform.velocity.y;
-//session.second->SendPacket(&posion_packet);

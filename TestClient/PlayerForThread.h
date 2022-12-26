@@ -20,7 +20,7 @@ public:
 
 	std::vector<Player> sessions;
 	void Channel();
-
+	void Stop();
 private:
 	std::thread m_thread;
 	std::random_device os_seed;
@@ -28,5 +28,6 @@ private:
 	std::mt19937 generator;
 	void Update();
 	void Start();
+
 
 };
