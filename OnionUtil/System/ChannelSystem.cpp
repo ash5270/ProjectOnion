@@ -37,8 +37,10 @@ void Channel::AddPlayerSession(const std::size_t& userId,  socket::Session* sess
 
 ChannelSystem::ChannelSystem()
 {
+	
 }
 
 ChannelSystem::~ChannelSystem()
 {
+
 }

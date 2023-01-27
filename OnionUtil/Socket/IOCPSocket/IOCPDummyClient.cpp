@@ -44,7 +44,6 @@ bool onion::socket::IOCPDummyClient::InitializeClient(int SessionCount)
 		session->SetPacketProcessSystem(m_packetProcess);
 	}
 
-
 	return true;
 }
 

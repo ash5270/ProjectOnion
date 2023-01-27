@@ -10,10 +10,10 @@ namespace onion::socket
 		SESSION_BUFFER_SIZE = 65536,
 
 		MAX_THREAD = 22,
-		MAX_RESULT = 64,
-		MAX_SEND_RQ_SIZE_PER_SOCK = 32,
-		MAX_RECV_RQ_SIZE_PER_SOCK = 32,
-		MAX_CLIENT_PER_RIO_THREAD = 40, //ex 2560
+		MAX_RESULT = 32,
+		MAX_SEND_RQ_SIZE_PER_SOCK = 64,
+		MAX_RECV_RQ_SIZE_PER_SOCK = 64,
+		MAX_CLIENT_PER_RIO_THREAD = 46, //ex 2560
 		MAX_CQ_SIZE_PER_RIO_THREAD = (MAX_SEND_RQ_SIZE_PER_SOCK + MAX_RECV_RQ_SIZE_PER_SOCK) * MAX_CLIENT_PER_RIO_THREAD,
 	};
 
@@ -24,7 +24,7 @@ namespace onion::socket
 		bool m_bWorkerThread;
 	public:
 		RIOSock();
-		~RIOSock();
+		virtual ~RIOSock();
 
 		static unsigned int WINAPI CallWorkerThread(LPVOID p);
 		bool CreateWorkerThread(size_t num_thread);

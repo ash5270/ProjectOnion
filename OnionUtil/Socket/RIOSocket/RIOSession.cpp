@@ -11,7 +11,7 @@ onion::socket::RIOSession::RIOSession(const SOCKET& socket) : Session(socket)
 {
 	server = nullptr;
 	m_bufPool = new system::BufferPool();
-	m_bufPool->Init(1000,4096);
+	m_bufPool->Init(1000,BUF_SIZE);
 }
 
 onion::socket::RIOSession::~RIOSession()

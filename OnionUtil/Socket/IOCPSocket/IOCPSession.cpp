@@ -20,7 +20,7 @@ onion::socket::IOCPSession::IOCPSession(const SOCKET& socket) : Session(socket),
 	m_data[IO_WRITE]->SetIOType(IO_WRITE);
 
 	m_bufPool = new system::BufferPool();
-	m_bufPool->Init(1000,4096);
+	m_bufPool->Init(1000,BUF_SIZE);
 }
 
 onion::socket::IOCPSession::~IOCPSession()

@@ -10,7 +10,7 @@ namespace onion::socket
 	{
 	public:
 		IOCPSock();
-		~IOCPSock();
+		virtual ~IOCPSock();
 
 		//작업 스레드 생성
 		bool CreateWorkerThread(size_t num_thread);
